@@ -69,17 +69,36 @@ public partial class DebugDatabase : ContentPage, IDisposable
 
             foreach (var server in _server.Servers)
             {
-                
-                string srvjson = JsonSerializer.Serialize(server.Properties, new JsonSerializerOptions { WriteIndented = true });
-                combination += srvjson + "\n";
-
+                foreach (var item in server.Properties)
+                {
+                    if (!item.Value.UserVisisble) continue;
+                    if (item.Value.ProtectValue)
+                    {
+                        combination += $"{item.Key}: *****\n";
+                    }
+                    else
+                    {
+                        combination += $"{item.Key}: {item.Value.Value.ToString()}\n";
+                    }
+                }
+                combination += "\n";
                 foreach (var item in server.GetDataConnectors())
                 {
-                    string json = JsonSerializer.Serialize(item.Value.SyncStatusInfo, new JsonSerializerOptions { WriteIndented = true });
-                    System.Diagnostics.Debug.WriteLine(json);
-                    combination += item.Key + "\n";
-                    combination += json + "\n";
+                    if(item.Value != null)
+                    {
+                        //string json = JsonSerializer.Serialize(item.Value.SyncStatusInfo, new JsonSerializerOptions { WriteIndented = true });
+                        //System.Diagnostics.Debug.WriteLine(json);
+                        //combination += item.Key + "\n";
+                        //combination += json + "\n";
+                        combination += $"{item.Key}\n";
+                        combination += $"Status: {GetFriendlyTaskStatus(item.Value.SyncStatusInfo.TaskStatus)}\n";
+                        combination += $"Completion: {item.Value.SyncStatusInfo.StatusPercentage}%\n";
+                        combination += $"Items: {item.Value.SyncStatusInfo.ServerItemCount}/{item.Value.SyncStatusInfo.ServerItemTotal}\n";
+                        combination += "\n";
+                    }
                 }
+                combination += "------";
+                combination += "\n";
             }
 
             ticker.Text = combination;
@@ -91,5 +110,21 @@ public partial class DebugDatabase : ContentPage, IDisposable
         _cancellationTokenSource?.Cancel();
         _cancellationTokenSource?.Dispose();
         _timer?.Dispose();
+    }
+
+    private static string GetFriendlyTaskStatus(TaskStatus status)
+    {
+        return status switch
+        {
+            TaskStatus.Created => "Not Started",
+            TaskStatus.WaitingForActivation => "Waiting to Activate",
+            TaskStatus.WaitingToRun => "Waiting to Start",
+            TaskStatus.Running => "Running",
+            TaskStatus.WaitingForChildrenToComplete => "Waiting for Sub-tasks",
+            TaskStatus.RanToCompletion => "Completed",
+            TaskStatus.Canceled => "Canceled",
+            TaskStatus.Faulted => "Failed",
+            _ => status.ToString()
+        };
     }
 }

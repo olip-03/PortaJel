@@ -10,6 +10,16 @@
 		<UseMaui>true</UseMaui>
 	</PropertyGroup>
 
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+	  <AndroidCreatePackagePerAbi>True</AndroidCreatePackagePerAbi>
+	  <Debugger>Xamarin</Debugger>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+	  <AndroidCreatePackagePerAbi>True</AndroidCreatePackagePerAbi>
+	  <Debugger>Xamarin</Debugger>
+	</PropertyGroup>
+
 	<ItemGroup>
 		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="9.0.3" />
 		<PackageReference Include="Microsoft.Maui.Controls" Version="9.0.3" />

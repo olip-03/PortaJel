@@ -8,98 +8,85 @@ using Portajel.Connections.Enum;
 using Portajel.Connections.Interfaces;
 using Portajel.Connections.Services.Database;
 using Portajel.Connections;
+using Portajel.Connections.Data;
 
 namespace Portajel.Services;
 
 public class ServerConnectorSettings
 {
-    public ServerConnector ServerConnector { get; private init; } = new();
+    public ServerConnector ServerConnector { get; private init; }
 
     public ServerConnectorSettings(string json, IDbConnector database, string appDataDirectory)
     {
+        ServerConnector = new ServerConnector();
         if (string.IsNullOrWhiteSpace(json) || json == "{}")
         {
             // Return empty list
             return;
         }
 
-        var options = new JsonSerializerOptions
+        try
         {
-            IncludeFields = true
-        };
-        var settings = JsonSerializer.Deserialize<List<Dictionary<string, ConnectorProperty>>>(json, options);
-        if (settings == null) return;
-        foreach (var setting in settings)
-        {
-            MediaServerConnection? type = null;
-            IMediaServerConnector connector = null;
-
-            foreach (var variable in setting)
+            var options = new JsonSerializerOptions
             {
-                if (variable.Value.Value is JsonElement jsonElement)
+                IncludeFields = true
+            };
+            var serverProperties = JsonSerializer.Deserialize<List<Dictionary<string, ConnectorProperty>>>(json, options);
+            if (serverProperties == null) return;
+            ServerConnector = new ServerConnector { Servers = new List<IMediaServerConnector>() };
+            foreach (var props in serverProperties)
+            {
+                if (props.TryGetValue("ConnectorType", out var typeProperty))
                 {
-                    switch (jsonElement.ValueKind)
+                    IMediaServerConnector server = null;
+                    // Convert the Value to string or int as needed
+                    var connectorTypeValue = typeProperty.Value?.ToString();
+
+                    // Option 1: If the enum values match the numeric values
+                    if (int.TryParse(connectorTypeValue, out int connectorTypeInt))
                     {
-                        case JsonValueKind.String:
-                            variable.Value.Value = jsonElement.GetString();
-                            break;
-                        case JsonValueKind.Number:
-                            variable.Value.Value = jsonElement.GetInt32();
-                            break;
-                        case JsonValueKind.True:
-                            variable.Value.Value = true;
-                            break;
-                        case JsonValueKind.False:
-                            variable.Value.Value = false;
-                            break;
-                        default:
-                            variable.Value.Value = null;
-                            break;
+                        switch (connectorTypeInt)
+                        {
+                            case 3: // Assuming 3 means JellyFin
+                                server = new JellyfinServerConnector(database)
+                                {
+                                    Properties = props
+                                };
+                                break;
+                        }
+                    }
+                    // Option 2: Or if you expect string values in some cases
+                    else
+                    {
+                        switch (connectorTypeValue)
+                        {
+                            case "JellyFin":
+                                server = new JellyfinServerConnector(database)
+                                {
+                                    Properties = props
+                                };
+                                break;
+                        }
+                    }
+
+                    if (server != null)
+                    {
+                        server.Properties = props;
+                        ServerConnector.Servers.Add(server);
                     }
                 }
-            }
-            
-            if (Enum.TryParse(setting["ConnectorType"].Value.ToString(), out MediaServerConnection parsedType))
-            {
-                type = parsedType;
-            }
 
-            if (type == null) continue; 
-            switch (type)
-            {
-                case MediaServerConnection.Filesystem:
-                    connector = new FileSystemConnector()
-                    {
-                        Properties = setting
-                    };
-                    break;
-                case MediaServerConnection.Jellyfin:
-                    connector = new JellyfinServerConnector(database)
-                    {
-                        Properties = setting
-                    };
-                    break;
-                case MediaServerConnection.Spotify:
-                    connector = new SpotifyServerConnector()
-                    {
-                        Properties = setting
-                    };
-                    break;
-                case MediaServerConnection.Discogs:
-                    connector = new DiscogsConnector()
-                    {
-                        Properties = setting
-                    };
-                    break; 
             }
-            if(connector == null) continue; 
-            ServerConnector.Servers.Add(connector);
+        }
+        catch (Exception ex)
+        {
+            return;
         }
     }
 
-    public ServerConnectorSettings(ServerConnector serverConnector, IMediaServerConnector[] servers)
+    public ServerConnectorSettings(IServerConnector serverConnector, IMediaServerConnector[] servers)
     {
-        ServerConnector = serverConnector;
+        ServerConnector = (ServerConnector)serverConnector;
         if(ServerConnector.Servers.Count > 0) return;
         if(servers == null) return;
         foreach (var srv in servers)

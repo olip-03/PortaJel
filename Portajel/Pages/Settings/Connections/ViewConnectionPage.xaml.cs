@@ -13,7 +13,7 @@ public partial class ViewConnectionPage : ContentPage, IQueryAttributable
 {
     private string url = default!;
 
-    private Dictionary<string, ConnectorProperty> _connectionProperties = default!;
+    private Dictionary<string, ConnectorProperty> _connectionProperties = new();
     private ViewConnectionViewModel _viewModel = new();
 
     private IServerConnector _server = default!;
@@ -30,12 +30,33 @@ public partial class ViewConnectionPage : ContentPage, IQueryAttributable
     // This method will receive all navigation parameters at once
     public void ApplyQueryAttributes(IDictionary<string, object> query)
     {
-        _connectionProperties = (Dictionary<string, ConnectorProperty>)query["Properties"];
-        url = (string)_connectionProperties["URL"].Value;
+        var objects = query;
+        foreach (var item in objects)
+        {
+            try
+            {
+                var itemValue = (Dictionary<string, ConnectorProperty>)item.Value;
+                foreach (var setting in itemValue)
+                {
+                    _connectionProperties.Add(setting.Key, setting.Value);
+                }
+            }
+            catch (Exception ex)
+            {
+                return;
+            }
+        }
+
+        ConnectorProperty? connectorProperty = new ConnectorProperty();
+        var test = _connectionProperties.TryGetValue("URL", out connectorProperty);
+        if(test)
+        {
+            url = connectorProperty.Value.ToString();
+        }
         foreach (var item in _connectionProperties)
         {
             if (!item.Value.UserVisisble) continue;
-            _viewModel.ConnectionItems.Add((ConnectorProperty)item.Value);
+            _viewModel.ConnectionItems.Add(item.Value);
         }
     }
 

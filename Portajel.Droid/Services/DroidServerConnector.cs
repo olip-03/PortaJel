@@ -33,24 +33,19 @@ namespace Portajel.Services
             _serviceConnection = serverConnectior.AppServiceConnection;
         }
         public List<IMediaServerConnector> Servers { get => _serviceConnection.Binder.Server.Servers; }
-
         public Dictionary<string, ConnectorProperty> Properties => _serviceConnection.Binder.Server.Properties;
-
         public async Task<AuthResponse> AuthenticateAsync(CancellationToken cancellationToken = default)
         {
             return await _serviceConnection.Binder.Server.AuthenticateAsync();
         }
-
         public ServerConnectorSettings GetSettings()
         {
             return _serviceConnection.Binder.Server.GetSettings();
         }
-
         public async Task<BaseMusicItem[]> SearchAsync(string searchTerm = "", int? limit = null, int startIndex = 0, ItemSortBy setSortTypes = ItemSortBy.Name, SortOrder setSortOrder = SortOrder.Ascending, CancellationToken cancellationToken = default)
         {
             return await _serviceConnection.Binder.Server.SearchAsync(searchTerm, limit, startIndex, setSortTypes, setSortOrder, cancellationToken);
         }
-
         public async Task<bool> StartSyncAsync(CancellationToken cancellationToken = default)
         {
             return await _serviceConnection.Binder.Server.StartSyncAsync(cancellationToken);

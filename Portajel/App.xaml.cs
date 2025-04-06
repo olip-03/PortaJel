@@ -1,5 +1,7 @@
 ﻿using Portajel.Connections;
 using Portajel.Connections.Interfaces;
+using Portajel.Structures.Functional;
+using System.Diagnostics;
 
 namespace Portajel
 {
@@ -8,13 +10,58 @@ namespace Portajel
         public App(IServerConnector serverConnector, IDbConnector dbConnector)
         {
             InitializeComponent();
-            // Startup(serverConnector, dbConnector);
+
+            // Fire & forget
+            _ = Task.Run(async () =>
+            {
+                try
+                {
+                    await StartupAsync(serverConnector, dbConnector);
+                }
+                catch (Exception ex)
+                {
+                    Debug.WriteLine($"Startup error: {ex.Message}");
+                }
+            });
+            _ = Task.Run(async () =>
+            {
+                try
+                {
+                    await SetPermissions();
+                }
+                catch (Exception ex)
+                {
+                    Debug.WriteLine($"Startup error: {ex.Message}");
+                }
+            });
         }
 
-        private async void Startup(IServerConnector serverConnector, IDbConnector dbConnector)
+        private async Task StartupAsync(IServerConnector serverConnector, IDbConnector dbConnector)
         {
+            if (OperatingSystem.IsAndroid())
+            {
+                // Sync & auth should occur after binder has connected. Code for 
+                // auth is in the DroidService class.
+                return;
+            }
+            var timeoutTask = Task.Delay(TimeSpan.FromSeconds(30));
+
             var auth = await serverConnector.AuthenticateAsync();
-            await serverConnector.StartSyncAsync();
+            var t = serverConnector.Servers.Select(s => s.UpdateDb());
+            try
+            {
+                await Task.WhenAll(t);
+                await SaveHelper.SaveData(serverConnector);
+            }
+            catch (Exception)
+            {
+                throw;
+            };
+        }
+
+        private async Task SetPermissions()
+        {
+            PermissionStatus status = await Permissions.RequestAsync<Permissions.PostNotifications>();
         }
 
         protected override Window CreateWindow(IActivationState? activationState)

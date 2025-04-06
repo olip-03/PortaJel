@@ -7,11 +7,15 @@
 		android:supportsRtl="true"
 		android:usesCleartextTraffic="true"
 		android:debuggable="true">
-		<service android:name="PortaJel.Droid.ServiceController" android:enabled="true"></service>
+		<service
+			android:name="PortaJel.Droid.ServiceController"
+			android:enabled="true"
+			android:foregroundServiceType="dataSync">
+		</service>
 	</application>
+	<uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 	<uses-permission android:name="android.permission.INTERNET" />
 	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 	<uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
-	<uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK" />
-
+	<uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" />
 </manifest>

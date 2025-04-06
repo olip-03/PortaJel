@@ -19,7 +19,7 @@ namespace Portajel.Structures.Functional
         private static string model = DeviceInfo.Current.Model;
         private static string manufacturer = DeviceInfo.Current.Manufacturer;
         private static string deviceName = DeviceInfo.Current.Name;
-        public static ServerConnector LoadData(IDbConnector database, string appDataDirectory)
+        public static async Task<ServerConnector> LoadData(IDbConnector database, string appDataDirectory)
         {
             Task<string?> r = SecureStorage.Default.GetAsync(GuidHelper.GetDeviceHash(model, manufacturer, deviceName));
             r.Wait();
@@ -30,15 +30,25 @@ namespace Portajel.Structures.Functional
                 return new ServerConnector();
             }
 
-            ServerConnectorSettings settings = new(result, database, appDataDirectory);
+            ServerConnectorSettings settings = new("", database, appDataDirectory);
+            try
+            {
+                settings = new(result, database, appDataDirectory);
+            }
+            catch (Exception e)
+            {
+                Trace.WriteLine($"LoadData(): {e.Message}");
+                await SecureStorage.Default.SetAsync(GuidHelper.GetDeviceHash(model, manufacturer, deviceName), "");
+                return new ServerConnector();
+            }
             return settings.ServerConnector;
         }
         public static async Task<bool> SaveData(IServerConnector server)
         {
             try
             {
-                string toSave = System.Text.Json.JsonSerializer.Serialize(server.Properties);
-                await SecureStorage.Default.SetAsync(GuidHelper.GetDeviceHash(model, manufacturer, deviceName), toSave);
+                var settings = new ServerConnectorSettings(server, server.Servers.ToArray());
+                await SecureStorage.Default.SetAsync(GuidHelper.GetDeviceHash(model, manufacturer, deviceName), settings.ToJson());
             }
             catch (Exception e)
             {

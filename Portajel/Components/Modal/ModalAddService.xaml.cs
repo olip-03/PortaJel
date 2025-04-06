@@ -6,6 +6,8 @@ using Portajel.Connections.Interfaces;
 using Portajel.Connections.Services;
 using Portajel.Structures.Functional;
 using System.Collections.ObjectModel;
+using System.Data.Common;
+using System.Diagnostics;
 
 namespace Portajel.Components.Modal;
 
@@ -54,6 +56,18 @@ public partial class ModalAddServer : ContentPage
             await SaveHelper.SaveData(_serverConnector);
             await Navigation.PopModalAsync();
             OnLoginSuccess.Invoke(_server);
+            _ = Task.Run(async () =>
+            {
+                try
+                {
+                    await _server.StartSyncAsync();
+                }
+                catch (Exception ex)
+                {
+                    Debug.WriteLine($"Startup error: {ex.Message}");
+                }
+            });
+            
         }
         ViewCollectionActivityIndicator.IsVisible = false;
         ViewCollections.IsEnabled = true;

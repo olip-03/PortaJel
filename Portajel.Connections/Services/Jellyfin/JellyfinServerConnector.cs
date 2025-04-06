@@ -58,8 +58,8 @@ namespace Portajel.Connections.Services.Jellyfin
         public SyncStatusInfo SyncStatus { get; set; } = new();
         public JellyfinServerConnector(
             IDbConnector database,
-            string url = "", 
-            string username = "", 
+            string url = "",
+            string username = "",
             string password = "",
             string appName = "",
             string appVerison = "",
@@ -163,8 +163,8 @@ namespace Portajel.Connections.Services.Jellyfin
                 {
                     c.DefaultRequestHeaders.UserAgent.Add(
                         new ProductInfoHeaderValue(
-                            (string)Properties["AppName"].Value,
-                            (string)Properties["AppVersion"].Value));
+                            (string)Properties["AppName"].Value.ToString(),
+                            (string)Properties["AppVersion"].Value.ToString()));
                     c.DefaultRequestHeaders.Accept.Add(
                         new MediaTypeWithQualityHeaderValue(MediaTypeNames.Application.Json, 1.0));
                     c.DefaultRequestHeaders.Accept.Add(
@@ -193,10 +193,10 @@ namespace Portajel.Connections.Services.Jellyfin
                 _sdkClientSettings = serviceProvider.GetRequiredService<JellyfinSdkSettings>();
                 _sdkClientSettings.SetServerUrl(Properties["URL"].Value.ToString());
                 _sdkClientSettings.Initialize(
-                    (string)Properties["AppName"].Value,
-                    (string)Properties["AppVersion"].Value,
-                    (string)Properties["DeviceName"].Value,
-                    (string)Properties["DeviceID"].Value);
+                    (string)Properties["AppName"].Value.ToString(),
+                    (string)Properties["AppVersion"].Value.ToString(),
+                    (string)Properties["DeviceName"].Value.ToString(),
+                    (string)Properties["DeviceID"].Value.ToString());
 
                 var authenticationResult = await _jellyfinApiClient.Users.AuthenticateByName.PostAsync(
                     new AuthenticateUserByName
@@ -252,14 +252,16 @@ namespace Portajel.Connections.Services.Jellyfin
                 int retrieve = 50;
                 int checkCount = 3;
                 var dbItems = await GetDb(data).Value.GetAllAsync(
-                    limit: retrieve * checkCount, 
+                    limit: retrieve * checkCount,
                     setSortTypes: ItemSortBy.DateCreated);
                 var dbIds = dbItems.Select(item => item.Id).ToArray();
 
                 data.SyncStatusInfo.TaskStatus = TaskStatus.Running;
                 while (data.SyncStatusInfo.TaskStatus is TaskStatus.Running)
                 {
-                    var items = await data.GetAllAsync(
+                    try
+                    {
+                        var items = await data.GetAllAsync(
                             limit: retrieve,
                             startIndex: data.SyncStatusInfo.ServerItemCount,
                             setSortOrder: SortOrder.Descending,
@@ -267,20 +269,26 @@ namespace Portajel.Connections.Services.Jellyfin
                             cancellationToken: cancellationToken
                         );
 
-                    foreach (var item in items)
-                    {
-                        if (dbIds.Contains(item.Id))
+                        foreach (var item in items)
                         {
-                            data.SetSyncStatusInfo(DbFoundTotal: data.SyncStatusInfo.DbFoundTotal + 1);
+                            if (dbIds.Contains(item.Id))
+                            {
+                                data.SetSyncStatusInfo(DbFoundTotal: data.SyncStatusInfo.DbFoundTotal + 1);
+                            }
+                        }
+
+                        data.SetSyncStatusInfo(serverItemCount: items.Length);
+                        if (data.SyncStatusInfo.ServerItemCount < retrieve ||
+                            data.SyncStatusInfo.DbFoundTotal > retrieve * checkCount)
+                        {
+                            data.SetSyncStatusInfo(status: TaskStatus.RanToCompletion);
                         }
                     }
-
-                    data.SetSyncStatusInfo(serverItemCount: items.Length);
-                    if (data.SyncStatusInfo.ServerItemCount < retrieve || 
-                        data.SyncStatusInfo.DbFoundTotal > retrieve * checkCount)
+                    catch (Exception ex)
                     {
-                        data.SetSyncStatusInfo(status: TaskStatus.RanToCompletion);
+                        data.SetSyncStatusInfo(status: TaskStatus.Faulted);
                     }
+
                 }
             }, cancellationToken)).ToList();
             Task t = Task.WhenAll(tasks);
@@ -311,7 +319,9 @@ namespace Portajel.Connections.Services.Jellyfin
                 data.SyncStatusInfo.TaskStatus = TaskStatus.Running;
                 while (data.SyncStatusInfo.TaskStatus is TaskStatus.Running)
                 {
-                    var items = await data.GetAllAsync(
+                    try
+                    {
+                        var items = await data.GetAllAsync(
                             limit: retrieve,
                             startIndex: data.SyncStatusInfo.ServerItemCount,
                             setSortOrder: SortOrder.Descending,
@@ -319,18 +329,23 @@ namespace Portajel.Connections.Services.Jellyfin
                             cancellationToken: cancellationToken
                         );
 
-                    int newTotal = data.SyncStatusInfo.ServerItemCount + items.Length;
-                    double newPercent = ((double)newTotal / data.SyncStatusInfo.ServerItemTotal) * 100;
+                        int newTotal = data.SyncStatusInfo.ServerItemCount + items.Length;
+                        double newPercent = ((double)newTotal / data.SyncStatusInfo.ServerItemTotal) * 100;
 
-                    data.SetSyncStatusInfo(serverItemCount: newTotal, percentage: (int)newPercent);
-                    if (items.Length < retrieve ||
-                        data.SyncStatusInfo.DbFoundTotal > retrieve * checkCount)
-                    {
-                        data.SetSyncStatusInfo(status: TaskStatus.RanToCompletion);
+                        data.SetSyncStatusInfo(serverItemCount: newTotal, percentage: (int)newPercent);
+                        if (items.Length < retrieve ||
+                            data.SyncStatusInfo.DbFoundTotal > retrieve * checkCount)
+                        {
+                            data.SetSyncStatusInfo(status: TaskStatus.RanToCompletion);
+                        }
+                        GetDb(data).Value.InsertRangeAsync(items, cancellationToken).Wait(cancellationToken);
+                        workers = GetDataConnectors().Values.Where(d => d.SyncStatusInfo.TaskStatus == TaskStatus.Running).Count();
+                        retrieve = maxTasks / workers;
                     }
-                    GetDb(data).Value.InsertRangeAsync(items, cancellationToken).Wait(cancellationToken);
-                    workers = GetDataConnectors().Values.Where(d => d.SyncStatusInfo.TaskStatus == TaskStatus.Running).Count();
-                    retrieve = maxTasks / workers;
+                    catch (Exception ex)
+                    {
+                        data.SetSyncStatusInfo(status: TaskStatus.Faulted);
+                    }
                 }
             }, cancellationToken)).ToList();
             Task t = Task.WhenAll(tasks);

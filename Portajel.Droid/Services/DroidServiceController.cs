@@ -24,10 +24,9 @@ namespace PortaJel.Droid.Services
     public class DroidServiceController: Java.Lang.Object
     {
         public Portajel.Services.ServiceCollection AppServiceConnection { get; set; } = new();
-
         public DatabaseConnector Database => AppServiceConnection.Binder?.Database ?? throw new Exception("Binder is not set!");
         public ServerConnector Server => AppServiceConnection.Binder?.Server ?? throw new Exception("Binder is not set!");
-        public DroidServiceController(IDbConnector db)
+        public DroidServiceController()
         {
             Intent mediaServiceIntent = new Intent(Platform.AppContext, typeof(DroidService));
 
@@ -35,8 +34,9 @@ namespace PortaJel.Droid.Services
             string? mainDir = System.AppContext.BaseDirectory;
             var database = new DatabaseConnector(Path.Combine(mainDir, "portajeldb.sql"));
             var data = SaveHelper.LoadData(database, appDataDirectory);
+            data.Wait();
 
-            mediaServiceIntent.PutExtra("APICredentials", JsonSerializer.Serialize(data.Properties));
+            mediaServiceIntent.PutExtra("APICredentials", JsonSerializer.Serialize(data.Result.Properties));
             Platform.AppContext.StartForegroundService(mediaServiceIntent);
             Platform.AppContext.BindService(mediaServiceIntent, this.AppServiceConnection, Bind.AutoCreate);
         }
