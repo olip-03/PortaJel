@@ -24,21 +24,10 @@ namespace Portajel.Connections.Interfaces
             SortOrder setSortOrder = SortOrder.Ascending,
             CancellationToken cancellationToken = default);
         public ServerConnectorSettings GetSettings();
-        public void AddServer(IMediaServerConnector server)
-        {
-            Servers.Add(server);
-        }
-        public void RemoveServer(IMediaServerConnector server)
-        {
-            Servers.Remove(server);
-        }
-        public void RemoveServer(string address)
-        {
-            Servers.Remove(Servers.First(s => s.GetAddress() == address));
-        }
-        public IMediaServerConnector[] GetServers()
-        {
-            return Servers.ToArray();
-        }
+        List<Action<IMediaServerConnector>> AddServerActions { get; set; }
+        public void AddServer(IMediaServerConnector server);
+        public void RemoveServer(IMediaServerConnector server);
+        public void RemoveServer(string address);
+        public IMediaServerConnector[] GetServers();
     }
 }

@@ -3,6 +3,7 @@ using Android.Content;
 using Android.Content.PM;
 using Android.Locations;
 using Android.OS;
+using AndroidX.Startup;
 using Java.IO;
 using Java.Nio.Channels;
 using Jellyfin.Sdk.Generated.Models;
@@ -22,6 +23,7 @@ using System.Linq;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
+using Xamarin.Google.Crypto.Tink.Shaded.Protobuf;
 
 namespace Portajel.Services
 {
@@ -32,41 +34,98 @@ namespace Portajel.Services
         {
             _serviceConnection = serverConnectior.AppServiceConnection;
         }
-        public List<IMediaServerConnector> Servers { get => _serviceConnection.Binder.Server.Servers; }
-        public Dictionary<string, ConnectorProperty> Properties => _serviceConnection.Binder.Server.Properties;
+        public List<IMediaServerConnector> Servers
+        {
+            get
+            {
+                if (_serviceConnection.Binder == null)
+                    throw GetNullReferenceException();
+                return _serviceConnection.Binder.Server.Servers;
+            }
+        }
+        public Dictionary<string, ConnectorProperty> Properties
+        {
+            get
+            {
+                if (_serviceConnection.Binder == null)
+                    throw GetNullReferenceException();
+
+                return _serviceConnection.Binder.Server.Properties;
+            }
+        }
+        public List<Action<IMediaServerConnector>> AddServerActions
+        {
+            get
+            {
+                if (_serviceConnection.Binder == null)
+                    throw GetNullReferenceException();
+                return _serviceConnection.Binder.Server.AddServerActions;
+            }
+            set
+            {
+                if (_serviceConnection.Binder == null)
+                    throw GetNullReferenceException();
+                _serviceConnection.Binder.Server.AddServerActions = value;
+            }
+        }
+        private NullReferenceException GetNullReferenceException()
+        {
+            return new NullReferenceException("Service not initalized! Check back later.");
+        }
         public async Task<AuthResponse> AuthenticateAsync(CancellationToken cancellationToken = default)
         {
+            if (_serviceConnection.Binder == null)
+                throw GetNullReferenceException();
             return await _serviceConnection.Binder.Server.AuthenticateAsync();
         }
         public ServerConnectorSettings GetSettings()
         {
+            if (_serviceConnection.Binder == null)
+                throw GetNullReferenceException();
             return _serviceConnection.Binder.Server.GetSettings();
         }
         public async Task<BaseMusicItem[]> SearchAsync(string searchTerm = "", int? limit = null, int startIndex = 0, ItemSortBy setSortTypes = ItemSortBy.Name, SortOrder setSortOrder = SortOrder.Ascending, CancellationToken cancellationToken = default)
         {
-            return await _serviceConnection.Binder.Server.SearchAsync(searchTerm, limit, startIndex, setSortTypes, setSortOrder, cancellationToken);
+            if (_serviceConnection.Binder == null)
+                throw GetNullReferenceException();
+            return await _serviceConnection.Binder.Server.SearchAsync(
+                searchTerm, 
+                limit, 
+                startIndex, 
+                setSortTypes, 
+                setSortOrder, 
+                cancellationToken);
         }
         public async Task<bool> StartSyncAsync(CancellationToken cancellationToken = default)
         {
+            if (_serviceConnection.Binder == null)
+                throw GetNullReferenceException();
             return await _serviceConnection.Binder.Server.StartSyncAsync(cancellationToken);
         }
         public void AddServer(IMediaServerConnector server)
         {
-            _serviceConnection.Binder.Server.Servers.Add(server);
+            if (_serviceConnection.Binder == null)
+                throw GetNullReferenceException();
+            _serviceConnection.Binder.Server.AddServer(server);
         }
         public void RemoveServer(IMediaServerConnector server)
         {
-            Servers.Remove(server);
-            _serviceConnection.Binder.Server.Servers.Remove(server);
+            if (_serviceConnection.Binder == null)
+                throw GetNullReferenceException();
+            _serviceConnection.Binder.Server.RemoveServer(server);
         }
         public void RemoveServer(string address)
         {
-            _serviceConnection.Binder.Server.Servers.Remove(Servers.First(s => s.GetAddress() == address));
+            if (_serviceConnection.Binder == null)
+                throw GetNullReferenceException();
+            _serviceConnection.Binder.Server.RemoveServer(Servers.First(s => s.GetAddress() == address));
 
         }
         public IMediaServerConnector[] GetServers()
         {
-            return _serviceConnection.Binder.Server.Servers.ToArray();
+            if (_serviceConnection.Binder == null)
+                throw GetNullReferenceException();
+            return _serviceConnection.Binder.Server.GetServers();
         }
     }
 }

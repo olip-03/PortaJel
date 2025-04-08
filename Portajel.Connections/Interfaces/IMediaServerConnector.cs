@@ -21,6 +21,7 @@ namespace Portajel.Connections.Interfaces
             CancellationToken cancellationToken = default);
         Task<bool> StartSyncAsync(
             CancellationToken cancellationToken = default);
+        List<Action<CancellationToken>> StartSyncActions { get; set; }
         Task<bool> SetIsFavourite(
             Guid id, 
             bool isFavourite,

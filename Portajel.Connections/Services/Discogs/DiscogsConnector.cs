@@ -28,6 +28,8 @@ public class DiscogsConnector : IMediaServerConnector
     public string Image { get; } = "icon-spotify.png";
     public Dictionary<string, ConnectorProperty> Properties { get; set; }
     public SyncStatusInfo SyncStatus { get; set; } = new();
+    public List<Action<CancellationToken>> StartSyncActions { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+
     public Task<AuthResponse> AuthenticateAsync(CancellationToken cancellationToken = default)
     {
         throw new NotImplementedException();

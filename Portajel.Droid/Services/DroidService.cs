@@ -45,6 +45,11 @@ namespace Portajel.Droid.Services
             database = new DatabaseConnector(Path.Combine(mainDir, "portajeldb.sql"));
             serverConnector = (ServerConnector)t.Result;
 
+            serverConnector.AddServerActions.Add((IMediaServerConnector server) =>
+            {
+                server.StartSyncActions.Add(StartSyncProgressAsync);
+            });
+
             var srvAuth = serverConnector.AuthenticateAsync();
             var srvUpdate = Task.WhenAll(serverConnector.Servers.Select(s => s.UpdateDb()));
             try
@@ -57,12 +62,12 @@ namespace Portajel.Droid.Services
                 throw;
             };
 
-            return new DroidServiceBinder(this);
+            Binder = new DroidServiceBinder(this);
+            return Binder;
         }
         [return: GeneratedEnum]
         public override StartCommandResult OnStartCommand(Intent? intent, [GeneratedEnum] StartCommandFlags flags, int startId)
         {
-            // Setup notification channel
             if (Build.VERSION.SdkInt >= BuildVersionCodes.O)
             {
                 var channel = new NotificationChannel(
@@ -77,11 +82,7 @@ namespace Portajel.Droid.Services
             {
                 _notificationManager = (NotificationManager?)GetSystemService(NotificationService);
             }
-
-            // Create initial notification with progress bar
             var notification = CreateProgressNotification(0, 100);
-
-            // Process intent
             if (intent != null)
             {
                 string? value = intent.GetStringExtra("APICredentials");
@@ -91,19 +92,16 @@ namespace Portajel.Droid.Services
                     ServerConnectorSettings settings = new(value, database, appDataDirectory);
                     serverConnector = (ServerConnector)settings.ServerConnector;
 
-                    // Start a background task to simulate/track progress
-                    _ = Task.Run(async () => await UpdateSyncProgressAsync());
+                    serverConnector.AddServerActions.Add((IMediaServerConnector server) =>
+                    {
+                        server.StartSyncActions.Add(StartSyncProgressAsync);
+                    });
                 }
             }
 
-            // Start foreground with notification
             StartForeground(NOTIFICATION_ID, notification, ForegroundService.TypeDataSync);
-
-            // Return Sticky to have service restart if killed
-            return StartCommandResult.Sticky;
+            return StartCommandResult.Sticky; // service restart if killed
         }
-
-        // Helper method to create/update progress notification
         private Notification CreateProgressNotification(int progress, int max)
         {
             double percent = progress * 100 / max;
@@ -117,48 +115,46 @@ namespace Portajel.Droid.Services
                 .SetSmallIcon(Resource.Drawable.abc_star_half_black_48dp)
                 .SetColor(ContextCompat.GetColor(context, Resource.Color.primary_dark_material_dark))
                 .SetOngoing(true)
-                .SetProgress(max, progress, false) // false = determinate progress bar
+                .SetProgress(max, progress, false)
                 .Build();
         }
-
-        // Method to update progress notification
         public void UpdateNotification(int progress, int max)
         {
             var notification = CreateProgressNotification(progress, max);
             _notificationManager?.Notify(NOTIFICATION_ID, notification);
         }
-
-        // Example method to simulate progress (replace with your actual progress tracking)
-        private async Task UpdateSyncProgressAsync()
+        public void StartSyncProgressAsync(CancellationToken cancellationToken)
         {
-            await Task.Delay(4000);
             while (true)
             {
-                // Init
                 int total = 0;
                 int count = 0;
                 foreach (var item in Binder.Server.Servers)
                 {
-                    foreach (var data in item.GetDataConnectors())
+                    try
                     {
-                        if(data.Value != null)
+                        foreach (var data in item.GetDataConnectors())
                         {
-                            total += data.Value.SyncStatusInfo.ServerItemTotal;
-                            count += data.Value.SyncStatusInfo.ServerItemCount;
+                            if (data.Value != null)
+                            {
+                                total += data.Value.SyncStatusInfo.ServerItemTotal;
+                                count += data.Value.SyncStatusInfo.ServerItemCount;
+                            }
+                            else
+                            {
+                                total += 1;
+                            }
                         }
-                        else
-                        {
-                            total += 1;
-                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        total += 1;
                     }
                 }
                 UpdateNotification(count, total);
-                await Task.Delay(100);
                 if (count >= total)
                     break;
             }
-
-            // When complete, update notification
             Context context = Platform.AppContext;
             var completedNotification = new NotificationCompat.Builder(this, CHANNEL_ID)
                 .SetContentTitle("Sync Complete")
@@ -167,9 +163,8 @@ namespace Portajel.Droid.Services
                 .SetVisibility(1)
                 .SetSmallIcon(Resource.Drawable.abc_star_half_black_48dp)
                 .SetColor(ContextCompat.GetColor(context, Resource.Color.primary_dark_material_dark))
-                .SetOngoing(false) // Allow dismissing when complete
+                .SetOngoing(false)
                 .Build();
-
             _notificationManager?.Notify(NOTIFICATION_ID, completedNotification);
         }
     }

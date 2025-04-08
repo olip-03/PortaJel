@@ -13,6 +13,7 @@ public class ServerConnector : IServerConnector
 {
     public List<IMediaServerConnector> Servers { get; set; } = [];
     public Dictionary<string, ConnectorProperty> Properties { get; set; } = [];
+    public List<Action<IMediaServerConnector>> AddServerActions { get; set; } = new();
     public ServerConnector()
     {
         
@@ -98,16 +99,35 @@ public class ServerConnector : IServerConnector
         }
 
         return true;
-    }   
+    }
     public Task<BaseMusicItem[]> SearchAsync(string searchTerm = "", int? limit = null, int startIndex = 0,
         ItemSortBy setSortTypes = ItemSortBy.Name, SortOrder setSortOrder = SortOrder.Ascending,
         CancellationToken cancellationToken = default)
     {
         return Task.FromResult(Array.Empty<BaseMusicItem>());
     }
-
     public ServerConnectorSettings GetSettings()
     {
         throw new NotImplementedException();
+    }
+    public void AddServer(IMediaServerConnector server)
+    {
+        Servers.Add(server);
+        _ = Task.Run(() =>
+        {
+            AddServerActions.ForEach(a => a.Invoke(server));
+        });
+    }
+    public void RemoveServer(IMediaServerConnector server)
+    {
+        Servers.Remove(server);
+    }
+    public void RemoveServer(string address)
+    {
+        Servers.Remove(Servers.First(s => s.GetAddress() == address));
+    }
+    public IMediaServerConnector[] GetServers()
+    {
+        return Servers.ToArray();
     }
 }

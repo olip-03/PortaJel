@@ -42,6 +42,7 @@ public class FileSystemConnector : IMediaServerConnector
     };
 
     public SyncStatusInfo SyncStatus { get; set; } = new();
+    public List<Action<CancellationToken>> StartSyncActions { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
     public FileSystemConnector()
     {
