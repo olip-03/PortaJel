@@ -56,6 +56,7 @@ namespace Portajel.Connections.Services.Jellyfin
         public string Image { get; } = "icon_jellyfin.png";
         public Dictionary<string, ConnectorProperty> Properties { get; set; } = new();
         public SyncStatusInfo SyncStatus { get; set; } = new();
+        public List<Action<CancellationToken>> AuthenticateActions { get; set; } = new();
         public List<Action<CancellationToken>> StartSyncActions { get; set; } = new();
         public JellyfinServerConnector(
             IDbConnector database,
@@ -241,6 +242,11 @@ namespace Portajel.Connections.Services.Jellyfin
                 };
             }
 
+            var actions = AuthenticateActions.Select(a => Task.Run(() =>
+            {
+                a.Invoke(cancellationToken);
+            }));
+            _ = Task.WhenAll(actions);
             return AuthResponse.Ok();
         }
         public async Task<bool> UpdateDb(CancellationToken cancellationToken = default)

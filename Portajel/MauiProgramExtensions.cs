@@ -36,7 +36,6 @@ namespace Portajel
 
         public static MauiAppBuilder RegisterViewModels(this MauiAppBuilder mauiAppBuilder)
         {
- 
             return mauiAppBuilder;
         }
 

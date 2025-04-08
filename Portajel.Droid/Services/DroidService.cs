@@ -18,6 +18,7 @@ using Android.Runtime;
 using Portajel.Services;
 using AndroidX.Core.App;
 using AndroidX.Core.Content;
+using Android.Opengl;
 
 namespace Portajel.Droid.Services
 {
@@ -28,14 +29,11 @@ namespace Portajel.Droid.Services
         private NotificationManager? _notificationManager;
         private const int NOTIFICATION_ID = 517;
         private const string CHANNEL_ID = "sync_channel";
+        private bool isSyncRunning = false;
         public DroidServiceBinder Binder { get; set; } = default!;
         public DatabaseConnector database { get; private set; } = null!;
         public ServerConnector serverConnector { get; private set; } = null!;
         public DroidService()
-        {
-            
-        }
-        public override IBinder? OnBind(Intent? intent)
         {
             string? mainDir = System.AppContext.BaseDirectory;
             var appDataDirectory = Path.Combine(FileSystem.AppDataDirectory, "MediaData");
@@ -43,13 +41,15 @@ namespace Portajel.Droid.Services
             t.Wait();
 
             database = new DatabaseConnector(Path.Combine(mainDir, "portajeldb.sql"));
-            serverConnector = (ServerConnector)t.Result;
+            serverConnector = t.Result;
 
             serverConnector.AddServerActions.Add((IMediaServerConnector server) =>
             {
                 server.StartSyncActions.Add(StartSyncProgressAsync);
             });
-
+        }
+        public override IBinder? OnBind(Intent? intent)
+        {
             var srvAuth = serverConnector.AuthenticateAsync();
             var srvUpdate = Task.WhenAll(serverConnector.Servers.Select(s => s.UpdateDb()));
             try
@@ -82,35 +82,25 @@ namespace Portajel.Droid.Services
             {
                 _notificationManager = (NotificationManager?)GetSystemService(NotificationService);
             }
-            var notification = CreateProgressNotification(0, 100);
-            if (intent != null)
-            {
-                string? value = intent.GetStringExtra("APICredentials");
-                if (value != null)
-                {
-                    var appDataDirectory = Path.Combine(FileSystem.AppDataDirectory, "MediaData");
-                    ServerConnectorSettings settings = new(value, database, appDataDirectory);
-                    serverConnector = (ServerConnector)settings.ServerConnector;
-
-                    serverConnector.AddServerActions.Add((IMediaServerConnector server) =>
-                    {
-                        server.StartSyncActions.Add(StartSyncProgressAsync);
-                    });
-                }
-            }
+            var notification = CreateProgressNotification(0, 100, true);
 
             StartForeground(NOTIFICATION_ID, notification, ForegroundService.TypeDataSync);
             return StartCommandResult.Sticky; // service restart if killed
         }
-        private Notification CreateProgressNotification(int progress, int max)
+        private Notification CreateProgressNotification(int progress, int max, bool hidden = false)
         {
-            double percent = progress * 100 / max;
+            int hide = hidden ? NotificationCompat.PriorityMin : NotificationCompat.PriorityDefault;
+            double percent = 0;
+            if (!(progress == 0 && max == 0))
+            {
+                percent = progress * 100 / max;
+            }
             Context context = Platform.AppContext;
             return new NotificationCompat.Builder(this, CHANNEL_ID)
                 .SetContentTitle("Syncing Data")
                 .SetContentText($"Progress: {(int)percent}%")
                 .SetSmallIcon(Resource.Drawable.abc_star_black_48dp)
-                .SetPriority(NotificationCompat.PriorityLow)
+                .SetPriority(hide)
                 .SetVisibility(1)
                 .SetSmallIcon(Resource.Drawable.abc_star_half_black_48dp)
                 .SetColor(ContextCompat.GetColor(context, Resource.Color.primary_dark_material_dark))
@@ -123,12 +113,15 @@ namespace Portajel.Droid.Services
             var notification = CreateProgressNotification(progress, max);
             _notificationManager?.Notify(NOTIFICATION_ID, notification);
         }
-        public void StartSyncProgressAsync(CancellationToken cancellationToken)
+        public async void StartSyncProgressAsync(CancellationToken cancellationToken)
         {
+            if (isSyncRunning) return;
+            isSyncRunning = true;
             while (true)
             {
                 int total = 0;
                 int count = 0;
+                bool hasStarted = true;
                 foreach (var item in Binder.Server.Servers)
                 {
                     try
@@ -139,6 +132,10 @@ namespace Portajel.Droid.Services
                             {
                                 total += data.Value.SyncStatusInfo.ServerItemTotal;
                                 count += data.Value.SyncStatusInfo.ServerItemCount;
+                                if(data.Value.SyncStatusInfo.TaskStatus == TaskStatus.WaitingToRun)
+                                {
+                                    hasStarted = false;
+                                }
                             }
                             else
                             {
@@ -152,9 +149,11 @@ namespace Portajel.Droid.Services
                     }
                 }
                 UpdateNotification(count, total);
-                if (count >= total)
+                await Task.Delay(500);
+                if ((count >= total) && hasStarted)
                     break;
             }
+            isSyncRunning = false;
             Context context = Platform.AppContext;
             var completedNotification = new NotificationCompat.Builder(this, CHANNEL_ID)
                 .SetContentTitle("Sync Complete")
