@@ -4,7 +4,6 @@ using Portajel.Connections.Data;
 using Portajel.Connections.Enum;
 using Portajel.Connections.Interfaces;
 using Portajel.Connections.Services;
-using Portajel.Services;
 
 namespace Portajel.Connections;
 

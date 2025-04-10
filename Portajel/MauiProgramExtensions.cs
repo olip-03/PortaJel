@@ -6,9 +6,10 @@ using Portajel.Pages.Settings;
 using Portajel.Structures.Functional;
 using Portajel.Structures.Interfaces;
 using Portajel.Structures.ViewModels.Settings;
-using SkiaSharp.Views.Maui.Controls.Hosting;
+using Mapsui;
 using CommunityToolkit.Maui;
 using Portajel.Pages.Settings.Debug;
+using SkiaSharp.Views.Maui.Controls.Hosting;
 
 namespace Portajel
 {
@@ -20,7 +21,7 @@ namespace Portajel
             builder
                 .UseMauiApp<App>()
                 .UseMauiCommunityToolkit()
-                .UseSkiaSharp(true)
+                .UseSkiaSharp()
                 .RegisterViewModels()
                 .RegisterViews()
                 .ConfigureFonts(fonts =>

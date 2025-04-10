@@ -1,8 +1,8 @@
 ﻿using Microsoft.Maui.Controls;
 using Portajel.Connections;
+using Portajel.Connections.Data;
 using Portajel.Connections.Interfaces;
 using Portajel.Connections.Services.Database;
-using Portajel.Services;
 using PortaJel_Blazor.Classes;
 using System;
 using System.Collections.Generic;
@@ -19,7 +19,7 @@ namespace Portajel.Structures.Functional
         private static string model = DeviceInfo.Current.Model;
         private static string manufacturer = DeviceInfo.Current.Manufacturer;
         private static string deviceName = DeviceInfo.Current.Name;
-        public static async Task<ServerConnector> LoadData(IDbConnector database, string appDataDirectory)
+        public static async Task<IServerConnector> LoadData(IDbConnector database, string appDataDirectory)
         {
             Task<string?> r = SecureStorage.Default.GetAsync(GuidHelper.GetDeviceHash(model, manufacturer, deviceName));
             r.Wait();

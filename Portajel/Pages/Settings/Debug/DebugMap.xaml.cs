@@ -20,32 +20,17 @@ public partial class DebugMap : ContentPage
 	{
 		InitializeComponent();
 
-        var mapControl = new Mapsui.UI.Maui.MapControl();
+        MapControl.UseGPU = true;
+        var mapControl = new MapControl();
         mapControl.Map = CreateMap(1);
+        mapControl.Map.Navigator.RotationLock = true;
         Content = mapControl;
-
-        //var map = new Map
-        //{
-        //    CRS = "EPSG:3857",
-        //};
-
-        //var tileLayer = OpenStreetMap.CreateTileLayer();
-
-        //mapView.Map = map;
     }
 
     public static Map CreateMap(float pixelDensity)
     {
         var map = new Map();
-
         map.Layers.Add(OpenStreetMap.CreateTileLayer());
-        var lineStringLayer = CreateLineStringLayer();
-        map.Layers.Add(new RasterizingTileLayer(lineStringLayer, pixelDensity: pixelDensity));
-        var extent = lineStringLayer.Extent!.Grow(lineStringLayer.Extent!.Width * 0.25);
-        map.Navigator.ZoomToBox(extent);
-
-        map.Widgets.Add(new MapInfoWidget(map));
-
         return map;
     }
 
@@ -54,7 +39,6 @@ public partial class DebugMap : ContentPage
         return new MemoryLayer
         {
             Name = "LineString",
-            IsMapInfoLayer = true,
             Features = GetFeature()
         };
     }

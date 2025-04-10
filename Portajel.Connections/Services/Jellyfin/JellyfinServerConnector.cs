@@ -318,45 +318,70 @@ namespace Portajel.Connections.Services.Jellyfin
             await UpdateSyncStatus(cancellationToken);
             var tasks = GetDataConnectors().Values.Select(data => Task.Run(async () =>
             {
-                int workers = GetDataConnectors().Values.Where(d => d.SyncStatusInfo.TaskStatus == TaskStatus.Running).Count();
-                int retrieve = maxTasks / workers;
-                int checkCount = 3;
-                var dbItems = await GetDb(data).Value.GetAllAsync(
-                    limit: retrieve * checkCount,
-                    setSortTypes: ItemSortBy.DateCreated);
-                var dbIds = dbItems.Select(item => item.Id).ToArray();
-
-                data.SyncStatusInfo.TaskStatus = TaskStatus.Running;
-                while (data.SyncStatusInfo.TaskStatus is TaskStatus.Running)
+                try
                 {
-                    try
+                    int workers = GetDataConnectors().Values.Where(d => d.SyncStatusInfo.TaskStatus == TaskStatus.Running).Count();
+                    int retrieve = maxTasks / workers;
+                    int checkCount = 3;
+                    var dbItems = await GetDb(data).Value.GetAllAsync(
+                        limit: retrieve * checkCount,
+                        setSortTypes: ItemSortBy.DateCreated);
+                    var dbIds = dbItems.Select(item => item.Id).ToArray();
+
+                    if (Properties.TryGetValue("LastSync", out var maxTasksProperty))
                     {
-                        var items = await data.GetAllAsync(
-                            limit: retrieve,
-                            startIndex: data.SyncStatusInfo.ServerItemCount,
-                            setSortOrder: SortOrder.Descending,
-                            setSortTypes: ItemSortBy.DateCreated,
-                            cancellationToken: cancellationToken
-                        );
+                        DateTime lastSync = DateTime.Parse(maxTasksProperty.Value.ToString());
+                        DateTime threeMonthsAgo = DateTime.Now.AddMonths(-3);
 
-                        int newTotal = data.SyncStatusInfo.ServerItemCount + items.Length;
-                        double newPercent = ((double)newTotal / data.SyncStatusInfo.ServerItemTotal) * 100;
-
-                        data.SetSyncStatusInfo(serverItemCount: newTotal, percentage: (int)newPercent);
-                        if (items.Length < retrieve ||
-                            data.SyncStatusInfo.DbFoundTotal > retrieve * checkCount)
+                        if (lastSync > threeMonthsAgo)
                         {
-                            data.SetSyncStatusInfo(status: TaskStatus.RanToCompletion);
+                            // await UpdateDb(cancellationToken);
+                            data.SetSyncStatusInfo(
+                                status: TaskStatus.RanToCompletion, 
+                                serverItemCount: await GetDb(data).Value.GetTotalCountAsync(), 
+                                percentage: 100);
+                            return;
                         }
-                        GetDb(data).Value.InsertRangeAsync(items, cancellationToken).Wait(cancellationToken);
-                        workers = GetDataConnectors().Values.Where(d => d.SyncStatusInfo.TaskStatus == TaskStatus.Running).Count();
-                        retrieve = maxTasks / workers;
                     }
-                    catch (Exception ex)
+
+                    data.SyncStatusInfo.TaskStatus = TaskStatus.Running;
+                    while (data.SyncStatusInfo.TaskStatus is TaskStatus.Running)
                     {
-                        data.SetSyncStatusInfo(status: TaskStatus.Faulted);
+                        try
+                        {
+                            var items = await data.GetAllAsync(
+                                limit: retrieve,
+                                startIndex: data.SyncStatusInfo.ServerItemCount,
+                                setSortOrder: SortOrder.Descending,
+                                setSortTypes: ItemSortBy.DateCreated,
+                                cancellationToken: cancellationToken
+                            );
+
+                            int newTotal = data.SyncStatusInfo.ServerItemCount + items.Length;
+                            double newPercent = ((double)newTotal / data.SyncStatusInfo.ServerItemTotal) * 100;
+
+                            data.SetSyncStatusInfo(serverItemCount: newTotal, percentage: (int)newPercent);
+                            if (items.Length < retrieve ||
+                                data.SyncStatusInfo.DbFoundTotal > retrieve * checkCount)
+                            {
+                                data.SetSyncStatusInfo(status: TaskStatus.RanToCompletion);
+                            }
+                            GetDb(data).Value.InsertRangeAsync(items, cancellationToken).Wait(cancellationToken);
+                            workers = GetDataConnectors().Values.Where(d => d.SyncStatusInfo.TaskStatus == TaskStatus.Running).Count();
+                            retrieve = maxTasks / workers;
+                        }
+                        catch (Exception ex)
+                        {
+                            data.SetSyncStatusInfo(status: TaskStatus.Faulted);
+                        }
                     }
                 }
+                catch (Exception ex)
+                {
+                    Trace.WriteLine($"Sync Failed: {ex.Message}");
+                    Trace.WriteLine($"Sync Failed: {ex.StackTrace}");
+                    data.SetSyncStatusInfo(status: TaskStatus.Faulted);
+                }                
             }, cancellationToken)).ToList();
             Task t = Task.WhenAll(tasks);
             try
@@ -433,6 +458,10 @@ namespace Portajel.Connections.Services.Jellyfin
         }
         private KeyValuePair<string, IDbItemConnector> GetDb(IMediaDataConnector mediaDataConnector)
         {
+            if(_database == null)
+            {
+                throw new NullReferenceException("Database cannot be null!");
+            }
             try
             {
                 var returnVal = _database.GetDataConnectors().First(d => d.Value.MediaType == mediaDataConnector.MediaType);

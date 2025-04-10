@@ -30,13 +30,13 @@ namespace PortaJel.Droid.Services
         {
             Intent mediaServiceIntent = new Intent(Platform.AppContext, typeof(DroidService));
 
-            var appDataDirectory = Path.Combine(FileSystem.AppDataDirectory, "MediaData");
-            string? mainDir = System.AppContext.BaseDirectory;
-            var database = new DatabaseConnector(Path.Combine(mainDir, "portajeldb.sql"));
-            var data = SaveHelper.LoadData(database, appDataDirectory);
-            data.Wait();
+            // var appDataDirectory = Path.Combine(FileSystem.AppDataDirectory, "MediaData");
+            // string? mainDir = System.AppContext.BaseDirectory;
+            // var database = new DatabaseConnector(Path.Combine(mainDir, "portajeldb.sql"));
+            // var data = SaveHelper.LoadData(database, appDataDirectory);
+            // data.Wait();
 
-            mediaServiceIntent.PutExtra("APICredentials", JsonSerializer.Serialize(data.Result.Properties));
+            // mediaServiceIntent.PutExtra("APICredentials", JsonSerializer.Serialize(data.Result.Properties));
             Platform.AppContext.StartForegroundService(mediaServiceIntent);
             Platform.AppContext.BindService(mediaServiceIntent, this.AppServiceConnection, Bind.AutoCreate);
         }

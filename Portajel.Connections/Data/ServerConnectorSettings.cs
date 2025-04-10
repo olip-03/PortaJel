@@ -10,12 +10,11 @@ using Portajel.Connections.Services.Database;
 using Portajel.Connections;
 using Portajel.Connections.Data;
 
-namespace Portajel.Services;
+namespace Portajel.Connections.Data;
 
 public class ServerConnectorSettings
 {
-    public ServerConnector ServerConnector { get; private init; }
-
+    public IServerConnector ServerConnector { get; private init; }
     public ServerConnectorSettings(string json, IDbConnector database, string appDataDirectory)
     {
         ServerConnector = new ServerConnector();
@@ -72,7 +71,7 @@ public class ServerConnectorSettings
                     if (server != null)
                     {
                         server.Properties = props;
-                        ServerConnector.Servers.Add(server);
+                        ServerConnector.AddServer(server);
                     }
                 }
 
@@ -83,18 +82,16 @@ public class ServerConnectorSettings
             return;
         }
     }
-
     public ServerConnectorSettings(IServerConnector serverConnector, IMediaServerConnector[] servers)
     {
-        ServerConnector = (ServerConnector)serverConnector;
+        ServerConnector = serverConnector;
         if(ServerConnector.Servers.Count > 0) return;
         if(servers == null) return;
         foreach (var srv in servers)
         {
-            ServerConnector.Servers.Add(srv);
+            ServerConnector.AddServer(srv);
         }
     }
-
     public string ToJson()
     {
         var options = new JsonSerializerOptions

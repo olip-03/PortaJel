@@ -2,7 +2,6 @@
 using Portajel.Pages.Settings;
 using Portajel.Pages.Settings.Connections;
 using Portajel.Pages.Settings.Debug;
-using Portajel.Services;
 using PortaJel_Blazor.Classes;
 using System.Diagnostics;
 using ShellItem = Microsoft.Maui.Controls.ShellItem;

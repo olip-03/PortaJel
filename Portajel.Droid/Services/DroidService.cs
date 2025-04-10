@@ -35,29 +35,33 @@ namespace Portajel.Droid.Services
         public ServerConnector serverConnector { get; private set; } = null!;
         public DroidService()
         {
-            string? mainDir = System.AppContext.BaseDirectory;
-            var appDataDirectory = Path.Combine(FileSystem.AppDataDirectory, "MediaData");
-            var t = SaveHelper.LoadData(database, appDataDirectory);
-            t.Wait();
-
-            database = new DatabaseConnector(Path.Combine(mainDir, "portajeldb.sql"));
-            serverConnector = t.Result;
-
-            serverConnector.AddServerActions.Add((IMediaServerConnector server) =>
-            {
-                server.StartSyncActions.Add(StartSyncProgressAsync);
-            });
+            
         }
         public override IBinder? OnBind(Intent? intent)
         {
-            var srvAuth = serverConnector.AuthenticateAsync();
-            var srvUpdate = Task.WhenAll(serverConnector.Servers.Select(s => s.UpdateDb()));
+            Initialize();
             try
             {
-                srvAuth.Wait();
-                srvUpdate.Wait();
+                _ = Task.Run(async () =>
+                {
+                    await serverConnector.AuthenticateAsync();
+                    foreach (var srv in serverConnector.Servers)
+                    {
+                        try
+                        {
+                            await srv.StartSyncAsync();
+                            await SaveHelper.SaveData(serverConnector);
+                        }
+                        catch (Exception ex)
+                        {
+                            System.Diagnostics.Trace.WriteLine(ex.Message);
+                            continue;
+                        }
+
+                    }
+                });
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 throw;
             };
@@ -87,9 +91,37 @@ namespace Portajel.Droid.Services
             StartForeground(NOTIFICATION_ID, notification, ForegroundService.TypeDataSync);
             return StartCommandResult.Sticky; // service restart if killed
         }
-        private Notification CreateProgressNotification(int progress, int max, bool hidden = false)
+        private void Initialize()
         {
-            int hide = hidden ? NotificationCompat.PriorityMin : NotificationCompat.PriorityDefault;
+            string? mainDir = AppContext.BaseDirectory;
+            var appDataDirectory = Path.Combine(FileSystem.AppDataDirectory, "MediaData");
+            database = new DatabaseConnector(Path.Combine(mainDir, "portajeldb.sql"));
+            var t = SaveHelper.LoadData(database, appDataDirectory);
+            t.Wait();
+            var result = t.Result; 
+
+            try
+            {
+                serverConnector = (ServerConnector)result;
+            }
+            catch (Exception ex)
+            {
+                return;
+            }
+
+            // Add action to each loaded server and added server
+            foreach (var server in serverConnector.Servers)
+            {
+                server.StartSyncActions.Add(StartSyncProgressAsync);
+            }
+            serverConnector.AddServerActions.Add((IMediaServerConnector server) =>
+            {
+                server.StartSyncActions.Add(StartSyncProgressAsync);
+            });
+        }
+        private Notification CreateProgressNotification(int progress, int max, bool indeterminate = false)
+        {
+            int hide = indeterminate ? NotificationCompat.PriorityMin : NotificationCompat.PriorityDefault;
             double percent = 0;
             if (!(progress == 0 && max == 0))
             {
@@ -105,7 +137,7 @@ namespace Portajel.Droid.Services
                 .SetSmallIcon(Resource.Drawable.abc_star_half_black_48dp)
                 .SetColor(ContextCompat.GetColor(context, Resource.Color.primary_dark_material_dark))
                 .SetOngoing(true)
-                .SetProgress(max, progress, false)
+                .SetProgress(max, progress, indeterminate)
                 .Build();
         }
         public void UpdateNotification(int progress, int max)
