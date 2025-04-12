@@ -1,8 +1,8 @@
 ﻿using Jellyfin.Sdk.Generated.Models;
 using SQLite;
 using System.Text.Json;
-using PortaJel_Blazor.Classes;
 using Portajel.Connections.Structs;
+using Portajel.Connections.Services;
 
 namespace Portajel.Connections.Database
 {

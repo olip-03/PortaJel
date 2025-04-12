@@ -1,9 +1,9 @@
 ﻿using Microsoft.Maui.Controls;
 using Portajel.Connections;
 using Portajel.Connections.Interfaces;
+using Portajel.Connections.Services;
 using Portajel.Connections.Services.Database;
 using Portajel.Connections.Structs;
-using PortaJel_Blazor.Classes;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;

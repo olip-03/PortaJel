@@ -1,4 +1,4 @@
-namespace PortaJel_Blazor.Classes;
+namespace Portajel.Connections.Services;
 
 using System;
 using System.Security.Cryptography;
@@ -11,7 +11,7 @@ public static class GuidHelper
         // Combine the GUID and string into a single byte array
         byte[] guidBytes = inputGuid.ToByteArray();
         byte[] stringBytes = Encoding.UTF8.GetBytes(inputString);
-        
+
         byte[] combinedBytes = new byte[guidBytes.Length + stringBytes.Length];
         Buffer.BlockCopy(guidBytes, 0, combinedBytes, 0, guidBytes.Length);
         Buffer.BlockCopy(stringBytes, 0, combinedBytes, guidBytes.Length, stringBytes.Length);

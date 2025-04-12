@@ -1,6 +1,6 @@
 using Foundation;
 
-namespace Portajel.Mac
+namespace Portajel
 {
     [Register(nameof(AppDelegate))]
     public class AppDelegate : MauiUIApplicationDelegate

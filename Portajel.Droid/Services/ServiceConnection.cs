@@ -13,7 +13,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Portajel.Services
+namespace Portajel.Droid.Services
 {
     public class ServiceCollection : Java.Lang.Object, IServiceConnection
     {

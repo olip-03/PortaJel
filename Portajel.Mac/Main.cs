@@ -1,7 +1,7 @@
 using ObjCRuntime;
 using UIKit;
 
-namespace Portajel.Mac
+namespace Portajel
 {
     public class Program
     {

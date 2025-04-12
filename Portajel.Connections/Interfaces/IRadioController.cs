@@ -1,5 +1,4 @@
 ﻿using Portajel.Connections.Data.Radio.Search;
-using Portajel.Connections.Interfaces;
 using System;
 using System.Buffers.Text;
 using System.Collections.Generic;
@@ -10,7 +9,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using System.Web;
 
-namespace Portajel.Structures.Interfaces.Radio
+namespace Portajel.Connections.Interfaces
 {
     public interface IRadioController
     {

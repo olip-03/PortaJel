@@ -1,4 +1,4 @@
-﻿namespace Portajel.iOS
+﻿namespace Portajel
 {
     public static class MauiProgram
     {

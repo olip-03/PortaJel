@@ -1,7 +1,7 @@
 using ObjCRuntime;
 using UIKit;
 
-namespace Portajel.iOS
+namespace Portajel
 {
     public class Program
     {

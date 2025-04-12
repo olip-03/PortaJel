@@ -1,6 +1,5 @@
 ﻿using Portajel.Connections.Data.Radio.Search;
 using Portajel.Connections.Interfaces;
-using Portajel.Structures.Interfaces.Radio;
 using System;
 using System.Buffers.Text;
 using System.Collections.Generic;

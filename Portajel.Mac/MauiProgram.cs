@@ -1,4 +1,4 @@
-﻿namespace Portajel.Mac
+﻿namespace Portajel
 {
     public static class MauiProgram
     {
