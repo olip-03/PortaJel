@@ -2,6 +2,7 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:local="clr-namespace:Portajel.Pages"
+             xmlns:comp="clr-namespace:Portajel.Components"
              xmlns:music="clr-namespace:Portajel.Connections.Data;assembly=Portajel.Connections"
              x:Class="Portajel.Pages.HomePage"
              x:DataType="local:HomePageViewModel"
@@ -48,6 +49,7 @@
                                         MaximumWidthRequest="210"
                                         InputTransparent="True">
                                         <Image
+                                            Source="{Binding ImgSource}"
                                             BackgroundColor="LightBlue"
                                             Aspect="AspectFill"
                                             WidthRequest="200"
@@ -69,6 +71,7 @@
                     </CollectionView>
                 </HorizontalStackLayout>
             </ScrollView>
+            <comp:MusicImage HeightRequest="300" WidthRequest="300" Grid.Row="1"/>
         </Grid>
     </ScrollView>
 </ContentPage>

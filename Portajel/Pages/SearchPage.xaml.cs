@@ -23,6 +23,7 @@ public partial class SearchPage : ContentPage
 
     private void SearchBar_TextChanged(object sender, TextChangedEventArgs e)
     {
+        // Cancel any pending searches
         foreach (var token in _cancellationTokens)
         {
             if (!token.Token.IsCancellationRequested)
@@ -30,34 +31,39 @@ public partial class SearchPage : ContentPage
                 token.Cancel();
             }
         }
+
         var cToken = new CancellationTokenSource();
         _cancellationTokens.Add(cToken);
         _viewModel.IsLoading = true;
+
         _ = Task.Run(async () =>
         {
             try
             {
                 await Task.Delay(500, cancellationToken: cToken.Token);
                 BaseMusicItem[] result = await _database.SearchAsync(
-                    searchTerm: e.NewTextValue, 
-                    limit: 50, 
+                    searchTerm: e.NewTextValue,
+                    limit: 50,
                     cancellationToken: cToken.Token);
-                _viewModel.Albums.Clear();
-                _viewModel.IsLoading = false;
-                foreach (var item in result)
+                var albumsToAdd = result.OfType<Album>().ToList();
+                MainThread.BeginInvokeOnMainThread(() =>
                 {
-                    if (item is Album album)
+                    _viewModel.Albums.Clear();
+                    foreach (var album in albumsToAdd)
                     {
                         _viewModel.Albums.Add(album);
                     }
-                };
+                    _viewModel.IsLoading = false;
+                });
             }
             catch (Exception ex)
             {
                 Trace.Write($"Search Cancelled: {ex.Message}");
+                MainThread.BeginInvokeOnMainThread(() => _viewModel.IsLoading = false);
             }
         }, cToken.Token);
     }
+
 }
 
 public class SearchPageViewModel : INotifyPropertyChanged

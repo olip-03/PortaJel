@@ -1,9 +1,22 @@
 using Portajel.Connections.Data;
+using System.Diagnostics;
+using System.Runtime.CompilerServices;
 
 namespace Portajel.Components;
 
 public class MusicListItem : ContentView
 {
+
+    // Image Source bindable property
+    public static readonly BindableProperty BlurhashProperty =
+        BindableProperty.Create(nameof(Blurhash), typeof(string), typeof(MusicListItem), default(string));
+
+    public string Blurhash
+    {
+        get => (string)GetValue(BlurhashProperty);
+        set => SetValue(BlurhashProperty, value);
+    }
+
     // Image Source bindable property
     public static readonly BindableProperty ImgSourceProperty =
         BindableProperty.Create(nameof(ImgSource), typeof(string), typeof(MusicListItem), default(string));
@@ -85,14 +98,14 @@ public class MusicListItem : ContentView
         };
 
         // Create image with bindings
-        Image image = new Image
+        MusicImage image = new MusicImage
         {
             BackgroundColor = Colors.LightBlue,
-            Aspect = Aspect.AspectFill,
+            //Aspect = Aspect.AspectFill,
             WidthRequest = 64,
             HeightRequest = 64
         };
-        image.SetBinding(Image.SourceProperty, new Binding(nameof(ImgSource), source: this));
+        image.SetBinding(MusicImage.BlurHashProperty, new Binding(nameof(Blurhash), source: this));
 
         // Create vertical stack for text
         VerticalStackLayout textStack = new VerticalStackLayout
@@ -164,7 +177,7 @@ public class MusicListItem : ContentView
             WidthRequest = 200,
             HeightRequest = 200
         };
-        image.SetBinding(Image.SourceProperty, "ImgSource");
+        image.SetBinding(Image.SourceProperty, "Blurhash");
 
         // Create name label
         Label nameLabel = new Label

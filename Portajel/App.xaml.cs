@@ -7,8 +7,10 @@ namespace Portajel
 {
     public partial class App : Application
     {
-        public App(IServerConnector serverConnector, IDbConnector dbConnector)
+        public static IServiceProvider Services { get; set; }
+        public App(IServerConnector serverConnector, IDbConnector dbConnector, IServiceProvider services)
         {
+            Services = services;
             InitializeComponent();
 
             // Fire & forget

@@ -11,6 +11,7 @@ using CommunityToolkit.Maui;
 using Portajel.Pages.Settings.Debug;
 using SkiaSharp.Views.Maui.Controls.Hosting;
 using Portajel.Pages;
+using Portajel.Components;
 
 namespace Portajel
 {
@@ -45,6 +46,8 @@ namespace Portajel
         {
             mauiAppBuilder.Services.AddSingleton<HomePage>();
             mauiAppBuilder.Services.AddSingleton<SettingsPage>();
+            mauiAppBuilder.Services.AddSingleton<SearchPage>();
+            mauiAppBuilder.Services.AddSingleton<MusicListItem>();
             mauiAppBuilder.Services.AddSingleton<ConnectionsPage>();
             mauiAppBuilder.Services.AddSingleton<DebugDatabase>();
             return mauiAppBuilder;

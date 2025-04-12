@@ -20,7 +20,7 @@ public static class Blurhelper
 
         try
         {
-            // Decode blurhash into a pixel array
+            // BlurhashDecode blurhash into a pixel array
             Pixel[,] pixels = new Pixel[width, height];
             Core.Decode(blurhash, pixels);
 

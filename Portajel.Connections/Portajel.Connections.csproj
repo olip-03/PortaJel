@@ -13,10 +13,10 @@
 		<PackageReference Include="SkiaSharp" Version="3.116.1" />
 		<PackageReference Include="sqlite-net" Version="1.6.292" />
 		<PackageReference Include="sqlite-net-pcl" Version="1.9.172" />
+		<PackageReference Include="Veldrid.SPIRV" Version="1.0.15" />
 	</ItemGroup>
 
 	<ItemGroup>
 	  <Folder Include="Data\Radio\Channels\" />
-	  <Folder Include="Structs\Blurhash\" />
 	</ItemGroup>
 </Project>

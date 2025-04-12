@@ -19,6 +19,7 @@
                 <DataTemplate x:DataType="music:Album">
                     <components:MusicListItem 
                         Title="{Binding Name}" 
+                        Blurhash="{Binding ImgBlurhash}"
                         Subtitle="{Binding ArtistNames}" 
                         ImgSource="{Binding ImgSource}"/>
                 </DataTemplate>

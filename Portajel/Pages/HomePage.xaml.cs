@@ -26,13 +26,13 @@ public partial class HomePage : ContentPage
         BindingContext = _viewModel;
         Init();
     }
-    private void Init()
+    private async void Init()
     {
-        _ = Task.Run(async () =>
+        IDbItemConnector albumConnector = null!;
+        await Task.Run(async () =>
         {
             try
             {
-                IDbItemConnector? albumConnector = null;
                 while (true)
                 {
                     try
@@ -45,16 +45,6 @@ public partial class HomePage : ContentPage
                         await Task.Delay(100);
                     }
                 }
-                var data = await albumConnector.GetAllAsync(
-                    limit: 50,
-                    setSortTypes: Jellyfin.Sdk.Generated.Models.ItemSortBy.DateCreated,
-                    setSortOrder: Jellyfin.Sdk.Generated.Models.SortOrder.Descending);
-                Album[] albums = data.Select(s => (Album)s).ToArray();
-                MainThread.BeginInvokeOnMainThread(async () =>
-                {
-                    _viewModel.Sample = albums.ToObservableCollection();
-                    PermissionStatus status = await Permissions.RequestAsync<Permissions.PostNotifications>();
-                });
             }
             catch (Exception ex)
             {
@@ -62,6 +52,19 @@ public partial class HomePage : ContentPage
             }
         });
 
+        var data = await albumConnector.GetAllAsync(
+                    limit: 50,
+                    setSortTypes: Jellyfin.Sdk.Generated.Models.ItemSortBy.DateCreated,
+                    setSortOrder: Jellyfin.Sdk.Generated.Models.SortOrder.Descending);
+
+        // Convert all at once
+        Album[] albums = data.Select(s => (Album)s).ToArray();
+        _viewModel.Sample.Clear(); // Optional: clear existing items
+        foreach (var album in albums)
+        {
+            _viewModel.Sample.Add(album);
+        }
+        PermissionStatus status = await Permissions.RequestAsync<Permissions.PostNotifications>();
     }
     private void ScrollViewMain_Scrolled(object? sender, ScrolledEventArgs e)
     {
