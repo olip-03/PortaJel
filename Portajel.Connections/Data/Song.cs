@@ -8,18 +8,18 @@ namespace Portajel.Connections.Data
     public class Song : BaseMusicItem
     {
         public SongData GetBase => _songData;
-        public new Guid LocalId => _songData.LocalId;
-        public new Guid Id => _songData.Id;
+        public override Guid Id => _songData.Id;
+        public override Guid ServerId => _songData.ServerId;
         public Guid AlbumId => _songData.AlbumId;
-        public new string Name => _songData.Name;
-        public new bool IsFavourite => _songData.IsFavourite;
-        public new int PlayCount => _songData.PlayCount;
-        public new DateTimeOffset? DateAdded => _songData.DateAdded;
-        public new DateTimeOffset? DatePlayed => _songData.DatePlayed;
-        public new string ServerAddress => _songData.ServerAddress;
+        public override string Name => _songData.Name;
+        public override bool IsFavourite => _songData.IsFavourite;
+        public override int PlayCount => _songData.PlayCount;
+        public override DateTimeOffset? DateAdded => _songData.DateAdded;
+        public override DateTimeOffset? DatePlayed => _songData.DatePlayed;
+        public override string ServerAddress => _songData.ServerAddress;
         public string? PlaylistId => _songData.PlaylistId;
-        public new string ImgSource => _songData.ImgSource;
-        public new string ImgBlurhash => _songData.ImgBlurhash;
+        public override string ImgSource => _songData.ImgSource;
+        public override string ImgBlurhash => _songData.ImgBlurhash;
         public ArtistData[] Artists => _artistData;
         public Guid[] ArtistIds => _songData.GetArtistIds();
         public string ArtistNames => _songData.ArtistNames;

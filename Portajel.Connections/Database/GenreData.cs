@@ -8,7 +8,7 @@ namespace Portajel.Connections.Database;
 public class GenreData
 {
     [PrimaryKey, NotNull, AutoIncrement]
-    public int LocalId { get; set; }
+    public int ServerId { get; set; }
     public Guid Id { get; set; }
     public string ServerAddress { get; set; } = string.Empty;
     public string Name { get; set; } = string.Empty;

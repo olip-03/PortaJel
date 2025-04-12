@@ -1,9 +1,13 @@
+using Portajel.Connections.Interfaces;
+
 namespace Portajel.Pages;
 
 public partial class SearchPage : ContentPage
 {
-	public SearchPage()
+	private IDbConnector _database;
+	public SearchPage(IDbConnector db)
 	{
-		InitializeComponent();
+		_database = db;
+        InitializeComponent();
 	}
 }

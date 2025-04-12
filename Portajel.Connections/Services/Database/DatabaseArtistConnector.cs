@@ -68,7 +68,15 @@ public class DatabaseArtistConnector : IDbItemConnector
             .Where(album => artistDbItem.GetAlbumIds().Contains(album.Id)).ToArrayAsync();
         return new Artist(artistDbItem, albumData);
     }
-    
+    public async Task<bool> Contains(
+        Guid id,
+        CancellationToken cancellationToken = default)
+    {
+        var artistExists = await _database.Table<ArtistData>()
+            .Where(artist => artist.Id == id)
+            .CountAsync() > 0;
+        return artistExists;
+    }
     public async Task<int> GetTotalCountAsync(
             bool? getFavourite = null,
             CancellationToken cancellationToken = default)
@@ -87,11 +95,11 @@ public class DatabaseArtistConnector : IDbItemConnector
         try
         {
             // Delete associated artists (if applicable)
-            var artists = await _database.Table<ArtistData>().Where(a => a.LocalId == id).ToListAsync();
+            var artists = await _database.Table<ArtistData>().Where(a => a.Id == id).ToListAsync();
             foreach (var artist in artists)
             {
                 await _database.DeleteAsync(artist);
-                Trace.WriteLine($"Deleted artist with ID {artist.LocalId} associated with album ID {id}.");
+                Trace.WriteLine($"Deleted artist with ID {artist.Id} associated with album ID {id}.");
             }
             return true;
         }
@@ -111,7 +119,7 @@ public class DatabaseArtistConnector : IDbItemConnector
             foreach (var id in ids)
             {
                 // Find the album
-                var artist = await _database.Table<ArtistData>().FirstOrDefaultAsync(a => a.LocalId == id);
+                var artist = await _database.Table<ArtistData>().FirstOrDefaultAsync(a => a.Id == id);
                 if (artist == null)
                 {
                     Trace.WriteLine($"Artist with ID {id} not found.");
@@ -133,7 +141,8 @@ public class DatabaseArtistConnector : IDbItemConnector
             BaseMusicItem musicItem,
             CancellationToken cancellationToken = default)
     {
-        await _database.InsertOrReplaceAsync(musicItem, musicItem.GetType());
+        if (musicItem is not Artist artist) return false;
+        await _database.InsertOrReplaceAsync(artist.GetBase, artist.GetBase.GetType());
         return true;
     }
 

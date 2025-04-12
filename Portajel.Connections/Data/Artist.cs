@@ -7,19 +7,19 @@ namespace Portajel.Connections.Data
     public class Artist : BaseMusicItem
     {
         public ArtistData GetBase => _artistData;
-        public new Guid LocalId => _artistData.LocalId;
-        public new Guid Id => _artistData.Id;
-        public new string Name => _artistData.Name;
-        public new bool IsFavourite => _artistData.IsFavourite;
+        public override Guid ServerId => _artistData.ServerId;
+        public override Guid Id => _artistData.Id;
+        public override string Name => _artistData.Name;
+        public override bool IsFavourite => _artistData.IsFavourite;
         public string Description => _artistData.Description;
         public string LogoImgSource => _artistData.LogoImgSource;
         public string BackgroundImgSource => _artistData.BackgroundImgSource;
         public string BackgroundImgBlurhash => _artistData.BackgroundImgBlurhash;
-        public new string ImgSource => _artistData.ImgSource;
-        public new string ImgBlurhash => _artistData.ImgBlurhash;
+        public override string ImgSource => _artistData.ImgSource;
+        public override string ImgBlurhash => _artistData.ImgBlurhash;
         public Guid[] AlbumIds => _artistData.GetAlbumIds();
         public Guid[] SimilarIds => _artistData.GetSimilarIds();
-        public new string ServerAddress => _artistData.ServerAddress;
+        public override string ServerAddress => _artistData.ServerAddress;
         public bool IsPartial { get; set; } = false;
         public AlbumData[] Albums => _albumData;
 
@@ -115,7 +115,7 @@ namespace Portajel.Connections.Data
             MusicItemImage artistBackdrop = MusicItemImage.Builder(nameGuidPair, server);
             MusicItemImage artistImg = MusicItemImage.Builder(nameGuidPair, server);
 
-            Artist newArtist = new();
+            Artist overrideArtist = new();
             toAdd.Name = nameGuidPair.Name;
             toAdd.Id = (Guid)nameGuidPair.Id;
             toAdd.ServerAddress = server;
@@ -124,9 +124,9 @@ namespace Portajel.Connections.Data
             toAdd.ImgBlurhash = artistImg.Blurhash;
             toAdd.BackgroundImgSource = artistBackdrop.Source;
             toAdd.BackgroundImgBlurhash = artistBackdrop.Blurhash;
-            newArtist.IsPartial = true;
+            overrideArtist.IsPartial = true;
 
-            return newArtist;
+            return overrideArtist;
         }
         public void SetIsFavourite(bool state)
         {

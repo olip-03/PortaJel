@@ -19,7 +19,6 @@ public class DatabaseAlbumConnector : IDbItemConnector
     {
         _database = database;
     }
-
     public async Task<BaseMusicItem[]> GetAllAsync(
         int? limit = null, 
         int startIndex = 0,
@@ -69,7 +68,6 @@ public class DatabaseAlbumConnector : IDbItemConnector
         }
         return filteredCache.Select(dbItem => new Album(dbItem)).ToArray();
     }
-
     public async Task<BaseMusicItem> GetAsync(
         Guid id, 
         CancellationToken cancellationToken = default)
@@ -96,7 +94,13 @@ public class DatabaseAlbumConnector : IDbItemConnector
         ArtistData[] artistsFromDb = artistTask.Result;
         return new Album(albumFromDb, songFromDb, artistsFromDb);
     }
-
+    public async Task<bool> Contains(
+        Guid id,
+        CancellationToken cancellationToken = default)
+    {
+        var result = await GetAsync(id, cancellationToken);
+        return result != Album.Empty;
+    }
     public async Task<int> GetTotalCountAsync(
         bool? getFavourite = null, 
         CancellationToken cancellationToken = default)
@@ -116,7 +120,7 @@ public class DatabaseAlbumConnector : IDbItemConnector
         try
         {
             // Find the album
-            var album = await _database.Table<AlbumData>().FirstOrDefaultAsync(a => a.LocalId == id);
+            var album = await _database.Table<AlbumData>().FirstOrDefaultAsync(a => a.Id == id);
             if (album == null) return false;
             await _database.DeleteAsync(album);
             Trace.WriteLine($"Deleted album with ID {id}.");
@@ -138,7 +142,7 @@ public class DatabaseAlbumConnector : IDbItemConnector
             foreach (var id in ids)
             {
                 // Find the album
-                var album = await _database.Table<AlbumData>().FirstOrDefaultAsync(a => a.LocalId == id);
+                var album = await _database.Table<AlbumData>().FirstOrDefaultAsync(a => a.Id == id);
                 if (album == null)
                 {
                     Trace.WriteLine($"Album with ID {id} not found.");
@@ -184,4 +188,6 @@ public class DatabaseAlbumConnector : IDbItemConnector
         }
         return true;
     }
+
+
 }

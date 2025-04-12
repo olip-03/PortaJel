@@ -1,5 +1,6 @@
 using Android.App;
 using Android.Runtime;
+using Microsoft.Maui.Controls.PlatformConfiguration.AndroidSpecific;
 
 namespace Portajel.Droid
 {
@@ -10,7 +11,6 @@ namespace Portajel.Droid
             : base(handle, ownership)
         {
         }
-
         protected override MauiApp CreateMauiApp() => MauiProgram.CreateMauiApp();
     }
 }

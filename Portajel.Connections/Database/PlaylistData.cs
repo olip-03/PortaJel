@@ -9,7 +9,7 @@ namespace Portajel.Connections.Database
     public class PlaylistData
     {
         [PrimaryKey, NotNull, AutoIncrement]
-        public Guid LocalId { get; set; }
+        public Guid ServerId { get; set; }
         public Guid Id { get; set; }
         public string Name { get; set; } = string.Empty;
         public bool IsFavourite { get; set; } = false;
@@ -46,8 +46,8 @@ namespace Portajel.Connections.Database
             PlaylistData newPlaylist = new();
             MusicItemImage musicItemImage = MusicItemImage.Builder(baseItem, server);
             newPlaylist.Name = baseItem.Name;
-            newPlaylist.Id = (Guid)baseItem.Id;
-            newPlaylist.LocalId = GuidHelper.GenerateNewGuidFromHash(newPlaylist.Id, server);
+            newPlaylist.ServerId = (Guid)baseItem.Id;
+            newPlaylist.Id = GuidHelper.GenerateNewGuidFromHash(newPlaylist.Id, server);
             newPlaylist.IsFavourite = (bool)baseItem.UserData.IsFavorite;
             newPlaylist.Path = baseItem.Path;
             newPlaylist.ServerAddress = server;

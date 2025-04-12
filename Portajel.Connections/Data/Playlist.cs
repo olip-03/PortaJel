@@ -5,14 +5,14 @@ namespace Portajel.Connections.Data
     public class Playlist: BaseMusicItem
     {
         public PlaylistData GetBase => _playlistData;
-        public new Guid LocalId => _playlistData.LocalId;
-        public new Guid Id => _playlistData.Id;
-        public new string Name => _playlistData.Name;
-        public new bool IsFavourite => _playlistData.IsFavourite;
-        public new string ImgSource => _playlistData.ImgSource;
-        public new string ImgBlurhash => _playlistData.ImgBlurhash;
+        public override Guid Id => _playlistData.Id;
+        public override Guid ServerId => _playlistData.ServerId;
+        public override string Name => _playlistData.Name;
+        public override bool IsFavourite => _playlistData.IsFavourite;
+        public override string ImgSource => _playlistData.ImgSource;
+        public override string ImgBlurhash => _playlistData.ImgBlurhash;
         public string Path => _playlistData.Path;
-        public new string ServerAddress => _playlistData.ServerAddress;
+        public override string ServerAddress => _playlistData.ServerAddress;
         public bool IsPartial { get; set; } = true;
 
         public Guid[] SongIds => _playlistData.GetSongIds();
@@ -49,7 +49,7 @@ namespace Portajel.Connections.Data
 
         //    if (isFavourite)
         //    {
-        //        contextMenuItems.Add(new ContextMenuItem("Remove From Favourites", "light_heart.png", new Task(async () =>
+        //        contextMenuItems.Add(override ContextMenuItem("Remove From Favourites", "light_heart.png", override Task(async () =>
         //        {
         //            isFavourite = false;
         //            await MauiProgram.api.SetFavourite(this.id, this.serverAddress, false);
@@ -57,29 +57,29 @@ namespace Portajel.Connections.Data
         //    }
         //    else
         //    {
-        //        contextMenuItems.Add(new ContextMenuItem("Add To Favourites", "light_heart.png", new Task(async () =>
+        //        contextMenuItems.Add(override ContextMenuItem("Add To Favourites", "light_heart.png", override Task(async () =>
         //        {
         //            isFavourite = true;
         //            await MauiProgram.api.SetFavourite(this.id, this.serverAddress, true);
         //        })));
         //    }
-        //    contextMenuItems.Add(new ContextMenuItem("Edit Playlist", "light_edit.png", new Task(async () =>
+        //    contextMenuItems.Add(override ContextMenuItem("Edit Playlist", "light_edit.png", override Task(async () =>
         //    {
         //        await MauiProgram.MainPage.NavigateToPlaylistEdit(this.id);
         //    })));
-        //    contextMenuItems.Add(new ContextMenuItem("Download", "light_cloud_download.png", new Task(() =>
+        //    contextMenuItems.Add(override ContextMenuItem("Download", "light_cloud_download.png", override Task(() =>
         //    {
 
         //    })));
-        //    contextMenuItems.Add(new ContextMenuItem("Add To Playlist", "light_playlist.png", new Task(() =>
+        //    contextMenuItems.Add(override ContextMenuItem("Add To Playlist", "light_playlist.png", override Task(() =>
         //    {
 
         //    })));
-        //    contextMenuItems.Add(new ContextMenuItem("Add To Queue", "light_queue.png", new Task(() =>
+        //    contextMenuItems.Add(override ContextMenuItem("Add To Queue", "light_queue.png", override Task(() =>
         //    {
 
         //    })));
-        //    contextMenuItems.Add(new ContextMenuItem("Close", "light_close.png", new Task(() =>
+        //    contextMenuItems.Add(override ContextMenuItem("Close", "light_close.png", override Task(() =>
         //    {
         //        MauiProgram.MainPage.CloseContextMenu();
         //    })));

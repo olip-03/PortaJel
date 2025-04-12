@@ -2,17 +2,17 @@
 {
     public abstract class BaseMusicItem
     {
-        public string ServerAddress { get; set; }
-        public Guid Id { get; set; }
-        public Guid ServerId { get; set; }
-        public string ImgSource { get; set; }
-        public string ImgBlurhash { get; set; }
+        public virtual string ServerAddress { get; set; }
+        public virtual Guid Id { get; set; }
+        public virtual Guid ServerId { get; set; }
+        public virtual string ImgSource { get; set; }
+        public virtual string ImgBlurhash { get; set; }
         public string ImgBlurhashBase64 { get; set; }
-        public string Name { get; set; }
-        public bool IsFavourite { get; set; }
-        public int PlayCount { get; set; }
-        public DateTimeOffset? DateAdded { get; set; }
-        public DateTimeOffset? DatePlayed { get; set; }
+        public virtual string Name { get; set; }
+        public virtual bool IsFavourite { get; set; }
+        public virtual int PlayCount { get; set; }
+        public virtual DateTimeOffset? DateAdded { get; set; }
+        public virtual DateTimeOffset? DatePlayed { get; set; }
         public Album ToAlbum()
         {
             return (Album)this;

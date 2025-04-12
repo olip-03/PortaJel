@@ -42,6 +42,7 @@ namespace Portajel
 
         public static MauiAppBuilder RegisterViews(this MauiAppBuilder mauiAppBuilder)
         {
+            mauiAppBuilder.Services.AddSingleton<SettingsPage>();
             mauiAppBuilder.Services.AddSingleton<ConnectionsPage>();
             mauiAppBuilder.Services.AddSingleton<DebugDatabase>();
             return mauiAppBuilder;

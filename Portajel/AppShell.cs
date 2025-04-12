@@ -4,6 +4,7 @@ using Portajel.Pages.Settings.Connections;
 using Portajel.Pages.Settings.Debug;
 using PortaJel_Blazor.Classes;
 using System.Diagnostics;
+using Microsoft.Maui.Controls.PlatformConfiguration.AndroidSpecific;
 using ShellItem = Microsoft.Maui.Controls.ShellItem;
 
 namespace Portajel
@@ -208,7 +209,7 @@ namespace Portajel
             tabBar.Items.Add(homeTab);
             tabBar.Items.Add(searchTab);
             tabBar.Items.Add(libraryTab);
-
+            
             return [tabBar];
         }
     }

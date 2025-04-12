@@ -6,10 +6,10 @@ namespace Portajel.Connections.Data
     {
         public GenreData GetBase => _genreData;
         // public new Guid Id => _genreData.Id;
-        public new Guid Id => _genreData.Id;
+        public override Guid Id => _genreData.Id;
         public string ServerAddress => _genreData.ServerAddress;
-        public new string Name => _genreData.Name;
-        public new DateTimeOffset DateAdded => _genreData.DateAdded;
+        public override string Name => _genreData.Name;
+        // public override DateTimeOffset DateAdded => _genreData.DateAdded;
         public Guid[] AlbumIds => _genreData.GetAlbumIds();
         private readonly GenreData _genreData ;
 

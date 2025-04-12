@@ -255,17 +255,14 @@ namespace Portajel.Connections.Services.Jellyfin
             var tasks = GetDataConnectors().Values.Select(data => Task.Run(async () =>
             {
                 int retrieve = 50;
-                int checkCount = 3;
-                var dbItems = await GetDb(data).Value.GetAllAsync(
-                    limit: retrieve * checkCount,
-                    setSortTypes: ItemSortBy.DateCreated);
-                var dbIds = dbItems.Select(item => item.Id).ToArray();
+                int checkCount = 0;
 
                 data.SyncStatusInfo.TaskStatus = TaskStatus.Running;
                 while (data.SyncStatusInfo.TaskStatus is TaskStatus.Running)
                 {
                     try
                     {
+                        // get items from server
                         var items = await data.GetAllAsync(
                             limit: retrieve,
                             startIndex: data.SyncStatusInfo.ServerItemCount,
@@ -274,23 +271,38 @@ namespace Portajel.Connections.Services.Jellyfin
                             cancellationToken: cancellationToken
                         );
 
+                        int newTotal = data.SyncStatusInfo.ServerItemCount + items.Length;
+                        double newPercent = ((double)newTotal / data.SyncStatusInfo.ServerItemTotal) * 100;
+                        data.SetSyncStatusInfo(serverItemCount: newTotal, percentage: (int)newPercent);
+
+                        // Check if these items are in the database
                         foreach (var item in items)
                         {
-                            if (dbIds.Contains(item.Id))
+                            // If our DB has this item
+                            if (await GetDb(data).Value.Contains(item.Id))
                             {
-                                data.SetSyncStatusInfo(DbFoundTotal: data.SyncStatusInfo.DbFoundTotal + 1);
+                                checkCount++;
+                            }
+                            else 
+                            {
+                                await GetDb(data).Value.InsertAsync(item);
                             }
                         }
-
-                        data.SetSyncStatusInfo(serverItemCount: items.Length);
-                        if (data.SyncStatusInfo.ServerItemCount < retrieve ||
-                            data.SyncStatusInfo.DbFoundTotal > retrieve * checkCount)
+                        data.SetSyncStatusInfo(serverItemCount: await GetDb(data).Value.GetTotalCountAsync());
+                        if(items.Length < retrieve)
                         {
-                            data.SetSyncStatusInfo(status: TaskStatus.RanToCompletion);
+                            data.SetSyncStatusInfo(status: TaskStatus.Faulted, percentage: (int)100);
+                            continue;
+                        }
+                        if (checkCount >= retrieve)
+                        {
+                            data.SetSyncStatusInfo(status: TaskStatus.RanToCompletion, percentage: (int)100);
+                            continue;
                         }
                     }
                     catch (Exception ex)
                     {
+                        Trace.WriteLine(ex.Message);
                         data.SetSyncStatusInfo(status: TaskStatus.Faulted);
                     }
 
@@ -322,20 +334,13 @@ namespace Portajel.Connections.Services.Jellyfin
                 {
                     int workers = GetDataConnectors().Values.Where(d => d.SyncStatusInfo.TaskStatus == TaskStatus.Running).Count();
                     int retrieve = maxTasks / workers;
-                    int checkCount = 3;
-                    var dbItems = await GetDb(data).Value.GetAllAsync(
-                        limit: retrieve * checkCount,
-                        setSortTypes: ItemSortBy.DateCreated);
-                    var dbIds = dbItems.Select(item => item.Id).ToArray();
-
                     if (Properties.TryGetValue("LastSync", out var maxTasksProperty))
                     {
-                        DateTime lastSync = DateTime.Parse(maxTasksProperty.Value.ToString());
+                        DateTime.TryParse(maxTasksProperty.Value.ToString(), out DateTime lastSync);
                         DateTime threeMonthsAgo = DateTime.Now.AddMonths(-3);
-
                         if (lastSync > threeMonthsAgo)
                         {
-                            // await UpdateDb(cancellationToken);
+                            await UpdateDb(cancellationToken);
                             data.SetSyncStatusInfo(
                                 status: TaskStatus.RanToCompletion, 
                                 serverItemCount: await GetDb(data).Value.GetTotalCountAsync(), 
@@ -361,10 +366,10 @@ namespace Portajel.Connections.Services.Jellyfin
                             double newPercent = ((double)newTotal / data.SyncStatusInfo.ServerItemTotal) * 100;
 
                             data.SetSyncStatusInfo(serverItemCount: newTotal, percentage: (int)newPercent);
-                            if (items.Length < retrieve ||
-                                data.SyncStatusInfo.DbFoundTotal > retrieve * checkCount)
+                            if (items.Length < retrieve)
                             {
                                 data.SetSyncStatusInfo(status: TaskStatus.RanToCompletion);
+                                continue;
                             }
                             GetDb(data).Value.InsertRangeAsync(items, cancellationToken).Wait(cancellationToken);
                             workers = GetDataConnectors().Values.Where(d => d.SyncStatusInfo.TaskStatus == TaskStatus.Running).Count();
@@ -373,6 +378,7 @@ namespace Portajel.Connections.Services.Jellyfin
                         catch (Exception ex)
                         {
                             data.SetSyncStatusInfo(status: TaskStatus.Faulted);
+                            continue;
                         }
                     }
                 }

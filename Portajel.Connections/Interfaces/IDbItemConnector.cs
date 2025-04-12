@@ -19,6 +19,9 @@ namespace Portajel.Connections.Interfaces
         Task<BaseMusicItem> GetAsync(
             Guid id,
             CancellationToken cancellationToken = default);
+        Task<bool> Contains(
+            Guid id,
+            CancellationToken cancellationToken = default);
         Task<int> GetTotalCountAsync(
             bool? getFavourite = null,
             CancellationToken cancellationToken = default);

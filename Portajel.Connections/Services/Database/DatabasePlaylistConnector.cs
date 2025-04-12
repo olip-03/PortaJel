@@ -55,7 +55,13 @@ public class DatabasePlaylistConnector : IDbItemConnector, IMediaPlaylistInterfa
 
         return await query.CountAsync();
     }
-    
+    public async Task<bool> Contains(Guid id, CancellationToken cancellationToken = default)
+    {
+        var playlistExists = await _database.Table<PlaylistData>()
+            .Where(playlist => playlist.Id == id)
+            .CountAsync() > 0;
+        return playlistExists;
+    }
     public Task<bool> RemovePlaylistItemAsync(Guid playlistId, Guid songId,
         CancellationToken cancellationToken = default)
     {
@@ -74,11 +80,11 @@ public class DatabasePlaylistConnector : IDbItemConnector, IMediaPlaylistInterfa
         try
         {
             // Delete associated playlists
-            var playlists = await _database.Table<PlaylistData>().Where(p => p.LocalId == id).ToListAsync();
+            var playlists = await _database.Table<PlaylistData>().Where(p => p.Id == id).ToListAsync();
             foreach (var playlist in playlists)
             {
                 await _database.DeleteAsync(playlist);
-                Trace.WriteLine($"Deleted playlist with ID {playlist.LocalId} associated with album ID {id}.");
+                Trace.WriteLine($"Deleted playlist with ID {playlist.Id} associated with album ID {id}.");
             }
             return true;
         }
@@ -98,7 +104,7 @@ public class DatabasePlaylistConnector : IDbItemConnector, IMediaPlaylistInterfa
             foreach (var id in ids)
             {
                 // Find the album
-                var playlist = await _database.Table<PlaylistData>().FirstOrDefaultAsync(p => p.LocalId == id);
+                var playlist = await _database.Table<PlaylistData>().FirstOrDefaultAsync(p => p.Id == id);
                 if (playlist == null)
                 {
                     Trace.WriteLine($"Playlist with ID {id} not found.");

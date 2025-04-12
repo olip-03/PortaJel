@@ -35,7 +35,12 @@ public class DatabaseGenreConnector : IDbItemConnector
     {
         return Task.FromResult<BaseMusicItem>(new Genre());
     }
-
+    public async Task<bool> Contains(
+        Guid id,
+        CancellationToken cancellationToken = default)
+    {
+        return false;
+    }
     public Task<int> GetTotalCountAsync(
             bool? getFavourite = null,
             CancellationToken cancellationToken = default)

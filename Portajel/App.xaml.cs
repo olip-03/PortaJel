@@ -23,17 +23,6 @@ namespace Portajel
                     Debug.WriteLine($"Startup error: {ex.Message}");
                 }
             });
-            _ = Task.Run(async () =>
-            {
-                try
-                {
-                    await SetPermissions();
-                }
-                catch (Exception ex)
-                {
-                    Debug.WriteLine($"Startup error: {ex.Message}");
-                }
-            });
         }
 
         private async Task StartupAsync(IServerConnector serverConnector, IDbConnector dbConnector)
@@ -57,11 +46,6 @@ namespace Portajel
             {
                 throw;
             };
-        }
-
-        private async Task SetPermissions()
-        {
-            PermissionStatus status = await Permissions.RequestAsync<Permissions.PostNotifications>();
         }
 
         protected override Window CreateWindow(IActivationState? activationState)

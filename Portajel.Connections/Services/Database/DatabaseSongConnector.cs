@@ -127,7 +127,13 @@ namespace Portajel.Connections.Services.Database
                 .Where(artist => songData.GetArtistIds().First() == artist.Id).FirstOrDefaultAsync();
             return new Song(songData, albumData, [artistData]);
         }
-
+        public async Task<bool> Contains(Guid id, CancellationToken cancellationToken = default)
+        {
+            var songExists = await _database.Table<SongData>()
+                .Where(song => song.Id == id)
+                .CountAsync() > 0;
+            return songExists;
+        }
         public async Task<int> GetTotalCountAsync(
             bool? getFavourite = null,
             CancellationToken cancellationToken = default)
@@ -146,11 +152,11 @@ namespace Portajel.Connections.Services.Database
             try
             {
                 // Delete associated songs
-                var songs = await _database.Table<SongData>().Where(s => s.LocalId == id).ToListAsync();
+                var songs = await _database.Table<SongData>().Where(s => s.Id == id).ToListAsync();
                 foreach (var song in songs)
                 {
                     await _database.DeleteAsync(song);
-                    Trace.WriteLine($"Deleted song with ID {song.LocalId} associated with album ID {id}.");
+                    Trace.WriteLine($"Deleted song with ID {song.Id} associated with album ID {id}.");
                 }
 
                 return true;
@@ -171,7 +177,7 @@ namespace Portajel.Connections.Services.Database
                 foreach (var id in ids)
                 {
                     // Find the album
-                    var song = await _database.Table<SongData>().FirstOrDefaultAsync(s => s.LocalId == id);
+                    var song = await _database.Table<SongData>().FirstOrDefaultAsync(s => s.Id == id);
                     if (song == null)
                     {
                         Trace.WriteLine($"Song with ID {id} not found.");

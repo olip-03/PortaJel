@@ -7,16 +7,16 @@ namespace Portajel.Connections.Data
     {
         private readonly AlbumData _albumData = new();
         public AlbumData GetBase => _albumData;
-        public new Guid LocalId => _albumData.LocalId;
-        public new Guid Id => _albumData.Id;
-        public new string Name => _albumData.Name;
-        public new bool IsFavourite => _albumData.IsFavourite;
-        public new int PlayCount => _albumData.PlayCount;
-        public new DateTimeOffset? DateAdded => _albumData.DateAdded;
-        public new DateTimeOffset? DatePlayed => _albumData.DatePlayed;
-        public new string ServerAddress => _albumData.ServerAddress;
-        public new string ImgSource =>   _albumData.ImgSource;
-        public new string ImgBlurhash => _albumData.ImgBlurhash;
+        public override Guid Id => _albumData.Id;
+        public override Guid ServerId => _albumData.ServerId;
+        public override string Name => _albumData.Name;
+        public override bool IsFavourite => _albumData.IsFavourite;
+        public override int PlayCount => _albumData.PlayCount;
+        public override DateTimeOffset? DateAdded => _albumData.DateAdded;
+        public override DateTimeOffset? DatePlayed => _albumData.DatePlayed;
+        public override string ServerAddress => _albumData.ServerAddress;
+        public override string ImgSource =>   _albumData.ImgSource;
+        public override string ImgBlurhash => _albumData.ImgBlurhash;
         public ArtistData[] Artists { get; }
         public string ArtistNames => _albumData.ArtistNames;
         public Guid[] ArtistIds => _albumData.GetArtistIds();
@@ -63,6 +63,5 @@ namespace Portajel.Connections.Data
         {
             _albumData.IsFavourite = state;
         }
-
     }
 }

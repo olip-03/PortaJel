@@ -17,6 +17,12 @@ public partial class HomePage : ContentPage
             viewModel.PageMargin = 0;
         }
         BindingContext = viewModel;
+        Init();
+    }
+
+    private async void Init()
+    {
+        PermissionStatus status = await Permissions.RequestAsync<Permissions.PostNotifications>();
     }
 
     private void ScrollViewMain_Scrolled(object? sender, ScrolledEventArgs e)
