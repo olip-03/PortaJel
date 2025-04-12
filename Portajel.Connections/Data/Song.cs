@@ -1,4 +1,5 @@
 ﻿using Portajel.Connections.Database;
+using Portajel.Connections.Structs;
 
 namespace Portajel.Connections.Data
 {

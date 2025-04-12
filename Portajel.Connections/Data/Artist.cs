@@ -1,6 +1,7 @@
 ﻿using System.Text.Json;
 using Jellyfin.Sdk.Generated.Models;
 using Portajel.Connections.Database;
+using Portajel.Connections.Structs;
 
 namespace Portajel.Connections.Data
 {

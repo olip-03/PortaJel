@@ -1,4 +1,6 @@
-﻿namespace Portajel.Connections.Data
+﻿using Portajel.Connections.Data;
+
+namespace Portajel.Connections.Structs
 {
     public abstract class BaseMusicItem
     {
@@ -34,7 +36,7 @@
             if (item == null) return true;
             if (item is Album)
             {
-                if(item == Album.Empty)return true;
+                if (item == Album.Empty) return true;
             }
             else if (item is Song)
             {

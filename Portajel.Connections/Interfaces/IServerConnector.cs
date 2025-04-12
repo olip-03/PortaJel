@@ -1,6 +1,6 @@
 ﻿using Jellyfin.Sdk.Generated.Models;
-using Portajel.Connections.Data;
 using Portajel.Connections.Services;
+using Portajel.Connections.Structs;
 using System;
 using System.Collections.Generic;
 using System.Linq;

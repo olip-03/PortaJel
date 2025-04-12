@@ -7,10 +7,8 @@ using Portajel.Connections.Services.Spotify;
 using Portajel.Connections.Enum;
 using Portajel.Connections.Interfaces;
 using Portajel.Connections.Services.Database;
-using Portajel.Connections;
-using Portajel.Connections.Data;
 
-namespace Portajel.Connections.Data;
+namespace Portajel.Connections.Structs;
 
 public class ServerConnectorSettings
 {
@@ -85,8 +83,8 @@ public class ServerConnectorSettings
     public ServerConnectorSettings(IServerConnector serverConnector, IMediaServerConnector[] servers)
     {
         ServerConnector = serverConnector;
-        if(ServerConnector.Servers.Count > 0) return;
-        if(servers == null) return;
+        if (ServerConnector.Servers.Count > 0) return;
+        if (servers == null) return;
         foreach (var srv in servers)
         {
             ServerConnector.AddServer(srv);

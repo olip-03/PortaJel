@@ -2,6 +2,7 @@ using Jellyfin.Sdk.Generated.Models;
 using Portajel.Connections.Data;
 using Portajel.Connections.Enum;
 using Portajel.Connections.Interfaces;
+using Portajel.Connections.Structs;
 using SQLite;
 
 namespace Portajel.Connections.Services.FS

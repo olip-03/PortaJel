@@ -6,6 +6,7 @@ using Portajel.Connections.Interfaces;
 using SQLite;
 using System.Linq;
 using Portajel.Connections.Enum;
+using Portajel.Connections.Structs;
 
 namespace Portajel.Connections.Services.Database
 {

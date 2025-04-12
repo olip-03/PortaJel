@@ -5,6 +5,7 @@ using Portajel.Connections.Database;
 using Portajel.Connections.Interfaces;
 using Jellyfin.Sdk.Generated.Models;
 using SQLite;
+using Portajel.Connections.Structs;
 
 namespace Portajel.Connections.Services.Database;
 

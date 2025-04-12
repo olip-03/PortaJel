@@ -1,8 +1,8 @@
 ﻿using Jellyfin.Sdk.Generated.Models;
 using SQLite;
 using System.Text.Json;
-using Portajel.Connections.Data;
 using PortaJel_Blazor.Classes;
+using Portajel.Connections.Structs;
 
 namespace Portajel.Connections.Database
 {
@@ -12,6 +12,7 @@ namespace Portajel.Connections.Database
         public Guid ServerId { get; set; }
         public Guid Id { get; set; }
         public string ServerAddress { get; set; } = string.Empty;
+        [Indexed]
         public string Name { get; set; } = string.Empty;
         public DateTimeOffset? DateAdded { get; set; }
         public bool IsFavourite { get; set; } = false;

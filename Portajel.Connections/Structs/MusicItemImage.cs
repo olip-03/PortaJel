@@ -1,11 +1,10 @@
 ﻿using Blurhash;
 using Jellyfin.Sdk.Generated.Models;
-using Portajel.Connections;
 using Portajel.Connections.Data;
 using Portajel.Connections.Services;
 using SkiaSharp;
 
-namespace Portajel.Connections.Data
+namespace Portajel.Connections.Structs
 {
     public class MusicItemImage
     {
@@ -14,7 +13,9 @@ namespace Portajel.Connections.Data
         public string Source { get; set; } = string.Empty;
         public string Blurhash { get; set; } = string.Empty;
         public int soureResolution { get; set; } = 500;
-        public string sourceAtResolution { get
+        public string sourceAtResolution
+        {
+            get
             {
                 return SourceAtResolution(soureResolution);
             }
@@ -34,7 +35,7 @@ namespace Portajel.Connections.Data
         /// <returns>Image at the requested resolution, by the 'px' variable.</returns>
         public string SourceAtResolution(int px)
         {
-            if(musicItemImageType == MusicItemImageType.url)
+            if (musicItemImageType == MusicItemImageType.url)
             {
                 string toReturn = Source + $"&fillHeight={px}&fillWidth={px}&quality=96";
                 return toReturn;
@@ -43,12 +44,12 @@ namespace Portajel.Connections.Data
         }
         public static Task<string?> BlurhashToBase64Async(string? blurhash, int width = 0, int height = 0, float brightness = 1)
         {
-            if(String.IsNullOrWhiteSpace(blurhash))
+            if (string.IsNullOrWhiteSpace(blurhash))
             {
                 return Task.FromResult<string?>(string.Empty);
             }
             try
-            {            
+            {
                 // TODO: SQLite DB for Blurhashes you have already decoded ;) 
                 // Assuming you have a method to decode the blurhash into a pixel array
                 Pixel[,] pixels = new Pixel[width, height];
@@ -107,7 +108,7 @@ namespace Portajel.Connections.Data
             catch (Exception ex)
             {
                 string? noval = null;
-                return Task.FromResult<string?>(noval);
+                return Task.FromResult(noval);
             }
         }
         public static Task<string?> BlurhashToBase64Async(BaseMusicItem musicItem, int width = 0, int height = 0, float brightness = 1)
@@ -116,17 +117,17 @@ namespace Portajel.Connections.Data
             if (musicItem is Album)
             {
                 Album? album = musicItem as Album;
-                return Task.FromResult<string?>(BlurhashToBase64Async(album.ImgBlurhash, 20, 20).Result);
+                return Task.FromResult(BlurhashToBase64Async(album.ImgBlurhash, 20, 20).Result);
             }
             if (musicItem is Song)
             {
                 Song? song = musicItem as Song;
-                return Task.FromResult<string?>(BlurhashToBase64Async(song.ImgBlurhash, 20, 20).Result);
+                return Task.FromResult(BlurhashToBase64Async(song.ImgBlurhash, 20, 20).Result);
             }
             if (musicItem is Artist)
             {
                 Artist? artist = musicItem as Artist;
-                return Task.FromResult<string?>(BlurhashToBase64Async(artist.ImgBlurhash, 20, 20).Result);
+                return Task.FromResult(BlurhashToBase64Async(artist.ImgBlurhash, 20, 20).Result);
             }
             if (musicItem is Playlist)
             {
@@ -147,9 +148,9 @@ namespace Portajel.Connections.Data
             image.musicItemImageType = MusicItemImageType.url;
             string imgType = "Primary";
 
-            if(baseItem.ImageTags.AdditionalData.Count() == 0)
+            if (baseItem.ImageTags.AdditionalData.Count() == 0)
             {
-                return MusicItemImage.Empty;
+                return Empty;
             }
 
             switch (imageType)
@@ -186,7 +187,7 @@ namespace Portajel.Connections.Data
                     }
                     else
                     {
-                        image.Blurhash = String.Empty;
+                        image.Blurhash = string.Empty;
                         return image; // bascially returning nothing if no logo is found
                     }
                     break;
@@ -202,7 +203,7 @@ namespace Portajel.Connections.Data
                     }
                     else
                     {
-                        image.Blurhash = String.Empty;
+                        image.Blurhash = string.Empty;
                     }
                     break;
             }
@@ -242,7 +243,7 @@ namespace Portajel.Connections.Data
             }
             else if (baseItem.Type == BaseItemDto_Type.MusicGenre && baseItem.ImageBlurHashes.Primary != null)
             {
-                image.Source =  server + "/Items/" + baseItem.Id + "/Images/" + imgType;
+                image.Source = server + "/Items/" + baseItem.Id + "/Images/" + imgType;
                 image.Blurhash = baseItem.ImageBlurHashes.Primary.AdditionalData.First().Value.ToString();
             }
             else if (baseItem.ImageBlurHashes.Primary != null && baseItem.AlbumId != null)

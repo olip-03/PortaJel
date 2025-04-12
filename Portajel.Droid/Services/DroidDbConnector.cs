@@ -1,6 +1,6 @@
 ﻿using Jellyfin.Sdk.Generated.Models;
-using Portajel.Connections.Data;
 using Portajel.Connections.Interfaces;
+using Portajel.Connections.Structs;
 using PortaJel.Droid.Services;
 using System;
 using System.Collections.Generic;
@@ -18,8 +18,8 @@ namespace Portajel.Services
             _serviceConnection.AppServiceConnection.Binder.Database.GetDataConnectors() : 
             throw new Exception("Cannot retrieve value without Binder.");
         public Task<BaseMusicItem[]> SearchAsync(
-            string searchTerm = "", 
-            int? limit = null, 
+            string searchTerm = "",
+            int limit = 50, 
             int startIndex = 0, 
             ItemSortBy setSortTypes = ItemSortBy.Name, 
             SortOrder setSortOrder = SortOrder.Ascending, 

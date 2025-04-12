@@ -1,5 +1,6 @@
 ﻿using Portajel.Connections.Data;
 using Portajel.Connections.Enum;
+using Portajel.Connections.Structs;
 using Portajel.Structures.Interfaces;
 using System;
 using System.Collections.Generic;

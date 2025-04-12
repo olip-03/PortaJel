@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Portajel.Connections.Data;
+using Portajel.Connections.Structs;
 
 namespace Portajel.Connections.Interfaces
 {

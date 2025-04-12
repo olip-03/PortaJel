@@ -3,6 +3,7 @@ using Portajel.Connections.Data;
 using Portajel.Connections.Interfaces;
 using Portajel.Connections.Enum;
 using SQLite;
+using Portajel.Connections.Structs;
 
 namespace Portajel.Connections.Services.FS;
 

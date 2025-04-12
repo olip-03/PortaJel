@@ -18,7 +18,6 @@
 
             <VerticalStackLayout Padding="20">
                 <Label FontSize="Title" Text="Add Server Connection"  Margin="0, 0, 0, 10"/>
-
                 <Grid Margin="0, 10">
                     <ActivityIndicator x:Name="ViewCollectionActivityIndicator" IsRunning="true" IsVisible="False" />
                     <CollectionView 
@@ -35,7 +34,6 @@
                         </CollectionView.ItemTemplate>
                     </CollectionView>
                 </Grid>
-
                 <HorizontalStackLayout>
                     <Button Clicked="BtnCancelClicked" Text="Cancel"/>
                     <Button Margin="10, 0" Clicked="BtnConfirmClicked" Text="Confirm"/>

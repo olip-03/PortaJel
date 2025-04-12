@@ -1,4 +1,4 @@
-﻿namespace Portajel.Connections.Data
+﻿namespace Portajel.Connections.Structs
 {
     public class UserCredentials
     {
@@ -8,7 +8,7 @@
         public string UserId { get; set; }
         public string SessionId { get; set; }
         public string SessionToken { get; set; }
-        public UserCredentials(string serverAddress, string username, string userid, string password, string sessionId, string sessionToken) 
+        public UserCredentials(string serverAddress, string username, string userid, string password, string sessionId, string sessionToken)
         {
             ServerAddress = serverAddress;
             UserName = username;

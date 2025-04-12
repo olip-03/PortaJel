@@ -11,7 +11,6 @@ using Jellyfin.Sdk.Generated.Models;
 using Microsoft.Kiota.Abstractions;
 using Microsoft.Kiota.Abstractions.Authentication;
 using Portajel.Connections.Services;
-using Portajel.Connections.Data;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Http;
 using PortaJel_Blazor.Classes;
@@ -19,6 +18,7 @@ using Portajel.Connections.Services.Database;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Xml.Linq;
+using Portajel.Connections.Structs;
 
 namespace Portajel.Connections.Services.Jellyfin
 {

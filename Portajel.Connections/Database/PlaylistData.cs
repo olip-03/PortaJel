@@ -1,8 +1,8 @@
 ﻿using Jellyfin.Sdk.Generated.Models;
 using SQLite;
 using System.Text.Json;
-using Portajel.Connections.Data;
 using PortaJel_Blazor.Classes;
+using Portajel.Connections.Structs;
 
 namespace Portajel.Connections.Database
 {
@@ -11,6 +11,7 @@ namespace Portajel.Connections.Database
         [PrimaryKey, NotNull, AutoIncrement]
         public Guid ServerId { get; set; }
         public Guid Id { get; set; }
+        [Indexed]
         public string Name { get; set; } = string.Empty;
         public bool IsFavourite { get; set; } = false;
         public string ImgSource { get; set; } = string.Empty;

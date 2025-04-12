@@ -1,4 +1,8 @@
+using CommunityToolkit.Maui.Core.Extensions;
+using Portajel.Connections.Data;
+using Portajel.Connections.Interfaces;
 using Portajel.Pages.Settings;
+using RTools_NTS.Util;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -8,29 +12,62 @@ namespace Portajel.Pages;
 
 public partial class HomePage : ContentPage
 {
-	public HomePage()
+    private HomePageViewModel _viewModel = new();
+    private IDbConnector _database; 
+	public HomePage(IDbConnector db)
 	{
-		InitializeComponent();
-        MainViewModel viewModel = new();
+        _database = db;
+        
+        InitializeComponent();
         if (OperatingSystem.IsWindows())
         {
-            viewModel.PageMargin = 0;
+            _viewModel.PageMargin = 0;
         }
-        BindingContext = viewModel;
+        BindingContext = _viewModel;
         Init();
     }
-
-    private async void Init()
+    private void Init()
     {
-        PermissionStatus status = await Permissions.RequestAsync<Permissions.PostNotifications>();
-    }
+        _ = Task.Run(async () =>
+        {
+            try
+            {
+                IDbItemConnector? albumConnector = null;
+                while (true)
+                {
+                    try
+                    {
+                        albumConnector = _database.GetDataConnectors()["Album"];
+                        break;
+                    }
+                    catch (Exception)
+                    {
+                        await Task.Delay(100);
+                    }
+                }
+                var data = await albumConnector.GetAllAsync(
+                    limit: 50,
+                    setSortTypes: Jellyfin.Sdk.Generated.Models.ItemSortBy.DateCreated,
+                    setSortOrder: Jellyfin.Sdk.Generated.Models.SortOrder.Descending);
+                Album[] albums = data.Select(s => (Album)s).ToArray();
+                MainThread.BeginInvokeOnMainThread(async () =>
+                {
+                    _viewModel.Sample = albums.ToObservableCollection();
+                    PermissionStatus status = await Permissions.RequestAsync<Permissions.PostNotifications>();
+                });
+            }
+            catch (Exception ex)
+            {
+                Trace.Write($"Loading Home Data Failed: {ex.Message}");
+            }
+        });
 
+    }
     private void ScrollViewMain_Scrolled(object? sender, ScrolledEventArgs e)
     {
         
         Trace.WriteLine($"ScrollX: {e.ScrollX}, ScrollY: {e.ScrollY}");
     }
-
     private async void NavigateSettings(object sender, EventArgs e)
     {
         await Shell.Current.GoToAsync("settings");
@@ -43,45 +80,30 @@ public class ImageItem
     public string Source_ { get; set; }
 }
 
-public class MainViewModel : INotifyPropertyChanged
+public class HomePageViewModel : INotifyPropertyChanged
 {
-    private ObservableCollection<ImageItem> _sample;
-
+    private ObservableCollection<Album> _music = [];
     public int PageMargin = 10;
-    public ObservableCollection<ImageItem> Sample
+    public ObservableCollection<Album> Sample
     {
-        get => _sample;
+        get => _music;
         set
         {
-            if (_sample != value)
+            if (_music != value)
             {
-                _sample = value;
+                _music = value;
                 OnPropertyChanged();
             }
         }
     }
 
-    public MainViewModel()
+    public HomePageViewModel()
     {
-        LoadDummyData();
-    }
-
-    private void LoadDummyData()
-    {
-        Sample = new ObservableCollection<ImageItem>
-        {
-            new ImageItem { Source_ = "dotnet_bot.png" }, // Default MAUI image
-            new ImageItem { Source_ = "cat1.png" },
-            new ImageItem { Source_ = "cat2.png" },
-            new ImageItem { Source_ = "cat3.png" },
-            new ImageItem { Source_ = "cat4.png" }
-        };
-        PageMargin = 10;
+        
     }
 
     // INotifyPropertyChanged implementation
-    public event PropertyChangedEventHandler PropertyChanged;
-
+    public event PropertyChangedEventHandler? PropertyChanged;
     protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
     {
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));

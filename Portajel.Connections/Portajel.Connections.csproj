@@ -17,5 +17,6 @@
 
 	<ItemGroup>
 	  <Folder Include="Data\Radio\Channels\" />
+	  <Folder Include="Structs\Blurhash\" />
 	</ItemGroup>
 </Project>

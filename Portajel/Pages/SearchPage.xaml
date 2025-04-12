@@ -1,9 +1,28 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:music="clr-namespace:Portajel.Connections.Data;assembly=Portajel.Connections"
+             xmlns:components="clr-namespace:Portajel.Components"
+             xmlns:local="clr-namespace:Portajel.Pages"
+             x:DataType="local:SearchPageViewModel"
              x:Class="Portajel.Pages.SearchPage"
              Title="SearchPage">
-    <VerticalStackLayout>
-        <SearchBar></SearchBar>
-    </VerticalStackLayout>
+    <Grid RowDefinitions="Auto,*" 
+          RowSpacing="0">
+        <SearchBar Grid.Row="0"
+                  x:Name="SearchBar"
+                  TextChanged="SearchBar_TextChanged" />
+        <CollectionView Grid.Row="1"
+                       x:Name="SearchResults" 
+                       ItemsSource="{Binding Albums}">
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="music:Album">
+                    <components:MusicListItem 
+                        Title="{Binding Name}" 
+                        Subtitle="{Binding ArtistNames}" 
+                        ImgSource="{Binding ImgSource}"/>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+    </Grid>
 </ContentPage>

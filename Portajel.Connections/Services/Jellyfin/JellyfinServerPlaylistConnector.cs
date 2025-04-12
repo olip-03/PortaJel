@@ -4,6 +4,7 @@ using Portajel.Connections.Data;
 using Portajel.Connections.Database;
 using Portajel.Connections.Interfaces;
 using Portajel.Connections.Enum;
+using Portajel.Connections.Structs;
 
 namespace Portajel.Connections.Services.Jellyfin;
 

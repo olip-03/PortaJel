@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.Text.RegularExpressions;
 using Portajel.Connections.Data;
 using Portajel.Connections.Enum;
+using Portajel.Connections.Structs;
 
 namespace Portajel.Connections.Services.Database
 {
@@ -48,7 +49,7 @@ namespace Portajel.Connections.Services.Database
 
         public async Task<BaseMusicItem[]> SearchAsync(
             string searchTerm = "", 
-            int? limit = null, 
+            int limit = 50, 
             int startIndex = 0,
             ItemSortBy setSortTypes = ItemSortBy.Name, 
             SortOrder setSortOrder = SortOrder.Ascending,
@@ -60,7 +61,7 @@ namespace Portajel.Connections.Services.Database
                 return Array.Empty<BaseMusicItem>();
             }
 
-            searchTerm = FormatString(searchTerm);
+            searchTerm = searchTerm.Trim();
 
             var resultList = new List<BaseMusicItem>();
 
@@ -71,36 +72,50 @@ namespace Portajel.Connections.Services.Database
 
                 var connectorName = connectorPair.Key;
                 var dataConnector = connectorPair.Value;
-                
+
                 switch (connectorName)
                 {
                     case "Album":
-                        var matchingAlbums = (await _database.Table<AlbumData>().ToListAsync().ConfigureAwait(false))
-                            .Where(item => FormatString(item.Name).Contains(searchTerm))
+                        var matchingAlbums = (await _database.Table<AlbumData>()
+                            .Take(limit)
+                            .Where(item => item.Name.ToLower().Contains(searchTerm.ToLower()))
+                            .ToListAsync()
+                            .ConfigureAwait(false))
                             .ToList();
                         resultList.AddRange(matchingAlbums.Select(item => new Album(item)));
                         break;
                     case "Artist":
-                        var matchingArtists = (await _database.Table<ArtistData>().ToListAsync().ConfigureAwait(false))
-                            .Where(item => FormatString(item.Name).Contains(searchTerm))
+                        var matchingArtists = (await _database.Table<ArtistData>()
+                            .Take(limit)
+                            .Where(item => item.Name.ToLower().Contains(searchTerm.ToLower()))
+                            .ToListAsync()
+                            .ConfigureAwait(false))
                             .ToList();
                         resultList.AddRange(matchingArtists.Select(item => new Artist(item)));
                         break;
                     case "Song":
-                        var matchingSongs = (await _database.Table<SongData>().ToListAsync().ConfigureAwait(false))
-                            .Where(item => FormatString(item.Name).Contains(searchTerm))
+                        var matchingSongs = (await _database.Table<SongData>()
+                            .Take(limit)
+                            .Where(item => item.Name.ToLower().Contains(searchTerm.ToLower()))
+                            .ToListAsync()
+                            .ConfigureAwait(false))
                             .ToList();
                         resultList.AddRange(matchingSongs.Select(item => new Song(item)));
                         break;
                     case "Playlist":
-                        var matchingPlaylists = (await _database.Table<PlaylistData>().ToListAsync().ConfigureAwait(false))
-                            .Where(item => FormatString(item.Name).Contains(searchTerm))
+                        var matchingPlaylists = (await _database.Table<PlaylistData>()
+                            .Take(limit)
+                            .Where(item => item.Name.ToLower().Contains(searchTerm.ToLower()))
+                            .ToListAsync()
+                            .ConfigureAwait(false))
                             .ToList();
                         resultList.AddRange(matchingPlaylists.Select(item => new Playlist(item)));
                         break;
                     case "Genre":
-                        // var matchingItems = (await _database.Table<GenreData>().ToListAsync().ConfigureAwait(false))
-                        //     .Where(item => FormatString(item.Name).Contains(searchTerm))
+                        // var matchingItems = (await _database.Table<GenreData>()
+                        //     .Where(item => item.Name.ToLower().Contains(searchTerm.ToLower()))
+                        //     .ToListAsync()
+                        //     .ConfigureAwait(false))
                         //     .ToList();
                         // resultList.InsertRange(matchingItems.Select(item => new Genre(item)));
                         break;
@@ -140,23 +155,8 @@ namespace Portajel.Connections.Services.Database
                     break;
             }
 
-            // Apply limit and offset
-            if (limit.HasValue)
-            {
-                sortedResult = sortedResult.Skip(startIndex).Take(limit.Value);
-            }
-
             // Return the result as an array
             return sortedResult.ToArray();
-        }
-
-        private string FormatString(string toFormat)
-        {
-            if (string.IsNullOrEmpty(toFormat))
-                return string.Empty;
-            string result = Regex.Replace(toFormat, @"[^a-zA-Z0-9]", "");
-            result = result.ToLowerInvariant();
-            return result;
         }
     }
 }

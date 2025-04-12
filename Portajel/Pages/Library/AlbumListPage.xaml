@@ -4,9 +4,8 @@
              x:Class="Portajel.Pages.Library.AlbumListPage"
              Title="AlbumListPage">
     <VerticalStackLayout>
-        <Label 
-            Text="Albums!"
-            VerticalOptions="Center" 
-            HorizontalOptions="Center" />
+        <CollectionView>
+            
+        </CollectionView>
     </VerticalStackLayout>
 </ContentPage>

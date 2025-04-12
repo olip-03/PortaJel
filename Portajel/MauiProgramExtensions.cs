@@ -10,6 +10,7 @@ using Mapsui;
 using CommunityToolkit.Maui;
 using Portajel.Pages.Settings.Debug;
 using SkiaSharp.Views.Maui.Controls.Hosting;
+using Portajel.Pages;
 
 namespace Portajel
 {
@@ -42,6 +43,7 @@ namespace Portajel
 
         public static MauiAppBuilder RegisterViews(this MauiAppBuilder mauiAppBuilder)
         {
+            mauiAppBuilder.Services.AddSingleton<HomePage>();
             mauiAppBuilder.Services.AddSingleton<SettingsPage>();
             mauiAppBuilder.Services.AddSingleton<ConnectionsPage>();
             mauiAppBuilder.Services.AddSingleton<DebugDatabase>();
