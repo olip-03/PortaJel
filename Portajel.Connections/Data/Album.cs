@@ -1,6 +1,7 @@
 ﻿using Jellyfin.Sdk.Generated.Models;
 using Portajel.Connections.Database;
 using Portajel.Connections.Structs;
+using System.Runtime.CompilerServices;
 
 namespace Portajel.Connections.Data
 {
@@ -54,7 +55,9 @@ namespace Portajel.Connections.Data
             {
                 artists = artistData.Select(data => ArtistData.Builder(data, server)).ToArray();
             }
-            return new Album(album, songs, artists);
+            Album toReturn = new Album(album, songs, artists);
+            toReturn.ImgBlurhashBitmap = Blurhasher.Decode(toReturn.ImgBlurhash, 64, 64);
+            return toReturn;
         }
         public Song[] GetSongs()
         {

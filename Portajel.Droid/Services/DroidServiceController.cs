@@ -23,7 +23,7 @@ namespace PortaJel.Droid.Services
 {
     public class DroidServiceController: Java.Lang.Object
     {
-        public Portajel.Services.ServiceCollection AppServiceConnection { get; set; } = new();
+        public Portajel.Droid.Services.ServiceCollection AppServiceConnection { get; set; } = new();
         public DatabaseConnector Database => AppServiceConnection.Binder?.Database ?? throw new Exception("Binder is not set!");
         public ServerConnector Server => AppServiceConnection.Binder?.Server ?? throw new Exception("Binder is not set!");
         public DroidServiceController()

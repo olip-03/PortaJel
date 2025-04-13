@@ -31,7 +31,7 @@ public partial class SearchPage : ContentPage
                 token.Cancel();
             }
         }
-
+        
         var cToken = new CancellationTokenSource();
         _cancellationTokens.Add(cToken);
         _viewModel.IsLoading = true;

@@ -13,7 +13,6 @@ using Microsoft.Kiota.Abstractions.Authentication;
 using Portajel.Connections.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Http;
-using PortaJel_Blazor.Classes;
 using Portajel.Connections.Services.Database;
 using System.Runtime.CompilerServices;
 using System.Threading;

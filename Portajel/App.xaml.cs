@@ -12,6 +12,7 @@ namespace Portajel
         {
             Services = services;
             InitializeComponent();
+            string mainDir = FileSystem.Current.AppDataDirectory;
 
             // Fire & forget
             _ = Task.Run(async () =>

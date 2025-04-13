@@ -12,7 +12,7 @@ namespace Portajel.Components
     public class MusicImage : SKCanvasView, IDisposable
     {
         private SKShader? _shader = null;
-        // Define bindable property
+
         public static readonly BindableProperty BlurHashProperty =
             BindableProperty.Create(
                 nameof(BlurHash),
@@ -20,16 +20,14 @@ namespace Portajel.Components
                 typeof(MusicImage),
                 defaultValue: string.Empty,
                 propertyChanged: OnBlurHashChanged);
-
-        // BlurHash property that uses the bindable property
         public string BlurHash
         {
             get => (string)GetValue(BlurHashProperty);
             set => SetValue(BlurHashProperty, value);
         }
 
-        private int _width => WidthRequest >= 1 ? (int)WidthRequest * 3 : 1;
-        private int _height => HeightRequest >= 1 ? (int)HeightRequest * 3 : 1;
+        private int _width => 64;
+        private int _height => 64;
 
         // Property to set the BlurHash
         private static void OnBlurHashChanged(BindableObject bindable, object oldValue, object newValue)
@@ -88,6 +86,9 @@ namespace Portajel.Components
 
             if (_shader != null)
             {
+                float scale = Math.Min(e.Info.Width / _width, e.Info.Height / _height);
+                var matrix = SKMatrix.CreateScale(scale, scale);
+                _shader.WithLocalMatrix(matrix);
                 using var paint = new SKPaint
                 {
                     Shader = _shader
@@ -99,7 +100,6 @@ namespace Portajel.Components
         }
 
         #region BlurHash Implementation
-
         // BlurHash implementation converted from TypeScript to C#
         private static readonly string Base83Chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz#$%*+,-.:;=?@[]^_{|}~";
 
@@ -278,7 +278,6 @@ namespace Portajel.Components
             _shader?.Dispose();
             _shader = null;
         }
-
         #endregion
     }
 }

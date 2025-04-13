@@ -8,7 +8,6 @@ namespace Portajel.Connections.Structs
 {
     public class MusicItemImage
     {
-        // Variables
         public string ServerAddress { get; set; } = string.Empty;
         public string Source { get; set; } = string.Empty;
         public string Blurhash { get; set; } = string.Empty;

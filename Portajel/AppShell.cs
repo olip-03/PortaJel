@@ -2,7 +2,6 @@
 using Portajel.Pages.Settings;
 using Portajel.Pages.Settings.Connections;
 using Portajel.Pages.Settings.Debug;
-using PortaJel_Blazor.Classes;
 using System.Diagnostics;
 using Microsoft.Maui.Controls.PlatformConfiguration.AndroidSpecific;
 using ShellItem = Microsoft.Maui.Controls.ShellItem;
@@ -22,7 +21,7 @@ namespace Portajel
             Routing.RegisterRoute("settings/debug/radio", typeof(DebugRadio));
             Routing.RegisterRoute("settings/debug/map", typeof(DebugMap));
             Routing.RegisterRoute("settings/debug/database", typeof(DebugDatabase));
-            
+
             if (DeviceInfo.Platform == DevicePlatform.WinUI)
             {
                 FlyoutBehavior = FlyoutBehavior.Locked;

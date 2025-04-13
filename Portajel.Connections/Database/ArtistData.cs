@@ -3,6 +3,8 @@ using SQLite;
 using System.Text.Json;
 using Portajel.Connections.Structs;
 using Portajel.Connections.Services;
+using SkiaSharp;
+using System.IO;
 
 namespace Portajel.Connections.Database
 {
@@ -24,6 +26,7 @@ namespace Portajel.Connections.Database
         public string ImgBlurhash { get; set; } = string.Empty;
         public string AlbumIdsJson { get; set;} = string.Empty;
         public bool IsPartial { get; set; } = true;
+
         public Guid[] GetAlbumIds()
         {
             Guid[]? guids = JsonSerializer.Deserialize<Guid[]>(AlbumIdsJson);
@@ -34,6 +37,7 @@ namespace Portajel.Connections.Database
         {
             return [];
         }
+
         public static ArtistData Builder(BaseItemDto baseItem, string server)
         {
             if (baseItem.Id == null)
@@ -48,6 +52,11 @@ namespace Portajel.Connections.Database
             MusicItemImage artistLogo = MusicItemImage.Builder(baseItem, server, ImageBuilderImageType.Logo);
             MusicItemImage artistBackdrop = MusicItemImage.Builder(baseItem, server, ImageBuilderImageType.Backdrop);
             MusicItemImage artistImg = MusicItemImage.Builder(baseItem, server, ImageBuilderImageType.Primary);
+
+            // Save Blurhash to file
+            //var decoded = BlurhashDecode.Decode(artistImg.Blurhash);
+            //using var bitmap = BlurhashDecode.GenerateBitmapFromBlurHash(decoded, 64, 64);
+            // var blurpath = SaveHelper.SaveBlurhash(bitmap);
 
             ArtistData toAdd = new();
             toAdd.ServerId = (Guid)baseItem.Id;

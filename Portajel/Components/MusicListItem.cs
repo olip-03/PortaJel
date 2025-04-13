@@ -1,5 +1,8 @@
 using Portajel.Connections.Data;
+using Portajel.Connections.Structs;
+using SkiaSharp;
 using System.Diagnostics;
+using System.Globalization;
 using System.Runtime.CompilerServices;
 
 namespace Portajel.Components;
@@ -10,7 +13,6 @@ public class MusicListItem : ContentView
     // Image Source bindable property
     public static readonly BindableProperty BlurhashProperty =
         BindableProperty.Create(nameof(Blurhash), typeof(string), typeof(MusicListItem), default(string));
-
     public string Blurhash
     {
         get => (string)GetValue(BlurhashProperty);
@@ -98,14 +100,18 @@ public class MusicListItem : ContentView
         };
 
         // Create image with bindings
-        MusicImage image = new MusicImage
+        Image image = new Image
         {
             BackgroundColor = Colors.LightBlue,
-            //Aspect = Aspect.AspectFill,
+            Aspect = Aspect.AspectFill,
             WidthRequest = 64,
             HeightRequest = 64
         };
-        image.SetBinding(MusicImage.BlurHashProperty, new Binding(nameof(Blurhash), source: this));
+        image.SetBinding(Image.SourceProperty, new Binding(
+            nameof(Blurhash),
+            source: this,
+            converter: new BlurhashToImageConverter(),
+            converterParameter: "12,12")); // Width,Height of the decoded image
 
         // Create vertical stack for text
         VerticalStackLayout textStack = new VerticalStackLayout
@@ -209,6 +215,43 @@ public class MusicListItem : ContentView
         return grid;
     }
 }
+
+public class BlurhashToImageConverter : IValueConverter
+{
+    public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+    {
+        if (value is string blurhash)
+        {
+            // Default dimensions if not specified
+            int width = 64;
+            int height = 64;
+
+            if (parameter is string dimensions)
+            {
+                var parts = dimensions.Split(',');
+                if (parts.Length == 2 && int.TryParse(parts[0], out int w) && int.TryParse(parts[1], out int h))
+                {
+                    width = w;
+                    height = h;
+                }
+            }
+
+            var bitmap = Blurhasher.Decode(blurhash, width, height);
+            var image = SKImage.FromBitmap(bitmap);
+            var data = image.Encode();
+
+            return ImageSource.FromStream(() => data.AsStream());
+        }
+
+        return null;
+    }
+
+    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+    {
+        throw new NotImplementedException();
+    }
+}
+
 
 /// <summary>
 /// Enum to define the size of the MusicListItem.

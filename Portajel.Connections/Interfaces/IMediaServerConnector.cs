@@ -2,7 +2,6 @@
 using Portajel.Connections.Enum;
 using Portajel.Connections.Services;
 using Portajel.Connections.Structs;
-using PortaJel_Blazor.Classes;
 
 namespace Portajel.Connections.Interfaces
 {

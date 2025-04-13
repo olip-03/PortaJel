@@ -4,6 +4,7 @@ using Portajel.Connections.Interfaces;
 using Portajel.Connections.Services;
 using Portajel.Connections.Services.Database;
 using Portajel.Connections.Structs;
+using SkiaSharp;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -56,6 +57,25 @@ namespace Portajel.Structures.Functional
                 return false;
             }
             return true;
+        }
+        // Saves a blurhash to file and returns the path
+        public static async Task<string> SaveBlurhash(SKBitmap blurhash)
+        {
+            string cacheDir = FileSystem.Current.CacheDirectory;
+            string path = Path.Combine(cacheDir, $"blur/{blurhash}.png");
+            try
+            {
+                using var image = SKImage.FromBitmap(blurhash);
+                using var data = image.Encode(SKEncodedImageFormat.Png, 100); // Format and quality
+                using var stream = File.OpenWrite(path);
+                data.SaveTo(stream);
+            }
+            catch (Exception e)
+            {
+                Trace.WriteLine($"SaveData(): {e.Message}");
+                return "";
+            }
+            return path;
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Portajel.Connections.Data;
+using SkiaSharp;
 
 namespace Portajel.Connections.Structs
 {
@@ -9,7 +10,7 @@ namespace Portajel.Connections.Structs
         public virtual Guid ServerId { get; set; }
         public virtual string ImgSource { get; set; }
         public virtual string ImgBlurhash { get; set; }
-        public string ImgBlurhashBase64 { get; set; }
+        public SKBitmap ImgBlurhashBitmap { get; set; }
         public virtual string Name { get; set; }
         public virtual bool IsFavourite { get; set; }
         public virtual int PlayCount { get; set; }

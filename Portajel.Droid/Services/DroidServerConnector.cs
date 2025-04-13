@@ -29,7 +29,7 @@ namespace Portajel.Services
 {
     public class DroidServerConnector : IServerConnector
     {
-        private ServiceCollection _serviceConnection = null!;
+        private Droid.Services.ServiceCollection _serviceConnection = null!;
         public DroidServerConnector(DroidServiceController serverConnectior)
         {
             _serviceConnection = serverConnectior.AppServiceConnection;

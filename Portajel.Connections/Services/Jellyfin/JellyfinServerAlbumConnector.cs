@@ -20,10 +20,16 @@ namespace Portajel.Connections.Services.Jellyfin
             SyncStatusInfo.StatusPercentage = percentage;
         }
 
-        public async Task<BaseMusicItem[]> GetAllAsync(int? limit = null, int startIndex = 0,  bool? getFavourite = null,
-            ItemSortBy setSortTypes = ItemSortBy.DateCreated, SortOrder setSortOrder = SortOrder.Descending,
+        public async Task<BaseMusicItem[]> GetAllAsync(
+            int? limit = null, 
+            int startIndex = 0,
+            bool? getFavourite = null,
+            ItemSortBy setSortTypes = ItemSortBy.DateCreated, 
+            SortOrder setSortOrder = SortOrder.Descending,
             Guid?[] includeIds = null,
-            Guid?[] excludeIds = null, string serverUrl = "", CancellationToken cancellationToken = default)
+            Guid?[] excludeIds = null, 
+            string serverUrl = "", 
+            CancellationToken cancellationToken = default)
         {
             BaseItemDtoQueryResult serverResults = await api.Items.GetAsync(c =>
             {
@@ -108,7 +114,10 @@ namespace Portajel.Connections.Services.Jellyfin
             }
             return Album.Empty;
         }
-        public async Task<BaseMusicItem[]> GetSimilarAsync(Guid id, int setLimit, string serverUrl = "",
+        public async Task<BaseMusicItem[]> GetSimilarAsync(
+            Guid id, 
+            int setLimit, 
+            string serverUrl = "",
             CancellationToken cancellationToken = default)
         {
             BaseItemDtoQueryResult result = await api.Albums[id].Similar.GetAsync(c =>
@@ -119,7 +128,9 @@ namespace Portajel.Connections.Services.Jellyfin
             if (result?.Items == null) return [];
             return result.Items.Select(dto => Album.Builder(dto, clientSettings.ServerUrl)).ToArray();
         }
-        public async Task<int> GetTotalCountAsync(bool? getFavourite = null, string serverUrl = "",
+        public async Task<int> GetTotalCountAsync(
+            bool? getFavourite = null, 
+            string serverUrl = "",
             CancellationToken cancellationToken = default)
         {
             BaseItemDtoQueryResult serverResults = await api.Items.GetAsync(c =>
@@ -138,7 +149,10 @@ namespace Portajel.Connections.Services.Jellyfin
             return serverResults?.TotalRecordCount ?? 0;
         }
 
-        public Task<bool> DeleteAsync(Guid id, string serverUrl = "", CancellationToken cancellationToken = default)
+        public Task<bool> DeleteAsync(
+            Guid id, 
+            string serverUrl = "", 
+            CancellationToken cancellationToken = default)
         {
             throw new NotImplementedException();
         }
