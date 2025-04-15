@@ -8,6 +8,6 @@ namespace Portajel.Connections.Interfaces
 {
     public interface IRadioPlacesController
     {
-
+        public async Task<RadioPlace> 
     }
 }

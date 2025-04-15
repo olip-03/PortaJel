@@ -16,9 +16,7 @@ namespace Portajel.Connections.Services.Radio.RadioGarden
     public class RadioGardenController : IRadioController
     {
         private HttpClient _httpClient;
-
-        public IRadioPlacesController Places => throw new NotImplementedException();
-
+        public IRadioPlacesController Places { get; } = new RadioGardenPlacesController();
         public RadioGardenController(HttpClient? httpClient = null)
         {
             if(httpClient != null)
@@ -30,7 +28,6 @@ namespace Portajel.Connections.Services.Radio.RadioGarden
                 _httpClient = new HttpClient();
             }
         }
-
         public async Task<RadioSearchResult?> SearchAsync(string query)
         {
             string encodedQuery = HttpUtility.UrlEncode(query);
