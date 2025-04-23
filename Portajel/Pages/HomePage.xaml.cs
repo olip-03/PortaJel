@@ -1,6 +1,7 @@
 using CommunityToolkit.Maui.Core.Extensions;
 using Portajel.Connections.Data;
 using Portajel.Connections.Interfaces;
+using Portajel.Connections.Structs;
 using Portajel.Pages.Settings;
 using RTools_NTS.Util;
 using System.Collections.ObjectModel;
@@ -56,10 +57,10 @@ public partial class HomePage : ContentPage
                     limit: 50,
                     setSortTypes: Jellyfin.Sdk.Generated.Models.ItemSortBy.DateCreated,
                     setSortOrder: Jellyfin.Sdk.Generated.Models.SortOrder.Descending);
-
-        // Convert all at once
-        Album[] albums = data.Select(s => (Album)s).ToArray();
-        _viewModel.Sample.Clear(); // Optional: clear existing items
+        string cacheDir = Path.Combine(FileSystem.Current.CacheDirectory, "Blurhash");
+        var itemsToAdd = Blurhasher.DownloadMusicItemBitmap(data, _database, cacheDir, 50, 50);
+        Album[] albums = itemsToAdd.Select(s => (Album)s).ToArray();
+        _viewModel.Sample.Clear(); 
         foreach (var album in albums)
         {
             _viewModel.Sample.Add(album);

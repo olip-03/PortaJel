@@ -290,7 +290,7 @@ namespace Portajel.Connections.Structs
             {
                 try
                 {
-                    data[i].ImgBlurhashBase64 = Blurhelper.BlurhashToBase64Async(data[i].ImgBlurhash, 5, 5);
+                    // data[i].ImgBlurhashBase64 = Blurhelper.BlurhashToBase64Async(data[i].ImgBlurhash, 5, 5);
                 }
                 catch (Exception)
                 {

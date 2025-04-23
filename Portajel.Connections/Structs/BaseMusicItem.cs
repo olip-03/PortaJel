@@ -8,9 +8,9 @@ namespace Portajel.Connections.Structs
         public virtual string ServerAddress { get; set; }
         public virtual Guid Id { get; set; }
         public virtual Guid ServerId { get; set; }
-        public virtual string ImgSource { get; set; }
-        public virtual string ImgBlurhash { get; set; }
-        public SKBitmap ImgBlurhashBitmap { get; set; }
+        public virtual string? ImgSource { get; set; }
+        public virtual string? ImgBlurhash { get; set; }
+        public virtual string? ImgBlurhashSource { get; set; }
         public virtual string Name { get; set; }
         public virtual bool IsFavourite { get; set; }
         public virtual int PlayCount { get; set; }

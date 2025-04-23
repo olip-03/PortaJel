@@ -9,14 +9,12 @@ namespace Portajel.Components;
 
 public class MusicListItem : ContentView
 {
-
-    // Image Source bindable property
-    public static readonly BindableProperty BlurhashProperty =
-        BindableProperty.Create(nameof(Blurhash), typeof(string), typeof(MusicListItem), default(string));
-    public string Blurhash
+    public static readonly BindableProperty ImgBlurhashSourceProperty =
+        BindableProperty.Create(nameof(ImgBlurhashSource), typeof(string), typeof(MusicListItem), default(string));
+    public string ImgBlurhashSource
     {
-        get => (string)GetValue(BlurhashProperty);
-        set => SetValue(BlurhashProperty, value);
+        get => (string)GetValue(ImgBlurhashSourceProperty);
+        set => SetValue(ImgBlurhashSourceProperty, value);
     }
 
     // Image Source bindable property
@@ -107,11 +105,7 @@ public class MusicListItem : ContentView
             WidthRequest = 64,
             HeightRequest = 64
         };
-        image.SetBinding(Image.SourceProperty, new Binding(
-            nameof(Blurhash),
-            source: this,
-            converter: new BlurhashToImageConverter(),
-            converterParameter: "12,12")); // Width,Height of the decoded image
+        image.SetBinding(Image.SourceProperty, new Binding(nameof(ImgBlurhashSource), source: this));
 
         // Create vertical stack for text
         VerticalStackLayout textStack = new VerticalStackLayout

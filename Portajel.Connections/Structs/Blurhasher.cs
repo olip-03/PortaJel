@@ -1,4 +1,5 @@
 ﻿using Blurhash;
+using Portajel.Connections.Interfaces;
 using SkiaSharp;
 using System;
 using System.Linq;
@@ -7,6 +8,65 @@ namespace Portajel.Connections.Structs
 {
     public static class Blurhasher
     {
+        public static IEnumerable<BaseMusicItem> DownloadMusicItemBitmap(IEnumerable<BaseMusicItem> musicItems, IDbConnector database, string path, int width, int height)
+        {
+            Directory.CreateDirectory(path);
+
+            Parallel.ForEach(musicItems, music =>
+            {
+                if (!string.IsNullOrWhiteSpace(music.ImgBlurhashSource))
+                {
+                    return;
+                }
+                var fileName = $"{music.Id}_{music.ServerId}.png";
+                var filePath = Path.Combine(path, fileName);
+
+                if (string.IsNullOrEmpty(music.ImgBlurhash))
+                {
+                    using var surface = SKSurface.Create(new SKImageInfo(width, height));
+                    surface.Canvas.Clear(SKColors.Gray);
+                    using var image = surface.Snapshot();
+                    using var fs = File.Create(filePath);
+                    image.Encode().SaveTo(fs);
+                    music.ImgBlurhashSource = filePath;
+                }
+                else
+                {
+                    using var bitmap = Decode(music.ImgBlurhash, width, height);
+                    using var image = SKImage.FromBitmap(bitmap);
+                    using var fs = File.Create(filePath);
+                    image.Encode().SaveTo(fs);
+                    music.ImgBlurhashSource = filePath;
+                }
+
+                var connectors = database.GetDataConnectors();
+                var connectorKey = music.GetType().Name; 
+                switch (connectorKey)
+                {
+                    case "Album":
+                        connectors["Album"].InsertAsync(music);
+                        break;
+                    case "Artist":
+                        connectors["Artist"].InsertAsync(music);
+                        break;
+                    case "Song":
+                        connectors["Song"].InsertAsync(music);
+                        break;
+                    case "Playlist":
+                        connectors["Playlist"].InsertAsync(music);
+                        break;
+                    case "Genre":
+                        connectors["Genre"].InsertAsync(music);
+                        break;
+                    default:
+                        throw new InvalidOperationException($"Unsupported music item type: {connectorKey}");
+                }
+            });
+
+            return musicItems;
+        }
+
+
         /// <summary>
         /// Decodes a Blurhash string into a <c>SKBitmap</c>
         /// </summary>

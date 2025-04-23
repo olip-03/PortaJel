@@ -45,12 +45,14 @@ public partial class SearchPage : ContentPage
                     searchTerm: e.NewTextValue,
                     limit: 50,
                     cancellationToken: cToken.Token);
-                var albumsToAdd = result.OfType<Album>().ToList();
+                string cacheDir = Path.Combine(FileSystem.Current.CacheDirectory, "Blurhash");
+                var itemsToAdd = Blurhasher.DownloadMusicItemBitmap(result.OfType<Album>(), _database, cacheDir, 50, 50); 
                 MainThread.BeginInvokeOnMainThread(() =>
                 {
                     _viewModel.Albums.Clear();
-                    foreach (var album in albumsToAdd)
+                    foreach (var item in itemsToAdd)
                     {
+                        if (item is not Album album) continue;
                         _viewModel.Albums.Add(album);
                     }
                     _viewModel.IsLoading = false;
