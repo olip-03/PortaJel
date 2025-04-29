@@ -1,5 +1,6 @@
 using CommunityToolkit.Maui.Core.Extensions;
 using Portajel.Connections.Data;
+using Portajel.Connections.Database;
 using Portajel.Connections.Interfaces;
 using Portajel.Connections.Structs;
 using Portajel.Pages.Settings;
@@ -53,13 +54,13 @@ public partial class HomePage : ContentPage
             }
         });
 
-        var data = await albumConnector.GetAllAsync(
+        var data = albumConnector.GetAll(
                     limit: 50,
                     setSortTypes: Jellyfin.Sdk.Generated.Models.ItemSortBy.DateCreated,
                     setSortOrder: Jellyfin.Sdk.Generated.Models.SortOrder.Descending);
         string cacheDir = Path.Combine(FileSystem.Current.CacheDirectory, "Blurhash");
         var itemsToAdd = Blurhasher.DownloadMusicItemBitmap(data, _database, cacheDir, 50, 50);
-        Album[] albums = itemsToAdd.Select(s => (Album)s).ToArray();
+        AlbumData[] albums = itemsToAdd.Select(s => (AlbumData)s).ToArray();
         _viewModel.Sample.Clear(); 
         foreach (var album in albums)
         {
@@ -86,9 +87,9 @@ public class ImageItem
 
 public class HomePageViewModel : INotifyPropertyChanged
 {
-    private ObservableCollection<Album> _music = [];
+    private ObservableCollection<AlbumData> _music = [];
     public int PageMargin = 10;
-    public ObservableCollection<Album> Sample
+    public ObservableCollection<AlbumData> Sample
     {
         get => _music;
         set

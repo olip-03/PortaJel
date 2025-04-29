@@ -21,7 +21,7 @@ public class JellyfinServerPlaylistConnector(JellyfinApiClient api, JellyfinSdkS
         SyncStatusInfo.StatusPercentage = percentage;
     }
 
-    public async Task<BaseMusicItem[]> GetAllAsync(int? limit = null, int startIndex = 0, bool? getFavourite = null,
+    public async Task<BaseData[]> GetAllAsync(int? limit = null, int startIndex = 0, bool? getFavourite = null,
         ItemSortBy setSortTypes = ItemSortBy.Album, SortOrder setSortOrder = SortOrder.Ascending, Guid?[] includeIds = null,
         Guid?[] excludeIds = null, string serverUrl = "", CancellationToken cancellationToken = default)
     {
@@ -41,14 +41,13 @@ public class JellyfinServerPlaylistConnector(JellyfinApiClient api, JellyfinSdkS
         }, cancellationToken).ConfigureAwait(false);
         if (playlistResult == null || cancellationToken.IsCancellationRequested) return [];
         if (playlistResult.Items == null || cancellationToken.IsCancellationRequested) return [];
-        return playlistResult.Items.Select(p => new Playlist(PlaylistData.Builder(p, clientSettings.ServerUrl)))
-            .ToArray();
+        return playlistResult.Items.Select(p => PlaylistData.Builder(p, clientSettings.ServerUrl)).ToArray();
     }
     
-    public async Task<BaseMusicItem> GetAsync(Guid id, string serverUrl = "",
+    public async Task<BaseData> GetAsync(Guid id, string serverUrl = "",
         CancellationToken cancellationToken = default)
     {
-        // Implementation to fetch a specific playlist by its ID
+        // Implementation to fetch a specific PlaylistData by its ID
         var playlistQueryResult = api.Items.GetAsync(c =>
         {
             c.QueryParameters.UserId = user.Id;
@@ -66,14 +65,14 @@ public class JellyfinServerPlaylistConnector(JellyfinApiClient api, JellyfinSdkS
             c.QueryParameters.EnableImages = true;
         }, cancellationToken);
         await Task.WhenAll(playlistQueryResult, playlistSongResult);
-        if (playlistQueryResult.Result?.Items == null) return Playlist.Empty;
-        if (playlistSongResult.Result?.Items == null) return Playlist.Empty;
+        if (playlistQueryResult.Result?.Items == null) return PlaylistData.Empty;
+        if (playlistSongResult.Result?.Items == null) return PlaylistData.Empty;
         var songData = playlistSongResult.Result?.Items.Select(song => SongData.Builder(song, clientSettings.ServerUrl))
             .ToArray();
-        return await Task.FromResult(new Playlist());
+        return await Task.FromResult(PlaylistData.Empty);
     }
 
-    public Task<BaseMusicItem[]> GetSimilarAsync(Guid id, int setLimit, string serverUrl = "", CancellationToken cancellationToken = default)
+    public Task<BaseData[]> GetSimilarAsync(Guid id, int setLimit, string serverUrl = "", CancellationToken cancellationToken = default)
     {
         throw new NotImplementedException();
     }
@@ -118,7 +117,7 @@ public class JellyfinServerPlaylistConnector(JellyfinApiClient api, JellyfinSdkS
         throw new NotImplementedException();
     }
 
-    public Task<bool> AddRange(BaseMusicItem[] musicItems, CancellationToken cancellationToken = default)
+    public Task<bool> AddRange(BaseData[] musicItems, CancellationToken cancellationToken = default)
     {
         throw new NotImplementedException();
     }

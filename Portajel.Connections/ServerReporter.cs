@@ -18,7 +18,7 @@ namespace Portajel.Connections
 {
     //public class ServerReporter
     //{
-    //    private DatabaseConnector _database;
+    //    private DatabaseConnector Database;
     //    private readonly JellyfinApiClient _jellyfinApiClient;
     //    private readonly JellyfinSdkSettings _sdkClientSettings = new();
     //    private readonly string sessionId;
@@ -86,11 +86,11 @@ namespace Portajel.Connections
     //        }
     //        string filePath = Path.Combine(FileSystem.Current.AppDataDirectory, $"{result}.db");
     //        MauiProgram.UpdateDebugMessage($"Db initalized at {filePath}");
-    //        _database = new SQLiteAsyncConnection(filePath, DbFlags);
-    //        await _database.CreateTableAsync<AlbumData>();
-    //        await _database.CreateTableAsync<SongData>();
-    //        await _database.CreateTableAsync<ArtistData>();
-    //        await _database.CreateTableAsync<PlaylistData>();
+    //        Database = new SQLiteAsyncConnection(filePath, DbFlags);
+    //        await Database.CreateTableAsync<AlbumData>();
+    //        await Database.CreateTableAsync<SongData>();
+    //        await Database.CreateTableAsync<ArtistData>();
+    //        await Database.CreateTableAsync<PlaylistData>();
     //    }
 		
     //    public void SetVerboseReporting(bool verbose)
@@ -147,14 +147,14 @@ namespace Portajel.Connections
     //                {
     //                    try
     //                    {
-    //                        var song = await _database.Table<SongData>().Where(a => a.ServerId == itemId).FirstOrDefaultAsync();
-    //                        var album = await _database.Table<AlbumData>().Where(a => a.ServerId == song.AlbumId).FirstOrDefaultAsync();
+    //                        var SongData = await Database.Table<SongData>().Where(a => a.ServerId == itemId).FirstOrDefaultAsync();
+    //                        var AlbumData = await Database.Table<AlbumData>().Where(a => a.ServerId == song.AlbumId).FirstOrDefaultAsync();
 
     //                        song.DatePlayed = DateTimeOffset.Now;
     //                        album.DatePlayed = DateTimeOffset.Now;
 
-    //                        await _database.UpdateAsync(song);
-    //                        await _database.UpdateAsync(album);
+    //                        await Database.UpdateAsync(song);
+    //                        await Database.UpdateAsync(album);
     //                    }
     //                    catch (Exception ex)
     //                    {

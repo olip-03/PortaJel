@@ -4,6 +4,7 @@ using Portajel.Connections.Data;
 using Portajel.Connections.Interfaces;
 using Portajel.Connections.Enum;
 using Portajel.Connections.Structs;
+using Portajel.Connections.Database;
 
 namespace Portajel.Connections.Services.Jellyfin;
 
@@ -18,21 +19,21 @@ public class JellyfinServerGenreConnector(JellyfinApiClient api, JellyfinSdkSett
         SyncStatusInfo.StatusPercentage = percentage;
     }
 
-    public Task<BaseMusicItem[]> GetAllAsync(int? limit = null, int startIndex = 0, bool? getFavourite = null,
+    public Task<BaseData[]> GetAllAsync(int? limit = null, int startIndex = 0, bool? getFavourite = null,
         ItemSortBy setSortTypes = ItemSortBy.Album, SortOrder setSortOrder = SortOrder.Ascending, Guid?[] includeIds = null,
         Guid?[] excludeIds = null, string serverUrl = "", CancellationToken cancellationToken = default)
     {
-        return Task.FromResult<BaseMusicItem[]>([]);
+        return Task.FromResult<BaseData[]>([]);
     }
 
-    public Task<BaseMusicItem> GetAsync(Guid id, string serverUrl = "", CancellationToken cancellationToken = default)
+    public Task<BaseData> GetAsync(Guid id, string serverUrl = "", CancellationToken cancellationToken = default)
     {
-        return Task.FromResult<BaseMusicItem>(new Album());
+        return Task.FromResult<BaseData>(AlbumData.Empty);
     }
 
-    public Task<BaseMusicItem[]> GetSimilarAsync(Guid id, int setLimit, string serverUrl = "", CancellationToken cancellationToken = default)
+    public Task<BaseData[]> GetSimilarAsync(Guid id, int setLimit, string serverUrl = "", CancellationToken cancellationToken = default)
     {
-        return Task.FromResult<BaseMusicItem[]>([]);
+        return Task.FromResult<BaseData[]>([]);
     }
 
     public Task<int> GetTotalCountAsync(bool? getFavourite = null, string serverUrl = "",
@@ -51,7 +52,7 @@ public class JellyfinServerGenreConnector(JellyfinApiClient api, JellyfinSdkSett
         throw new NotImplementedException();
     }
 
-    public Task<bool> AddRange(BaseMusicItem[] musicItems, CancellationToken cancellationToken = default)
+    public Task<bool> AddRange(BaseData[] musicItems, CancellationToken cancellationToken = default)
     {
         throw new NotImplementedException();
     }

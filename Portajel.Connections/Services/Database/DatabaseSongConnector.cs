@@ -12,14 +12,14 @@ namespace Portajel.Connections.Services.Database
 {
     public class DatabaseSongConnector : IDbItemConnector
     {
-        private readonly SQLiteAsyncConnection _database;
+        private readonly SQLiteConnection _database;
         public MediaTypes MediaType { get; set; } = MediaTypes.Song;
-        public DatabaseSongConnector(SQLiteAsyncConnection database)
+        public DatabaseSongConnector(SQLiteConnection database)
         {
             _database = database;
         }
 
-        public async Task<BaseMusicItem[]> GetAllAsync(
+        public BaseData[] GetAll(
             int? limit = null,
             int startIndex = 0,
             bool? getFavourite = null,
@@ -82,14 +82,13 @@ namespace Portajel.Connections.Services.Database
                     break;
                 case ItemSortBy.Random:
                     // For random sorting, fetch data first and then shuffle
-                    var allSongs = await query.ToListAsync().ConfigureAwait(false);
-                    allSongs = allSongs.OrderBy(song => Guid.NewGuid()).ToList();
+                    var allSongDatas = query.ToList();
+                    allSongDatas = allSongDatas.OrderBy(song => Guid.NewGuid()).ToList();
                     if (limit.HasValue)
                     {
-                        allSongs = allSongs.Take(limit.Value).ToList();
+                        allSongDatas = allSongDatas.Take(limit.Value).ToList();
                     }
-
-                    return allSongs.Select(dbItem => new Song(dbItem)).ToArray();
+                    break;
                 default:
                     query = setSortOrder == SortOrder.Ascending
                         ? query.OrderBy(song => song.Name)
@@ -109,33 +108,28 @@ namespace Portajel.Connections.Services.Database
             }
 
             // Execute the query
-            var filteredCache = await query.ToListAsync().ConfigureAwait(false);
+            var filteredCache = query.ToList();
 
-            // Convert to BaseMusicItem[]
-            return filteredCache.Select(dbItem => new Song(dbItem)).ToArray();
+            // Convert to BaseData[]
+            return filteredCache.ToArray();
         }
 
-        public async Task<BaseMusicItem> GetAsync(
+        public BaseData Get(
             Guid id,
             CancellationToken cancellationToken = default)
         {
-            var songData = await _database.Table<SongData>().Where(song => song.Id == id).FirstOrDefaultAsync();
-            if (songData == null) return Song.Empty;
-
-            var albumData = await _database.Table<AlbumData>().Where(album => songData.AlbumId == album.Id)
-                .FirstOrDefaultAsync();
-            var artistData = await _database.Table<ArtistData>()
-                .Where(artist => songData.GetArtistIds().First() == artist.Id).FirstOrDefaultAsync();
-            return new Song(songData, albumData, [artistData]);
+            var song = _database.Table<SongData>().Where(song => song.Id == id).FirstOrDefault();
+            if (song == null) return SongData.Empty;
+            return song;
         }
-        public async Task<bool> Contains(Guid id, CancellationToken cancellationToken = default)
+        public bool Contains(Guid id, CancellationToken cancellationToken = default)
         {
-            var songExists = await _database.Table<SongData>()
+            var SongDataExists = _database.Table<SongData>()
                 .Where(song => song.Id == id)
-                .CountAsync() > 0;
-            return songExists;
+                .Count() > 0;
+            return SongDataExists;
         }
-        public async Task<int> GetTotalCountAsync(
+        public int GetTotalCount(
             bool? getFavourite = null,
             CancellationToken cancellationToken = default)
         {
@@ -143,21 +137,21 @@ namespace Portajel.Connections.Services.Database
             if (getFavourite == true)
                 query = query.Where(song => song.IsFavourite);
 
-            return await query.CountAsync();
+            return query.Count();
         }
 
-        public async Task<bool> DeleteAsync(
+        public bool Delete(
             Guid id,
             CancellationToken cancellationToken = default)
         {
             try
             {
-                // Delete associated songs
-                var songs = await _database.Table<SongData>().Where(s => s.Id == id).ToListAsync();
-                foreach (var song in songs)
+                // Delete associated SongDatas
+                var SongDatas = _database.Table<SongData>().Where(s => s.Id == id).ToList();
+                foreach (var song in SongDatas)
                 {
-                    await _database.DeleteAsync(song);
-                    Trace.WriteLine($"Deleted song with ID {song.Id} associated with album ID {id}.");
+                    _database.Delete(song);
+                    Trace.WriteLine($"Deleted song with ID {song.Id} associated with AlbumData ID {id}.");
                 }
 
                 return true;
@@ -169,7 +163,7 @@ namespace Portajel.Connections.Services.Database
             }
         }
 
-        public async Task<bool> DeleteRangeAsync(
+        public bool DeleteRange(
             Guid[] ids,
             CancellationToken cancellationToken = default)
         {
@@ -178,14 +172,14 @@ namespace Portajel.Connections.Services.Database
                 foreach (var id in ids)
                 {
                     // Find the album
-                    var song = await _database.Table<SongData>().FirstOrDefaultAsync(s => s.Id == id);
+                    var song = _database.Table<SongData>().FirstOrDefault(s => s.Id == id);
                     if (song == null)
                     {
-                        Trace.WriteLine($"Song with ID {id} not found.");
-                        return false; // Stop if any album is not found
+                        Trace.WriteLine($"song with ID {id} not found.");
+                        return false; // Stop if any AlbumData is not found
                     }
-                    await _database.DeleteAsync(song);
-                    Trace.WriteLine($"Deleted Song with ID {id}.");
+                    _database.Delete(song);
+                    Trace.WriteLine($"Deleted song with ID {id}.");
                 }
                 return true; // All deletions succeeded
             }
@@ -196,23 +190,23 @@ namespace Portajel.Connections.Services.Database
             }
         }
 
-        public async Task<bool> InsertAsync(
-            BaseMusicItem musicItem,
+        public bool Insert(
+            BaseData musicItem,
             CancellationToken cancellationToken = default)
         {
-            if (musicItem is not Song song) return false;
-            await _database.InsertOrReplaceAsync(song.GetBase, song.GetBase.GetType());
+            if (musicItem is not SongData SongData) return false;
+            _database.InsertOrReplace(SongData, SongData.GetType());
             return true;
         }
 
-        public async Task<bool> InsertRangeAsync(
-            BaseMusicItem[] musicItems,
+        public bool InsertRange(
+            BaseData[] musicItems,
             CancellationToken cancellationToken = default)
         {
             foreach (var s in musicItems)
             {
-                if (s is not Song song) continue;
-                await _database.InsertOrReplaceAsync(song.GetBase, song.GetBase.GetType());
+                if (s is not SongData SongData) continue;
+                _database.InsertOrReplace(SongData, SongData.GetType());
                 if (cancellationToken.IsCancellationRequested)
                 {
                     return false;

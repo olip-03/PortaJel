@@ -12,6 +12,8 @@ using Portajel.Pages.Settings.Debug;
 using SkiaSharp.Views.Maui.Controls.Hosting;
 using Portajel.Pages;
 using Portajel.Components;
+using Portajel.Structures.ViewModels.Pages.Library;
+using Portajel.Pages.Library;
 
 namespace Portajel
 {
@@ -22,6 +24,7 @@ namespace Portajel
             // Todo: UpdateDb minimum version requirements so this messaage goes away
             builder
                 .UseMauiApp<App>()
+                .UseVirtualListView()
                 .UseMauiCommunityToolkit()
                 .UseSkiaSharp()
                 .RegisterViewModels()
@@ -50,6 +53,7 @@ namespace Portajel
             mauiAppBuilder.Services.AddSingleton<MusicListItem>();
             mauiAppBuilder.Services.AddSingleton<ConnectionsPage>();
             mauiAppBuilder.Services.AddSingleton<DebugDatabase>();
+            mauiAppBuilder.Services.AddSingleton<AlbumListPage>();
             return mauiAppBuilder;
         }
     }

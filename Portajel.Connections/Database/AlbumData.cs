@@ -6,25 +6,14 @@ using Portajel.Connections.Services;
 
 namespace Portajel.Connections.Database
 {
-    public class AlbumData
+    public class AlbumData : BaseData
     {
-        [PrimaryKey, NotNull, AutoIncrement]
-        public Guid ServerId { get; set; }
-        public Guid Id { get; set; }
-        [Indexed]
-        public string Name { get; set; } = string.Empty;
-        public bool IsFavourite { get; set; } = false;
-        public int PlayCount { get; set; } = 0;
-        public DateTimeOffset? DateAdded { get; set; }
-        public DateTimeOffset? DatePlayed { get; set; }
-        public string ServerAddress { get; set; } = string.Empty;
-        public string ImgSource { get; set; } = string.Empty;
-        public string ImgBlurhash { get; set; } = string.Empty;
+        [PrimaryKey, NotNull, AutoIncrement] public override Guid Id { get; set; }
         public string ArtistIdsJson { get; set; } = string.Empty;
         public string ArtistNames { get; set; } = string.Empty;
         public string SongIdsJson { get; set; } = string.Empty;
         public string GetSimilarJson { get; set; } = string.Empty;
-        public bool IsPartial { get; set; } = true;
+        public static AlbumData Empty { get; } = new();
         public Guid[] GetArtistIds()
         {
             Guid[] artistIds;
@@ -68,15 +57,15 @@ namespace Portajel.Connections.Database
         {
             if (baseItem.UserData == null)
             {
-                throw new ArgumentException("Cannot create Album without Album UserData! Please fix server call flags!");
+                throw new ArgumentException("Cannot create AlbumData without AlbumData UserData! Please fix server call flags!");
             }
             if (baseItem.Id == null)
             {
-                throw new ArgumentException("Cannot create Album without ID! Please fix server call flags!");
+                throw new ArgumentException("Cannot create AlbumData without ID! Please fix server call flags!");
             }
-            if(baseItem.ArtistItems == null)
+            if (baseItem.ArtistItems == null)
             {
-                throw new ArgumentException("Cannot create Album without ArtistItems! Please fix server call flags!");
+                throw new ArgumentException("Cannot create AlbumData without ArtistItems! Please fix server call flags!");
             }
 
             MusicItemImage musicItemImage = MusicItemImage.Builder(baseItem, server);
@@ -92,11 +81,11 @@ namespace Portajel.Connections.Database
             album.ImgSource = musicItemImage.Source;
             album.ImgBlurhash = musicItemImage.Blurhash;
             album.ArtistIdsJson = JsonSerializer.Serialize(baseItem.ArtistItems.Select(idPair => idPair.Id).ToArray());
-            if(songIds != null)
+            if (songIds != null)
             {
                 album.SongIdsJson = JsonSerializer.Serialize(songIds);
             }
-            if(songDataItems != null && songDataItems.Length > 0)
+            if (songDataItems != null && songDataItems.Length > 0)
             {
                 album.SongIdsJson = JsonSerializer.Serialize(songDataItems.Select(s => s.Id).ToArray());
                 album.DatePlayed = songDataItems.OrderBy(s => s.DatePlayed).First().DatePlayed;

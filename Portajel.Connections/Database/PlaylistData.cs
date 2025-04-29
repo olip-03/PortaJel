@@ -6,20 +6,13 @@ using Portajel.Connections.Services;
 
 namespace Portajel.Connections.Database
 {
-    public class PlaylistData
+    public class PlaylistData : BaseData
     {
-        [PrimaryKey, NotNull, AutoIncrement]
-        public Guid ServerId { get; set; }
-        public Guid Id { get; set; }
-        [Indexed]
-        public string Name { get; set; } = string.Empty;
-        public bool IsFavourite { get; set; } = false;
-        public string ImgSource { get; set; } = string.Empty;
-        public string ImgBlurhash { get; set; } = string.Empty;
+        [PrimaryKey, NotNull, AutoIncrement] public override Guid Id { get; set; }
         public string SongIdsJson { get; set; } = string.Empty;
         public string Path { get; set; } = string.Empty;
-        public string ServerAddress { get; set; } = string.Empty;
         public bool IsPartial { get; set; } = true;
+        public static PlaylistData Empty { get; set; } = new();
         public Guid[] GetSongIds()
         {
             Guid[]? artistIds = JsonSerializer.Deserialize<Guid[]>(SongIdsJson);
@@ -30,19 +23,19 @@ namespace Portajel.Connections.Database
         {
             if (baseItem.Id == null)
             {
-                throw new ArgumentException("Cannot create Playlist without ServerId! Please fix server call flags!");
+                throw new ArgumentException("Cannot create PlaylistData without ServerId! Please fix server call flags!");
             }
             if (baseItem.Name == null)
             {
-                throw new ArgumentException("Cannot create Playlist without Name! Please fix server call flags!");
+                throw new ArgumentException("Cannot create PlaylistData without Name! Please fix server call flags!");
             }
             if (baseItem.Path == null)
             {
-                throw new ArgumentException("Cannot create Playlist without Path! Please fix server call flags!");
+                throw new ArgumentException("Cannot create PlaylistData without Path! Please fix server call flags!");
             }
             if(baseItem.UserData == null || baseItem.UserData.IsFavorite == null)
             {
-                throw new ArgumentException("Cannot create Playlist without UserData! Please fix server call flags!");
+                throw new ArgumentException("Cannot create PlaylistData without UserData! Please fix server call flags!");
             }
             PlaylistData newPlaylist = new();
             MusicItemImage musicItemImage = MusicItemImage.Builder(baseItem, server);

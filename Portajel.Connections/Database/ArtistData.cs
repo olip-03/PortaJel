@@ -8,24 +8,16 @@ using System.IO;
 
 namespace Portajel.Connections.Database
 {
-    public class ArtistData
+    public class ArtistData : BaseData
     {
-        [PrimaryKey, NotNull, AutoIncrement]
-        public Guid ServerId { get; set; }
-        public Guid Id { get; set; }
-        public string ServerAddress { get; set; } = string.Empty;
-        [Indexed]
-        public string Name { get; set; } = string.Empty;
-        public DateTimeOffset? DateAdded { get; set; }
-        public bool IsFavourite { get; set; } = false;
-        public string Description { get; set; } = string.Empty;
-        public string LogoImgSource { get; set; } = string.Empty;
-        public string BackgroundImgSource { get; set; } = string.Empty;
-        public string BackgroundImgBlurhash { get; set; } = string.Empty;
-        public string ImgSource { get; set; } = string.Empty;
-        public string ImgBlurhash { get; set; } = string.Empty;
-        public string AlbumIdsJson { get; set;} = string.Empty;
+        [PrimaryKey, NotNull, AutoIncrement] public override Guid Id { get; set; }
+        public string? Description { get; set; }
+        public string? LogoImgSource { get; set; }
+        public string? BackgroundImgSource { get; set; }
+        public string? BackgroundImgBlurhashSource { get; set; }
         public bool IsPartial { get; set; } = true;
+        public string AlbumIdsJson { get; set;} = string.Empty;
+        public static ArtistData Empty { get; } = new();
 
         public Guid[] GetAlbumIds()
         {
@@ -42,21 +34,16 @@ namespace Portajel.Connections.Database
         {
             if (baseItem.Id == null)
             {
-                throw new ArgumentException("Cannot create Artist without Artist ServerId! Please fix server call flags!");
+                throw new ArgumentException("Cannot create ArtistData without ArtistData ServerId! Please fix server call flags!");
             }
             if (baseItem.UserData == null)
             {
-                throw new ArgumentException("Cannot create Artist without Artist UserData! Please fix server call flags!");
+                throw new ArgumentException("Cannot create ArtistData without ArtistData UserData! Please fix server call flags!");
             }
 
             MusicItemImage artistLogo = MusicItemImage.Builder(baseItem, server, ImageBuilderImageType.Logo);
             MusicItemImage artistBackdrop = MusicItemImage.Builder(baseItem, server, ImageBuilderImageType.Backdrop);
             MusicItemImage artistImg = MusicItemImage.Builder(baseItem, server, ImageBuilderImageType.Primary);
-
-            // Save Blurhash to file
-            //var decoded = BlurhashDecode.Decode(artistImg.Blurhash);
-            //using var bitmap = BlurhashDecode.GenerateBitmapFromBlurHash(decoded, 64, 64);
-            // var blurpath = SaveHelper.SaveBlurhash(bitmap);
 
             ArtistData toAdd = new();
             toAdd.ServerId = (Guid)baseItem.Id;
@@ -70,8 +57,7 @@ namespace Portajel.Connections.Database
             toAdd.ImgSource = artistImg.Source;
             toAdd.ImgBlurhash = artistImg.Blurhash;
             toAdd.BackgroundImgSource = artistBackdrop.Source;
-            toAdd.BackgroundImgBlurhash = artistBackdrop.Blurhash;
-
+            toAdd.BackgroundImgBlurhashSource = artistBackdrop.Blurhash;
             return toAdd;
         }
     }

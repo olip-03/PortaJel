@@ -11,14 +11,14 @@ namespace Portajel.Connections.Services.Database;
 
 public class DatabasePlaylistConnector : IDbItemConnector, IMediaPlaylistInterface
 {
-    private readonly SQLiteAsyncConnection _database = null;
+    private readonly SQLiteConnection _database = null;
     public MediaTypes MediaType { get; set; } = MediaTypes.Playlist;
-    public DatabasePlaylistConnector(SQLiteAsyncConnection database)
+    public DatabasePlaylistConnector(SQLiteConnection database)
     {
         _database = database;
     }
 
-    public async Task<BaseMusicItem[]> GetAllAsync(
+    public BaseData[] GetAll(
             int? limit = null,
             int startIndex = 0,
             bool? getFavourite = null,
@@ -30,37 +30,33 @@ public class DatabasePlaylistConnector : IDbItemConnector, IMediaPlaylistInterfa
     {
         limit ??= 50;
         List<PlaylistData> filteredCache = [];
-        filteredCache.AddRange(await _database.Table<PlaylistData>()
+        filteredCache.AddRange(_database.Table<PlaylistData>()
             .OrderByDescending(playlist => playlist.Name)
-            .Take(limit.Value).ToListAsync().ConfigureAwait(false));
-        return filteredCache.Select(dbItem => new Playlist(dbItem)).ToArray();
+            .Take(limit.Value).ToList());
+        return filteredCache.ToArray();
     }
 
-    public async Task<BaseMusicItem> GetAsync(
+    public BaseData Get(
             Guid id,
             CancellationToken cancellationToken = default)
     {
-        PlaylistData playlistDbItem =
-            await _database.Table<PlaylistData>().Where(p => p.Id == id).FirstOrDefaultAsync();
-        var songData = await _database.Table<SongData>().Where(song => playlistDbItem.GetSongIds().Contains(song.Id)).ToArrayAsync();
-        return new Playlist(playlistDbItem, songData);
+        return _database.Table<PlaylistData>().Where(p => p.Id == id).FirstOrDefault();
     }
 
-    public async Task<int> GetTotalCountAsync(
+    public int GetTotalCount(
             bool? getFavourite = null,
             CancellationToken cancellationToken = default)
     {
         var query = _database.Table<PlaylistData>();
         if (getFavourite == true)
             query = query.Where(song => song.IsFavourite);
-
-        return await query.CountAsync();
+        return query.Count();
     }
-    public async Task<bool> Contains(Guid id, CancellationToken cancellationToken = default)
+    public bool Contains(Guid id, CancellationToken cancellationToken = default)
     {
-        var playlistExists = await _database.Table<PlaylistData>()
+        var playlistExists = _database.Table<PlaylistData>()
             .Where(playlist => playlist.Id == id)
-            .CountAsync() > 0;
+            .Count() > 0;
         return playlistExists;
     }
     public Task<bool> RemovePlaylistItemAsync(Guid playlistId, Guid songId,
@@ -74,29 +70,29 @@ public class DatabasePlaylistConnector : IDbItemConnector, IMediaPlaylistInterfa
         throw new NotImplementedException();
     }
 
-    public async Task<bool> DeleteAsync(
+    public bool Delete(
             Guid id,
             CancellationToken cancellationToken = default)
     {
         try
         {
             // Delete associated playlists
-            var playlists = await _database.Table<PlaylistData>().Where(p => p.Id == id).ToListAsync();
+            var playlists = _database.Table<PlaylistData>().Where(p => p.Id == id).ToList();
             foreach (var playlist in playlists)
             {
-                await _database.DeleteAsync(playlist);
-                Trace.WriteLine($"Deleted playlist with ID {playlist.Id} associated with album ID {id}.");
+                _database.Delete(playlist);
+                Trace.WriteLine($"Deleted PlaylistData with ID {playlist.Id} associated with AlbumData ID {id}.");
             }
             return true;
         }
         catch (Exception ex)
         {
-            Trace.WriteLine($"Error deleting playlist with ID {id}: {ex.Message}");
+            Trace.WriteLine($"Error deleting PlaylistData with ID {id}: {ex.Message}");
             return false; // Deletion failed
         }
     }
 
-    public async Task<bool> DeleteRangeAsync(
+    public bool DeleteRange(
             Guid[] ids,
             CancellationToken cancellationToken = default)
     {
@@ -105,14 +101,14 @@ public class DatabasePlaylistConnector : IDbItemConnector, IMediaPlaylistInterfa
             foreach (var id in ids)
             {
                 // Find the album
-                var playlist = await _database.Table<PlaylistData>().FirstOrDefaultAsync(p => p.Id == id);
+                var playlist = _database.Table<PlaylistData>().FirstOrDefault(p => p.Id == id);
                 if (playlist == null)
                 {
-                    Trace.WriteLine($"Playlist with ID {id} not found.");
-                    return false; // Stop if any album is not found
+                    Trace.WriteLine($"PlaylistData with ID {id} not found.");
+                    return false; // Stop if any AlbumData is not found
                 }
-                await _database.DeleteAsync(playlist);
-                Trace.WriteLine($"Deleted playlist with ID {id}.");
+                _database.Delete(playlist);
+                Trace.WriteLine($"Deleted PlaylistData with ID {id}.");
             }
             return true; // All deletions succeeded
         }
@@ -123,23 +119,23 @@ public class DatabasePlaylistConnector : IDbItemConnector, IMediaPlaylistInterfa
         }
     }
 
-    public async Task<bool> InsertAsync(
-            BaseMusicItem musicItem,
+    public bool Insert(
+            BaseData musicItem,
             CancellationToken cancellationToken = default)
     {
-        if (musicItem is not Playlist playlist) return false;
-        await _database.InsertOrReplaceAsync(playlist.GetBase, playlist.GetBase.GetType());
+        if (musicItem is not PlaylistData playlist) return false;
+        _database.InsertOrReplace(playlist, playlist.GetType());
         return true;
     }
 
-    public async Task<bool> InsertRangeAsync(
-            BaseMusicItem[] musicItems,
+    public bool InsertRange(
+            BaseData[] musicItems,
             CancellationToken cancellationToken = default)
     {
         foreach (var p in musicItems)
         {
-            if (p is not Playlist playlist) continue;
-            await _database.InsertOrReplaceAsync(playlist.GetBase, playlist.GetBase.GetType());
+            if (p is not PlaylistData playlist) continue;
+            _database.InsertOrReplace(playlist, playlist.GetType());
             if (cancellationToken.IsCancellationRequested)
             {
                 return false;

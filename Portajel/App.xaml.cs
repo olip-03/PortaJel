@@ -39,7 +39,7 @@ namespace Portajel
             var timeoutTask = Task.Delay(TimeSpan.FromSeconds(30));
 
             var auth = await serverConnector.AuthenticateAsync();
-            var t = serverConnector.Servers.Select(s => s.UpdateDb());
+            var t = serverConnector.Servers.Select(s => s.StartSyncAsync());
             try
             {
                 await Task.WhenAll(t);

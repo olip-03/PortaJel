@@ -24,7 +24,7 @@ public class ServerConnector : IServerConnector
             {
                 try
                 {
-                    // Get album data 
+                    // Get AlbumData data 
                     var toAdd = server.AuthenticateAsync(cancellationToken);
                     toAdd.Wait(cancellationToken);
                 }
@@ -52,7 +52,7 @@ public class ServerConnector : IServerConnector
                 Trace.WriteLine($"All connections successfully authenticated");
                 break;
             case TaskStatus.Faulted:
-                Trace.WriteLine($"{failed} album request attempts failed!");
+                Trace.WriteLine($"{failed} AlbumData request attempts failed!");
                 break;
         }
         
@@ -99,11 +99,11 @@ public class ServerConnector : IServerConnector
 
         return true;
     }
-    public Task<BaseMusicItem[]> SearchAsync(string searchTerm = "", int? limit = null, int startIndex = 0,
+    public Task<BaseData[]> SearchAsync(string searchTerm = "", int? limit = null, int startIndex = 0,
         ItemSortBy setSortTypes = ItemSortBy.Name, SortOrder setSortOrder = SortOrder.Ascending,
         CancellationToken cancellationToken = default)
     {
-        return Task.FromResult(Array.Empty<BaseMusicItem>());
+        return Task.FromResult(Array.Empty<BaseData>());
     }
     public ServerConnectorSettings GetSettings()
     {

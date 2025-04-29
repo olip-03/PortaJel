@@ -12,129 +12,117 @@ namespace Portajel.Connections.Services.Database;
 // ReSharper disable once CoVariantArrayConversion
 public class DatabaseAlbumConnector : IDbItemConnector
 {
-    private readonly SQLiteAsyncConnection _database;
+    private readonly SQLiteConnection _database;
 
     public MediaTypes MediaType { get; set; } = MediaTypes.Album;
 
-    public DatabaseAlbumConnector(SQLiteAsyncConnection database)
+    public DatabaseAlbumConnector(SQLiteConnection database)
     {
         _database = database;
     }
-    public async Task<BaseMusicItem[]> GetAllAsync(
+    public BaseData[] GetAll(
         int? limit = null, 
         int startIndex = 0,
         bool? getFavourite = null, 
         ItemSortBy setSortTypes = ItemSortBy.Album, 
-        SortOrder setSortOrder = SortOrder.Ascending, 
+        SortOrder setSortOrder = SortOrder.Descending, 
         Guid?[]? includeIds = null, 
         Guid?[]? excludeIds = null, 
         CancellationToken cancellationToken = default)
     {
         List<AlbumData> filteredCache = [];
-        limit ??= await _database.Table<AlbumData>().CountAsync();
+        limit ??= _database.Table<AlbumData>().Count();
         switch (setSortTypes)
         {
             case ItemSortBy.DateCreated:
-                filteredCache.AddRange(await _database.Table<AlbumData>()
+                filteredCache.AddRange(_database.Table<AlbumData>()
                     .OrderByDescending(album => album.DateAdded)
-                    .Take((int)limit).ToListAsync().ConfigureAwait(false));
+                    .Skip(startIndex)
+                    .Take((int)limit).ToList());
                 break;
             case ItemSortBy.DatePlayed:
-                filteredCache.AddRange(await _database.Table<AlbumData>()
+                filteredCache.AddRange(_database.Table<AlbumData>()
                     .OrderByDescending(album => album.DatePlayed)
-                    .Take((int)limit).ToListAsync().ConfigureAwait(false));
+                    .Skip(startIndex)
+                    .Take((int)limit).ToList());
                 break;
             case ItemSortBy.Name:
-                filteredCache.AddRange(await _database.Table<AlbumData>()
+                filteredCache.AddRange(_database.Table<AlbumData>()
                     .OrderByDescending(album => album.Name)
-                    .Take((int)limit).ToListAsync().ConfigureAwait(false));
+                    .Skip(startIndex)
+                    .Take((int)limit).ToList());
                 break;
             case ItemSortBy.Random:
-                var firstTake = await _database.Table<AlbumData>().ToListAsync().ConfigureAwait(false);
+                var firstTake = _database.Table<AlbumData>().ToList();
                 filteredCache = firstTake
-                    .OrderBy(album => Guid.NewGuid())
+                    .OrderBy(AlbumData => Guid.NewGuid())
+                    .Skip(startIndex)
                     .Take((int)limit)
                     .ToList();
                 break;
             case ItemSortBy.PlayCount:
-                filteredCache.AddRange(await _database.Table<AlbumData>()
+                filteredCache.AddRange(
+                    _database.Table<AlbumData>()
                     .OrderByDescending(album => album.PlayCount)
-                    .Take((int)limit).ToListAsync().ConfigureAwait(false));
+                    .Skip(startIndex)
+                    .Take((int)limit).ToList());
                 break;
             default:
-                filteredCache.AddRange(await _database.Table<AlbumData>()
+                filteredCache.AddRange(_database.Table<AlbumData>()
                     .OrderByDescending(album => album.Name)
-                    .Take((int)limit).ToListAsync().ConfigureAwait(false));
+                    .Skip(startIndex)
+                    .Take((int)limit).ToList());
                 break;
         }
-        return filteredCache.Select(dbItem => new Album(dbItem)).ToArray();
+        return filteredCache.ToArray();
     }
-    public async Task<BaseMusicItem> GetAsync(
+    public BaseData Get(
         Guid id, 
         CancellationToken cancellationToken = default)
     {
         // Filter the cache based on the provided parameters
-        AlbumData albumFromDb = await _database.Table<AlbumData>().Where(album => album.Id == id).FirstOrDefaultAsync()
-            .ConfigureAwait(false);
-        // Null reference check
-        if (albumFromDb == null) return Album.Empty;
-        //Create tasks
-        var songIds = albumFromDb.GetSongIds();
-        var songTask = songIds.Length > 0
-            ? _database.Table<SongData>().Where(song => songIds.Contains(song.Id)).ToArrayAsync()
-            : Task.FromResult(Array.Empty<SongData>());
-        var artistIds = albumFromDb.GetArtistIds();
-        var artistTask = artistIds.Length > 0
-            ? _database.Table<ArtistData>().Where(artist => artistIds.Contains(artist.Id)).ToArrayAsync()
-            : Task.FromResult(Array.Empty<ArtistData>());
-
-        // Await
-        Task.WaitAll([songTask, artistTask], cancellationToken);
-        // Return data
-        SongData[] songFromDb = songTask.Result;
-        ArtistData[] artistsFromDb = artistTask.Result;
-        return new Album(albumFromDb, songFromDb, artistsFromDb);
+        return _database.Table<AlbumData>().Where(album => album.Id == id).FirstOrDefault();
     }
-    public async Task<bool> Contains(
+
+    public bool Contains(
         Guid id,
         CancellationToken cancellationToken = default)
     {
-        var result = await GetAsync(id, cancellationToken);
-        return result != Album.Empty;
+        var result = Get(id, cancellationToken);
+        return result != AlbumData.Empty;
     }
-    public async Task<int> GetTotalCountAsync(
+
+    public int GetTotalCount(
         bool? getFavourite = null, 
         CancellationToken cancellationToken = default)
     {
-        // Return the total count after removing duplicates
         var query = _database.Table<AlbumData>();
         if (getFavourite == true)
             query = query.Where(album => album.IsFavourite);
-
-        return await query.CountAsync();
+        return query.Count();
     }
 
-    public async Task<bool> DeleteAsync(
+    public bool Delete(
         Guid id, 
         CancellationToken cancellationToken = default)
     {
         try
         {
             // Find the album
-            var album = await _database.Table<AlbumData>().FirstOrDefaultAsync(a => a.Id == id);
+            var album = _database.Table<AlbumData>().FirstOrDefault(a => a.Id == id);
             if (album == null) return false;
-            await _database.DeleteAsync(album);
-            Trace.WriteLine($"Deleted album with ID {id}.");
+            _database.Delete(album);
+            Trace.WriteLine($"Deleted AlbumData with ID {id}.");
             return true; 
         }
         catch (Exception ex)
         {
-            Trace.WriteLine($"Error deleting album with ID {id}: {ex.Message}");
+            Trace.WriteLine($"Error deleting AlbumData with ID {id}: {ex.Message}");
             return false; // Deletion failed
         }
     }
 
-    public async Task<bool> DeleteRangeAsync(
+    public bool DeleteRange(
         Guid[] ids, 
         CancellationToken cancellationToken = default)
     {
@@ -143,14 +131,14 @@ public class DatabaseAlbumConnector : IDbItemConnector
             foreach (var id in ids)
             {
                 // Find the album
-                var album = await _database.Table<AlbumData>().FirstOrDefaultAsync(a => a.Id == id);
+                var album = _database.Table<AlbumData>().FirstOrDefault(a => a.Id == id);
                 if (album == null)
                 {
-                    Trace.WriteLine($"Album with ID {id} not found.");
-                    return false; // Stop if any album is not found
+                    Trace.WriteLine($"AlbumData with ID {id} not found.");
+                    return false; // Stop if any AlbumData is not found
                 }
-                await _database.DeleteAsync(album);
-                Trace.WriteLine($"Deleted album with ID {id}.");
+                _database.Delete(album);
+                Trace.WriteLine($"Deleted AlbumData with ID {id}.");
             }
             return true; // All deletions succeeded
         }
@@ -161,26 +149,26 @@ public class DatabaseAlbumConnector : IDbItemConnector
         }
     }
 
-    public async Task<bool> InsertAsync(
-        BaseMusicItem album,
+    public bool Insert(
+        BaseData album,
         CancellationToken cancellationToken = default)
     {
-        if (album is Album a && a.GetBase != null)
+        if (album is AlbumData a && a != null)
         {
-            await _database.InsertOrReplaceAsync(a.GetBase, a.GetBase.GetType());
+            _database.InsertOrReplace(a);
         }
         return true;
     }
 
-    public async Task<bool> InsertRangeAsync(
-        BaseMusicItem[] albums, 
+    public bool InsertRange(
+        BaseData[] albums, 
         CancellationToken cancellationToken = default)
     {
         foreach (var baseMusicItem in albums)
         {
-            if (baseMusicItem is Album a && a.GetBase != null)
+            if (baseMusicItem is AlbumData a && a != null)
             {
-                await _database.InsertOrReplaceAsync(a.GetBase, a.GetBase.GetType());
+                _database.InsertOrReplace(a);
             }
             if (cancellationToken.IsCancellationRequested)
             {
@@ -189,6 +177,4 @@ public class DatabaseAlbumConnector : IDbItemConnector
         }
         return true;
     }
-
-
 }

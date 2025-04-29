@@ -28,17 +28,17 @@ namespace Portajel.Connections.Services.Jellyfin
         private SessionInfoDto? _sessionInfo;
         private JellyfinSdkSettings? _sdkClientSettings;
         private JellyfinApiClient? _jellyfinApiClient;
-        public IMediaDataConnector Album { get; set; } = null!;
-        public IMediaDataConnector Artist { get; set; } = null!;
-        public IMediaDataConnector Song { get; set; } = null!;
-        public IMediaDataConnector Playlist { get; set; } = null!;
+        public IMediaDataConnector AlbumData { get; set; } = null!;
+        public IMediaDataConnector ArtistData { get; set; } = null!;
+        public IMediaDataConnector SongData { get; set; } = null!;
+        public IMediaDataConnector PlaylistData { get; set; } = null!;
         public IMediaDataConnector Genre { get; set; } = null!;
         public Dictionary<string, IMediaDataConnector> GetDataConnectors() => new()
         {
-            { "Album", Album },
-            { "Artist", Artist },
-            { "Song", Song },
-            { "Playlist", Playlist },
+            { "Album", AlbumData },
+            { "Artist", ArtistData },
+            { "Song", SongData },
+            { "Playlist", PlaylistData },
             { "Genre", Genre }
         };
         public Dictionary<MediaTypes, bool> SupportedReturnTypes { get; set; } =
@@ -212,10 +212,10 @@ namespace Portajel.Connections.Services.Jellyfin
                     _sessionInfo = authenticationResult.SessionInfo;
                 }
 
-                Album = new JellyfinServerAlbumConnector(_jellyfinApiClient, _sdkClientSettings, _userDto);
-                Artist = new JellyfinServerArtistConnector(_jellyfinApiClient, _sdkClientSettings, _userDto);
-                Song = new JellyfinServerSongConnector(_jellyfinApiClient, _sdkClientSettings, _userDto);
-                Playlist = new JellyfinServerPlaylistConnector(_jellyfinApiClient, _sdkClientSettings, _userDto);
+                AlbumData = new JellyfinServerAlbumConnector(_jellyfinApiClient, _sdkClientSettings, _userDto);
+                ArtistData = new JellyfinServerArtistConnector(_jellyfinApiClient, _sdkClientSettings, _userDto);
+                SongData = new JellyfinServerSongConnector(_jellyfinApiClient, _sdkClientSettings, _userDto);
+                PlaylistData = new JellyfinServerPlaylistConnector(_jellyfinApiClient, _sdkClientSettings, _userDto);
                 Genre = new JellyfinServerGenreConnector(_jellyfinApiClient, _sdkClientSettings, _userDto);
             }
             catch (ApiException apiEx)
@@ -278,16 +278,16 @@ namespace Portajel.Connections.Services.Jellyfin
                         foreach (var item in items)
                         {
                             // If our DB has this item
-                            if (await GetDb(data).Value.Contains(item.Id))
+                            if (GetDb(data).Value.Contains(item.Id))
                             {
                                 checkCount++;
                             }
                             else 
                             {
-                                await GetDb(data).Value.InsertAsync(item);
+                                GetDb(data).Value.Insert(item);
                             }
                         }
-                        data.SetSyncStatusInfo(serverItemCount: await GetDb(data).Value.GetTotalCountAsync());
+                        data.SetSyncStatusInfo(serverItemCount: GetDb(data).Value.GetTotalCount());
                         if(items.Length < retrieve)
                         {
                             data.SetSyncStatusInfo(status: TaskStatus.Faulted, percentage: (int)100);
@@ -342,7 +342,7 @@ namespace Portajel.Connections.Services.Jellyfin
                             await UpdateDb(cancellationToken);
                             data.SetSyncStatusInfo(
                                 status: TaskStatus.RanToCompletion, 
-                                serverItemCount: await GetDb(data).Value.GetTotalCountAsync(), 
+                                serverItemCount: GetDb(data).Value.GetTotalCount(), 
                                 percentage: 100);
                             return;
                         }
@@ -365,12 +365,14 @@ namespace Portajel.Connections.Services.Jellyfin
                             double newPercent = ((double)newTotal / data.SyncStatusInfo.ServerItemTotal) * 100;
 
                             data.SetSyncStatusInfo(serverItemCount: newTotal, percentage: (int)newPercent);
+
+                            GetDb(data).Value.InsertRange(items, cancellationToken);
                             if (items.Length < retrieve)
                             {
                                 data.SetSyncStatusInfo(status: TaskStatus.RanToCompletion);
                                 continue;
                             }
-                            GetDb(data).Value.InsertRangeAsync(items, cancellationToken).Wait(cancellationToken);
+
                             workers = GetDataConnectors().Values.Where(d => d.SyncStatusInfo.TaskStatus == TaskStatus.Running).Count();
                             retrieve = maxTasks / workers;
                         }
@@ -405,11 +407,11 @@ namespace Portajel.Connections.Services.Jellyfin
             await Task.Delay(10);
             return false;
         }
-        public Task<BaseMusicItem[]> SearchAsync(string searchTerm = "", int? limit = null, int startIndex = 0,
+        public Task<BaseData[]> SearchAsync(string searchTerm = "", int? limit = null, int startIndex = 0,
             ItemSortBy setSortTypes = ItemSortBy.Name, SortOrder setSortOrder = SortOrder.Ascending,
             CancellationToken cancellationToken = default)
         {
-            return Task.FromResult(Array.Empty<BaseMusicItem>());
+            return Task.FromResult(Array.Empty<BaseData>());
         }
         public string GetUsername()
         {

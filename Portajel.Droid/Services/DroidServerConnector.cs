@@ -84,7 +84,7 @@ namespace Portajel.Services
                 throw GetNullReferenceException();
             return _serviceConnection.Binder.Server.GetSettings();
         }
-        public async Task<BaseMusicItem[]> SearchAsync(string searchTerm = "", int? limit = null, int startIndex = 0, ItemSortBy setSortTypes = ItemSortBy.Name, SortOrder setSortOrder = SortOrder.Ascending, CancellationToken cancellationToken = default)
+        public async Task<BaseData[]> SearchAsync(string searchTerm = "", int? limit = null, int startIndex = 0, ItemSortBy setSortTypes = ItemSortBy.Name, SortOrder setSortOrder = SortOrder.Ascending, CancellationToken cancellationToken = default)
         {
             if (_serviceConnection.Binder == null)
                 throw GetNullReferenceException();

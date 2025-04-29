@@ -1,6 +1,7 @@
 ﻿using Blurhash;
 using Jellyfin.Sdk.Generated.Models;
 using Portajel.Connections.Data;
+using Portajel.Connections.Database;
 using Portajel.Connections.Services;
 using SkiaSharp;
 
@@ -110,27 +111,27 @@ namespace Portajel.Connections.Structs
                 return Task.FromResult(noval);
             }
         }
-        public static Task<string?> BlurhashToBase64Async(BaseMusicItem musicItem, int width = 0, int height = 0, float brightness = 1)
+        public static Task<string?> BlurhashToBase64Async(BaseData musicItem, int width = 0, int height = 0, float brightness = 1)
         {
             string base64 = string.Empty;
-            if (musicItem is Album)
+            if (musicItem is AlbumData)
             {
-                Album? album = musicItem as Album;
+                AlbumData? album = musicItem as AlbumData;
                 return Task.FromResult(BlurhashToBase64Async(album.ImgBlurhash, 20, 20).Result);
             }
-            if (musicItem is Song)
+            if (musicItem is SongData)
             {
-                Song? song = musicItem as Song;
+                SongData? song = musicItem as SongData;
                 return Task.FromResult(BlurhashToBase64Async(song.ImgBlurhash, 20, 20).Result);
             }
-            if (musicItem is Artist)
+            if (musicItem is ArtistData)
             {
-                Artist? artist = musicItem as Artist;
+                ArtistData? artist = musicItem as ArtistData;
                 return Task.FromResult(BlurhashToBase64Async(artist.ImgBlurhash, 20, 20).Result);
             }
-            if (musicItem is Playlist)
+            if (musicItem is PlaylistData)
             {
-                Playlist? playlist = musicItem as Playlist;
+                PlaylistData? PlaylistData = musicItem as PlaylistData;
                 // TODO: Implementation 
                 // string? imgString = await MusicItemImage.BlurhashToBase64Async(playlist.ImgBlurhash, 20, 20);
                 // if (imgString != null)
@@ -284,7 +285,7 @@ namespace Portajel.Connections.Structs
 
             return image;
         }
-        public void GenerateBlurHash(BaseMusicItem[] data)
+        public void GenerateBlurHash(BaseData[] data)
         {
             for (int i = 0; i < data.Count(); i++)
             {

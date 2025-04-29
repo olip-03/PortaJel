@@ -1,11 +1,80 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vlv="clr-namespace:Microsoft.Maui.Controls;assembly=VirtualListView"
+             xmlns:music="clr-namespace:Portajel.Connections.Database;assembly=Portajel.Connections"
+             xmlns:components="clr-namespace:Portajel.Components"
+             xmlns:local="clr-namespace:Portajel.Structures.ViewModels.Pages.Library"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
              x:Class="Portajel.Pages.Library.AlbumListPage"
+             x:DataType="local:AlbumListViewModel"
              Title="AlbumListPage">
-    <VerticalStackLayout>
-        <CollectionView>
-            
-        </CollectionView>
-    </VerticalStackLayout>
+    <vlv:VirtualListView
+	    x:Name="vlv"
+	    HorizontalOptions="Fill"
+	    VerticalOptions="Fill"
+	    IsRefreshEnabled="True"
+	    RefreshCommand="{Binding RefreshCommand}"
+	    Adapter="{Binding Adapter}"
+	    SelectionMode="None">
+
+        <vlv:VirtualListView.ItemTemplate>
+            <DataTemplate x:DataType="music:AlbumData">
+                <vlv:VirtualViewCell>
+                    <Grid>
+                        <Button
+                            BackgroundColor="Transparent"
+                            ZIndex="0" />
+
+                        <HorizontalStackLayout
+                            ZIndex="5"
+                            Margin="10"
+                            InputTransparent="True"
+                            Spacing="10">
+
+                            <!-- Image with Binding -->
+                            <Image
+                              BackgroundColor="LightBlue"
+                              Aspect="AspectFill"
+                              WidthRequest="64"
+                              HeightRequest="64"
+                              Source="{Binding ImgBlurhashSource}" />
+
+                            <!-- Vertical Stack for Text -->
+                            <VerticalStackLayout
+                              VerticalOptions="Center"
+                              Spacing="2">
+
+                                <!-- Name Label -->
+                                <Label
+                                    FontSize="16"
+                                    FontAttributes="Bold"
+                                    LineBreakMode="TailTruncation"
+                                    MaxLines="1"
+                                    Text="{Binding Name}" />
+
+                                <!-- Artist Label -->
+                                <Label
+                                    FontSize="14"
+                                    LineBreakMode="TailTruncation"
+                                    MaxLines="1"
+                                    Text="{Binding ArtistNames}" />
+                            </VerticalStackLayout>
+                        </HorizontalStackLayout>
+                    </Grid>
+
+
+                </vlv:VirtualViewCell>
+            </DataTemplate>
+        </vlv:VirtualListView.ItemTemplate>
+
+        <vlv:VirtualListView.EmptyView>
+            <Grid>
+                <Label
+				VerticalOptions="Center"
+				HorizontalOptions="Center"
+				Text="No Items" />
+            </Grid>
+        </vlv:VirtualListView.EmptyView>
+    </vlv:VirtualListView>
 </ContentPage>

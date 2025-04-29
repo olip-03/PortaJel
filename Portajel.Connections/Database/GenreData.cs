@@ -2,21 +2,15 @@ using Jellyfin.Sdk.Generated.Models;
 using SQLite;
 using System.Text.Json;
 using Portajel.Connections.Data;
+using Portajel.Connections.Structs;
 
 namespace Portajel.Connections.Database;
 
-public class GenreData
+public class GenreData: BaseData
 {
-    [PrimaryKey, NotNull, AutoIncrement]
-    public int ServerId { get; set; }
-    public Guid Id { get; set; }
-    public string ServerAddress { get; set; } = string.Empty;
-    [Indexed]
-    public string Name { get; set; } = string.Empty;
-    public DateTimeOffset DateAdded { get; set; }
-    public string AlbumIdsJson { get; set;} = string.Empty;
-    public bool IsPartial { get; set; } = true;
-
+    [PrimaryKey, NotNull, AutoIncrement] public override Guid Id { get; set; }
+    public string AlbumIdsJson { get; set; } = string.Empty;
+    public static GenreData Empty { get; } = new();
     public Guid[] GetAlbumIds()
     {
         return [];

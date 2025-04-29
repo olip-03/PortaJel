@@ -59,8 +59,8 @@ public class MusicListItem : ContentView
 
     public MusicListItem()
     {
-        UpdateLayout();
         BindingContext = this;
+        UpdateLayout();
     }
 
     private void UpdateLayout()

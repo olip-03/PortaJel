@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:local="clr-namespace:Portajel.Pages"
              xmlns:comp="clr-namespace:Portajel.Components"
-             xmlns:music="clr-namespace:Portajel.Connections.Data;assembly=Portajel.Connections"
+             xmlns:music="clr-namespace:Portajel.Connections.Database;assembly=Portajel.Connections"
              x:Class="Portajel.Pages.HomePage"
              x:DataType="local:HomePageViewModel"
              Title="PortaJel">
@@ -37,7 +37,7 @@
                             Orientation="Horizontal"/>
                         </CollectionView.ItemsLayout>
                         <CollectionView.ItemTemplate>
-                            <DataTemplate x:DataType="music:Album">
+                            <DataTemplate x:DataType="music:AlbumData">
                                 <Grid>
                                     <Button 
                                         BackgroundColor="Transparent"
@@ -71,7 +71,6 @@
                     </CollectionView>
                 </HorizontalStackLayout>
             </ScrollView>
-            <comp:MusicImage HeightRequest="300" WidthRequest="300" Grid.Row="1"/>
         </Grid>
     </ScrollView>
 </ContentPage>

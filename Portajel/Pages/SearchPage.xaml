@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:music="clr-namespace:Portajel.Connections.Data;assembly=Portajel.Connections"
+             xmlns:music="clr-namespace:Portajel.Connections.Database;assembly=Portajel.Connections"
              xmlns:components="clr-namespace:Portajel.Components"
              xmlns:local="clr-namespace:Portajel.Pages"
              x:DataType="local:SearchPageViewModel"
@@ -16,7 +16,7 @@
                        x:Name="SearchResults" 
                        ItemsSource="{Binding Albums}">
             <CollectionView.ItemTemplate>
-                <DataTemplate x:DataType="music:Album">
+                <DataTemplate x:DataType="music:AlbumData">
                     <components:MusicListItem 
                         Title="{Binding Name}" 
                         ImgBlurhashSource="{Binding ImgBlurhashSource}"

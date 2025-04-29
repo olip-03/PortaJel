@@ -11,17 +11,17 @@ public class FileSystemConnector : IMediaServerConnector
 {
     private SQLiteAsyncConnection _database = null;
 
-    public IMediaDataConnector Album { get; set; }
-    public IMediaDataConnector Artist { get; set; }
-    public IMediaDataConnector Song { get; set; }
-    public IMediaDataConnector Playlist { get; set; }
+    public IMediaDataConnector AlbumData { get; set; }
+    public IMediaDataConnector ArtistData { get; set; }
+    public IMediaDataConnector SongData { get; set; }
+    public IMediaDataConnector PlaylistData { get; set; }
     public IMediaDataConnector Genre { get; set; }
     public Dictionary<string, IMediaDataConnector> GetDataConnectors() => new()
     {
-        { "Album", Album },
-        { "Artist", Artist },
-        { "Song", Song },
-        { "Playlist", Playlist },
+        { "Album", AlbumData },
+        { "Artist", ArtistData },
+        { "Song", SongData },
+        { "Playlist", PlaylistData },
         { "Genre", Genre }
     };
 
@@ -55,10 +55,10 @@ public class FileSystemConnector : IMediaServerConnector
         Properties["Paths"].Value = paths;
         _database = database;
         
-        Album = new FileSystemAlbumConnector(_database);
-        Artist = new FileSystemArtistConnector(_database);
-        Song = new FileSystemSongConnector(_database);
-        Playlist = new FileSystemPlaylistConnector(_database);
+        AlbumData = new FileSystemAlbumConnector(_database);
+        ArtistData = new FileSystemArtistConnector(_database);
+        SongData = new FileSystemSongConnector(_database);
+        PlaylistData = new FileSystemPlaylistConnector(_database);
         Genre = new FileSystemGenreConnector(_database);
     }
     
@@ -82,11 +82,11 @@ public class FileSystemConnector : IMediaServerConnector
         throw new NotImplementedException();
     }
     
-    public Task<BaseMusicItem[]> SearchAsync(string searchTerm = "", int? limit = null, int startIndex = 0,
+    public Task<BaseData[]> SearchAsync(string searchTerm = "", int? limit = null, int startIndex = 0,
         ItemSortBy setSortTypes = ItemSortBy.Name, SortOrder setSortOrder = SortOrder.Ascending,
         CancellationToken cancellationToken = default)
     {
-        return Task.FromResult(Array.Empty<BaseMusicItem>());
+        return Task.FromResult(Array.Empty<BaseData>());
     }
 
     public string GetUsername()

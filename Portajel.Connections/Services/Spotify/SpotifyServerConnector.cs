@@ -7,18 +7,18 @@ namespace Portajel.Connections.Services.Spotify
 {
     public class SpotifyServerConnector : IMediaServerConnector
     {
-        public IMediaDataConnector Album { get; set; } = null;
-        public IMediaDataConnector Artist { get; set; } = null;
-        public IMediaDataConnector Song { get; set; } = null;
-        public IMediaDataConnector Playlist { get; set; } = new SpotifyServerPlaylistConnector();
+        public IMediaDataConnector AlbumData { get; set; } = null;
+        public IMediaDataConnector ArtistData { get; set; } = null;
+        public IMediaDataConnector SongData { get; set; } = null;
+        public IMediaDataConnector PlaylistData { get; set; } = new SpotifyServerPlaylistConnector();
         public IMediaDataConnector Genre { get; set; } = null;
 
         public Dictionary<string, IMediaDataConnector> GetDataConnectors() => new()
         {
-            { "Album", Album },
-            { "Artist", Artist },
-            { "Song", Song },
-            { "Playlist", Playlist },
+            { "Album", AlbumData },
+            { "Artist", ArtistData },
+            { "Song", SongData },
+            { "Playlist", PlaylistData },
             { "Genre", Genre }
         };
 
@@ -73,11 +73,11 @@ namespace Portajel.Connections.Services.Spotify
             throw new NotImplementedException();
         }
 
-        public Task<BaseMusicItem[]> SearchAsync(string searchTerm = "", int? limit = null, int startIndex = 0,
+        public Task<BaseData[]> SearchAsync(string searchTerm = "", int? limit = null, int startIndex = 0,
             ItemSortBy setSortTypes = ItemSortBy.Name, SortOrder setSortOrder = SortOrder.Ascending,
             CancellationToken cancellationToken = default)
         {
-            return Task.FromResult(Array.Empty<BaseMusicItem>());
+            return Task.FromResult(Array.Empty<BaseData>());
         }
         
         public SpotifyServerConnector(string username, string password)

@@ -1,4 +1,5 @@
 using Portajel.Connections.Data;
+using Portajel.Connections.Database;
 using Portajel.Connections.Interfaces;
 using Portajel.Connections.Structs;
 using System.Collections.ObjectModel;
@@ -41,18 +42,18 @@ public partial class SearchPage : ContentPage
             try
             {
                 await Task.Delay(500, cancellationToken: cToken.Token);
-                BaseMusicItem[] result = await _database.SearchAsync(
+                BaseData[] result = await _database.SearchAsync(
                     searchTerm: e.NewTextValue,
                     limit: 50,
                     cancellationToken: cToken.Token);
                 string cacheDir = Path.Combine(FileSystem.Current.CacheDirectory, "Blurhash");
-                var itemsToAdd = Blurhasher.DownloadMusicItemBitmap(result.OfType<Album>(), _database, cacheDir, 50, 50); 
+                var itemsToAdd = Blurhasher.DownloadMusicItemBitmap(result.OfType<AlbumData>(), _database, cacheDir, 50, 50); 
                 MainThread.BeginInvokeOnMainThread(() =>
                 {
                     _viewModel.Albums.Clear();
                     foreach (var item in itemsToAdd)
                     {
-                        if (item is not Album album) continue;
+                        if (item is not AlbumData album) continue;
                         _viewModel.Albums.Add(album);
                     }
                     _viewModel.IsLoading = false;
@@ -72,9 +73,9 @@ public class SearchPageViewModel : INotifyPropertyChanged
 {
     public bool IsLoading { get; set; } = false;
 
-    private ObservableCollection<Album> _albums = [];
+    private ObservableCollection<AlbumData> _albums = [];
     public int PageMargin = 10;
-    public ObservableCollection<Album> Albums
+    public ObservableCollection<AlbumData> Albums
     {
         get => _albums;
         set

@@ -10,14 +10,14 @@ namespace Portajel.Connections.Services.Database;
 
 public class DatabaseGenreConnector : IDbItemConnector
 {
-    private readonly SQLiteAsyncConnection _database = null;
+    private readonly SQLiteConnection _database = null;
     public MediaTypes MediaType { get; set; } = MediaTypes.Genre;
-    public DatabaseGenreConnector(SQLiteAsyncConnection database)
+    public DatabaseGenreConnector(SQLiteConnection database)
     {
         _database = database;
     }
 
-    public Task<BaseMusicItem[]> GetAllAsync(
+    public BaseData[] GetAll(
             int? limit = null,
             int startIndex = 0,
             bool? getFavourite = null,
@@ -27,53 +27,53 @@ public class DatabaseGenreConnector : IDbItemConnector
             Guid?[]? excludeIds = null,
             CancellationToken cancellationToken = default)
     {
-        return Task.FromResult<BaseMusicItem[]>([]);
+        return [];
     }
 
-    public Task<BaseMusicItem> GetAsync(
+    public BaseData Get(
             Guid id,
             CancellationToken cancellationToken = default)
     {
-        return Task.FromResult<BaseMusicItem>(new Genre());
+        return GenreData.Empty;
     }
-    public async Task<bool> Contains(
+    public bool Contains(
         Guid id,
         CancellationToken cancellationToken = default)
     {
         return false;
     }
-    public Task<int> GetTotalCountAsync(
+    public int GetTotalCount(
             bool? getFavourite = null,
             CancellationToken cancellationToken = default)
     {
-        return Task.FromResult(0);
+        return 0;
     }
 
-    public Task<bool> DeleteAsync(
+    public bool Delete(
             Guid id,
             CancellationToken cancellationToken = default)
     {
-        return Task.FromResult(false);
+        return false;
     }
 
-    public Task<bool> DeleteRangeAsync(
+    public bool DeleteRange(
             Guid[] ids,
             CancellationToken cancellationToken = default)
     {
-        return Task.FromResult(false);
+        return false;
     }
 
-    public Task<bool> InsertAsync(
-            BaseMusicItem musicItem,
+    public bool Insert(
+            BaseData musicItem,
             CancellationToken cancellationToken = default)
     {
-        return Task.FromResult(false);
+        return false;
     }
 
-    public Task<bool> InsertRangeAsync(
-            BaseMusicItem[] musicItems,
+    public bool InsertRange(
+            BaseData[] musicItems,
             CancellationToken cancellationToken = default)
     {
-        return Task.FromResult(false);
+        return false;
     }
 }

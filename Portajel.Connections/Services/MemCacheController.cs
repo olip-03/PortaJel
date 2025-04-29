@@ -9,10 +9,10 @@ namespace Portajel.Connections.Services
 {
     public class MemCacheController
     {
-        public Dictionary<Guid, BaseMusicItem> Albums = [];
-        public Dictionary<Guid, BaseMusicItem> Artists = [];
-        public Dictionary<Guid, BaseMusicItem> Songs = [];
-        public Dictionary<Guid, BaseMusicItem> Playlists = [];
-        public Dictionary<Guid, BaseMusicItem> Genres = [];
+        public Dictionary<Guid, BaseData> Albums = [];
+        public Dictionary<Guid, BaseData> Artists = [];
+        public Dictionary<Guid, BaseData> Songs = [];
+        public Dictionary<Guid, BaseData> Playlists = [];
+        public Dictionary<Guid, BaseData> Genres = [];
     }
 }

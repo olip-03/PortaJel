@@ -12,42 +12,43 @@ namespace Portajel.Connections.Services.Database
 {
     public class DatabaseConnector : IDbConnector
     {
-        private readonly SQLiteAsyncConnection _database;
+        public SQLiteConnection Database { get; }
         private const SQLiteOpenFlags DbFlags =
             SQLiteOpenFlags.ReadWrite | SQLiteOpenFlags.Create | SQLiteOpenFlags.SharedCache;
-        public IDbItemConnector Album { get; set; }
-        public IDbItemConnector Artist { get; set; }
-        public IDbItemConnector Song { get; set; }
-        public IDbItemConnector Playlist { get; set; }
+        public IDbItemConnector AlbumData { get; set; }
+        public IDbItemConnector ArtistData { get; set; }
+        public IDbItemConnector SongData { get; set; }
+        public IDbItemConnector PlaylistData { get; set; }
         public IDbItemConnector Genre { get; set; }
+
         // TODO: Storing Radio Stations in Db
         // First we need to implement the API functions 
         public Dictionary<string, IDbItemConnector> GetDataConnectors() => new()
         {
-            { "Album", Album },
-            { "Artist", Artist },
-            { "Song", Song },
-            { "Playlist", Playlist },
+            { "Album", AlbumData },
+            { "Artist", ArtistData },
+            { "Song", SongData },
+            { "Playlist", PlaylistData },
             { "Genre", Genre }
         };
 
         public DatabaseConnector(string appDataDirectory)
         {
-            _database = new SQLiteAsyncConnection(appDataDirectory, DbFlags);
+            Database = new SQLiteConnection(appDataDirectory, DbFlags);
 
-            _database.CreateTableAsync<AlbumData>().Wait();
-            _database.CreateTableAsync<SongData>().Wait();
-            _database.CreateTableAsync<ArtistData>().Wait();
-            _database.CreateTableAsync<PlaylistData>().Wait();
+            Database.CreateTable<AlbumData>();
+            Database.CreateTable<SongData>();
+            Database.CreateTable<ArtistData>();
+            Database.CreateTable<PlaylistData>();
 
-            Album = new DatabaseAlbumConnector(_database);
-            Artist = new DatabaseArtistConnector(_database);
-            Song = new DatabaseSongConnector(_database);
-            Playlist = new DatabasePlaylistConnector(_database);
-            Genre = new DatabaseGenreConnector(_database);
+            AlbumData = new DatabaseAlbumConnector(Database);
+            ArtistData = new DatabaseArtistConnector(Database);
+            SongData = new DatabaseSongConnector(Database);
+            PlaylistData = new DatabasePlaylistConnector(Database);
+            Genre = new DatabaseGenreConnector(Database);
         }
 
-        public async Task<BaseMusicItem[]> SearchAsync(
+        public async Task<BaseData[]> SearchAsync(
             string searchTerm = "", 
             int limit = 50, 
             int startIndex = 0,
@@ -58,12 +59,12 @@ namespace Portajel.Connections.Services.Database
             if (string.IsNullOrWhiteSpace(searchTerm))
             {
                 // If no search term is provided, return an empty array.
-                return Array.Empty<BaseMusicItem>();
+                return Array.Empty<BaseData>();
             }
 
             searchTerm = searchTerm.Trim();
 
-            var resultList = new List<BaseMusicItem>();
+            var resultList = new List<BaseData>();
 
             // Iterate over each data connector
             foreach (var connectorPair in GetDataConnectors())
@@ -76,46 +77,38 @@ namespace Portajel.Connections.Services.Database
                 switch (connectorName)
                 {
                     case "Album":
-                        var matchingAlbums = (await _database.Table<AlbumData>()
+                        var matchingAlbums = Database.Table<AlbumData>()
                             .Take(limit)
                             .Where(item => item.Name.ToLower().Contains(searchTerm.ToLower()))
-                            .ToListAsync()
-                            .ConfigureAwait(false))
                             .ToList();
-                        resultList.AddRange(matchingAlbums.Select(item => new Album(item)));
+                        resultList.AddRange(matchingAlbums);
                         break;
                     case "Artist":
-                        var matchingArtists = (await _database.Table<ArtistData>()
+                        var matchingArtists = Database.Table<ArtistData>()
                             .Take(limit)
                             .Where(item => item.Name.ToLower().Contains(searchTerm.ToLower()))
-                            .ToListAsync()
-                            .ConfigureAwait(false))
                             .ToList();
-                        resultList.AddRange(matchingArtists.Select(item => new Artist(item)));
+                        resultList.AddRange(matchingArtists);
                         break;
                     case "Song":
-                        var matchingSongs = (await _database.Table<SongData>()
+                        var matchingSongs = Database.Table<SongData>()
                             .Take(limit)
                             .Where(item => item.Name.ToLower().Contains(searchTerm.ToLower()))
-                            .ToListAsync()
-                            .ConfigureAwait(false))
                             .ToList();
-                        resultList.AddRange(matchingSongs.Select(item => new Song(item)));
+                        resultList.AddRange(matchingSongs);
                         break;
                     case "Playlist":
-                        var matchingPlaylists = (await _database.Table<PlaylistData>()
+                        var matchingPlaylists = Database.Table<PlaylistData>()
                             .Take(limit)
                             .Where(item => item.Name.ToLower().Contains(searchTerm.ToLower()))
-                            .ToListAsync()
-                            .ConfigureAwait(false))
                             .ToList();
-                        resultList.AddRange(matchingPlaylists.Select(item => new Playlist(item)));
+                        resultList.AddRange(matchingPlaylists);
                         break;
                     case "Genre":
-                        // var matchingItems = (await _database.Table<GenreData>()
+                        // var matchingItems = (await Database.Table<GenreData>()
                         //     .Where(item => item.Name.ToLower().Contains(searchTerm.ToLower()))
-                        //     .ToListAsync()
-                        //     .ConfigureAwait(false))
+                        //     .ToList()
+                        //     )
                         //     .ToList();
                         // resultList.InsertRange(matchingItems.Select(item => new Genre(item)));
                         break;
@@ -123,7 +116,7 @@ namespace Portajel.Connections.Services.Database
             }
 
             // Now, apply sorting on the combined results
-            IEnumerable<BaseMusicItem> sortedResult;
+            IEnumerable<BaseData> sortedResult;
 
             switch (setSortTypes)
             {

@@ -15,7 +15,7 @@ namespace Portajel.Connections.Interfaces
         Dictionary<string, ConnectorProperty> Properties { get; }
         Task<AuthResponse> AuthenticateAsync(CancellationToken cancellationToken = default);
         Task<bool> StartSyncAsync(CancellationToken cancellationToken = default);
-        Task<BaseMusicItem[]> SearchAsync(
+        Task<BaseData[]> SearchAsync(
             string searchTerm = "",
             int? limit = null,
             int startIndex = 0,

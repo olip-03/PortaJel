@@ -26,7 +26,7 @@ namespace Portajel.Connections.Interfaces
             Guid id, 
             bool isFavourite,
             string serverUrl);
-        public Task<BaseMusicItem[]> SearchAsync(
+        public Task<BaseData[]> SearchAsync(
             string searchTerm = "", 
             int? limit = null, 
             int startIndex = 0,

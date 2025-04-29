@@ -7,7 +7,7 @@ namespace Portajel.Connections.Interfaces
     public interface IDbItemConnector
     {
         public MediaTypes MediaType { get; set; }
-        Task<BaseMusicItem[]> GetAllAsync(
+        BaseData[] GetAll(
             int? limit = null,
             int startIndex = 0,
             bool? getFavourite = null,
@@ -16,26 +16,26 @@ namespace Portajel.Connections.Interfaces
             Guid?[]? includeIds = null,
             Guid?[]? excludeIds = null,
             CancellationToken cancellationToken = default);
-        Task<BaseMusicItem> GetAsync(
+        BaseData Get(
             Guid id,
             CancellationToken cancellationToken = default);
-        Task<bool> Contains(
+        bool Contains(
             Guid id,
             CancellationToken cancellationToken = default);
-        Task<int> GetTotalCountAsync(
+        int GetTotalCount(
             bool? getFavourite = null,
             CancellationToken cancellationToken = default);
-        Task<bool> DeleteAsync(
+        bool Delete(
             Guid id,
             CancellationToken cancellationToken = default);
-        Task<bool> DeleteRangeAsync(
+        bool DeleteRange(
             Guid[] ids,
             CancellationToken cancellationToken = default);
-        Task<bool> InsertAsync(
-            BaseMusicItem musicItem,
+        bool Insert(
+            BaseData musicItem,
             CancellationToken cancellationToken = default);
-        Task<bool> InsertRangeAsync(
-            BaseMusicItem[] musicItems,
+        bool InsertRange(
+            BaseData[] musicItems,
             CancellationToken cancellationToken = default);
     }
 }

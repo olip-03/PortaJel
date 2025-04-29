@@ -20,7 +20,7 @@ namespace Portajel.Connections.Services.Jellyfin
             SyncStatusInfo.StatusPercentage = percentage;
         }
 
-        public async Task<BaseMusicItem[]> GetAllAsync(
+        public async Task<BaseData[]> GetAllAsync(
             int? limit = null, 
             int startIndex = 0,
             bool? getFavourite = null,
@@ -48,9 +48,9 @@ namespace Portajel.Connections.Services.Jellyfin
             }, cancellationToken).ConfigureAwait(false);
             if (serverResults == null) return [];
             if (serverResults.Items == null) return [];
-            return serverResults.Items.Select(dto => Album.Builder(dto, clientSettings.ServerUrl)).ToArray();
+            return serverResults.Items.Select(dto => AlbumData.Builder(dto, clientSettings.ServerUrl)).ToArray();
         }
-        public async Task<BaseMusicItem> GetAsync(Guid id, string serverUrl = "",
+        public async Task<BaseData> GetAsync(Guid id, string serverUrl = "",
             CancellationToken cancellationToken = default)
         {
             var albumQueryResult = api.Items.GetAsync(c =>
@@ -78,12 +78,12 @@ namespace Portajel.Connections.Services.Jellyfin
             }, cancellationToken);
             await Task.WhenAll(albumQueryResult, songQueryResult).ConfigureAwait(false);
             
-            if (albumQueryResult.Result?.Items == null) return Album.Empty;
-            if (songQueryResult.Result?.Items == null) return Album.Empty;
+            if (albumQueryResult.Result?.Items == null) return AlbumData.Empty;
+            if (songQueryResult.Result?.Items == null) return AlbumData.Empty;
             
             BaseItemDto albumBaseItem = albumQueryResult.Result?.Items.FirstOrDefault();
 
-               if (albumBaseItem?.ArtistItems == null) return Album.Empty;
+               if (albumBaseItem?.ArtistItems == null) return AlbumData.Empty;
             BaseItemDtoQueryResult artistQueryResults = await api.Items.GetAsync(c =>
             {
                 c.QueryParameters.UserId = user.Id;
@@ -95,26 +95,18 @@ namespace Portajel.Connections.Services.Jellyfin
                 c.QueryParameters.Recursive = true;
                 c.QueryParameters.EnableImages = true;
             }, cancellationToken).ConfigureAwait(false);
-            if (artistQueryResults?.Items == null) return Album.Empty; 
+            if (artistQueryResults?.Items == null) return AlbumData.Empty; 
             var songBaseItemArray = songQueryResult.Result?.Items.ToArray();
             var artistBaseItemArray = artistQueryResults.Items.ToArray();
             if (songBaseItemArray != null)
             {
                 var songData = songBaseItemArray.Select(item => SongData.Builder(item, clientSettings.ServerUrl))
                     .OrderBy(song => song.IndexNumber).ThenBy(song => song.DiskNumber).ToArray();
-                AlbumData albumData =
-                    AlbumData.Builder(albumBaseItem, clientSettings.ServerUrl, songDataItems: songData);
-                var artistData = artistBaseItemArray
-                    .Select(item => ArtistData.Builder(item, clientSettings.ServerUrl)).ToArray();
-
-                albumData.DatePlayed = songData.OrderByDescending(s => s.DatePlayed).FirstOrDefault()?.DatePlayed;
-                songData = songData.OrderBy(s => s.DiskNumber).ToArray();
-            
-                return new Album(albumData, songData, artistData);
+                return AlbumData.Builder(albumBaseItem, clientSettings.ServerUrl, songDataItems: songData);
             }
-            return Album.Empty;
+            return AlbumData.Empty;
         }
-        public async Task<BaseMusicItem[]> GetSimilarAsync(
+        public async Task<BaseData[]> GetSimilarAsync(
             Guid id, 
             int setLimit, 
             string serverUrl = "",
@@ -126,7 +118,7 @@ namespace Portajel.Connections.Services.Jellyfin
                 c.QueryParameters.Limit = setLimit;
             }, cancellationToken).ConfigureAwait(false);
             if (result?.Items == null) return [];
-            return result.Items.Select(dto => Album.Builder(dto, clientSettings.ServerUrl)).ToArray();
+            return result.Items.Select(dto => AlbumData.Builder(dto, clientSettings.ServerUrl)).ToArray();
         }
         public async Task<int> GetTotalCountAsync(
             bool? getFavourite = null, 
@@ -162,7 +154,7 @@ namespace Portajel.Connections.Services.Jellyfin
             throw new NotImplementedException();
         }
 
-        public Task<bool> AddRange(BaseMusicItem[] musicItems, CancellationToken cancellationToken = default)
+        public Task<bool> AddRange(BaseData[] musicItems, CancellationToken cancellationToken = default)
         {
             throw new NotImplementedException();
         }

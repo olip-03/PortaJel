@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Portajel.Connections.Data;
+using Portajel.Connections.Database;
 using Portajel.Connections.Structs;
 
 namespace Portajel.Connections.Interfaces
@@ -22,13 +23,13 @@ namespace Portajel.Connections.Interfaces
         void PreviousTrack();
         void SeekToPosition(long position);
         void SeekToIndex(int index);
-        void SetPlayingCollection(BaseMusicItem baseMusicItem, int fromIndex = 0);
-        BaseMusicItem GetPlayingCollection();
-        void AddSong(Song song);
-        void AddSongs(Song[] songs);
+        void SetPlayingCollection(BaseData baseMusicItem, int fromIndex = 0);
+        BaseData GetPlayingCollection();
+        void AddSong(SongData song);
+        void AddSongs(SongData[] songs);
         void RemoveSong(int index);
         // SongGroupCollection GetQueue();
-        Song GetCurrentlyPlaying();
+        SongData GetCurrentlyPlaying();
         // public PlaybackInfo GetPlaybackTimeInfo();
         int GetQueueIndex();
         bool GetIsPlaying();

@@ -6,31 +6,21 @@ using Portajel.Connections.Services;
 
 namespace Portajel.Connections.Database
 {
-    public class SongData
+    public class SongData : BaseData
     {
-        [PrimaryKey, NotNull, AutoIncrement]
-        public Guid ServerId { get; set; }
-        public Guid Id { get; set; }
+        [PrimaryKey, NotNull, AutoIncrement] public override Guid Id { get; set; }
         public string? PlaylistId { get; set; }
         public Guid AlbumId { get; set; }
-        public string ArtistIdsJson { get; set; } = string.Empty;
-        public string ArtistNames { get; set; } = string.Empty;
-        [Indexed]
-        public string Name { get; set; } = string.Empty;
-        public bool IsFavourite { get; set; } = false;
         public TimeSpan Duration { get; set; } = new();
-        public int PlayCount { get; set; } = 0;
-        public DateTimeOffset? DateAdded { get; set; }
-        public DateTimeOffset? DatePlayed { get; set; }
         public int IndexNumber { get; set; } = 0;
         public int DiskNumber { get; set; } = 0;    
-        public string ServerAddress { get; set; } = string.Empty;
         public bool IsDownloaded { get; set; } = false;
+        public string? ArtistNames { get; set; }
+        public string ArtistIdsJson { get; set; } = string.Empty;
         public string FileLocation { get; set; } = string.Empty;
         public string StreamUrl { get; set; } = string.Empty;
-        public string ImgSource { get; set; } = string.Empty;
-        public string ImgBlurhash { get; set; } = string.Empty;
         public bool IsPartial { get; set; } = true;
+        public static SongData Empty { get; set; } = new();
         public Guid[] GetArtistIds()
         {
             Guid[]? artistIds = JsonSerializer.Deserialize<Guid[]>(ArtistIdsJson);
@@ -43,20 +33,20 @@ namespace Portajel.Connections.Database
 
             if (baseItem.UserData == null)
             {
-                throw new ArgumentException("Cannot create Song without Album UserData! Please fix server call flags!");
+                throw new ArgumentException("Cannot create SongData without AlbumData UserData! Please fix server call flags!");
             }
             if (baseItem.Id == null)
             {
-                throw new ArgumentException("Cannot create Song without ID! Please fix server call flags!");
+                throw new ArgumentException("Cannot create SongData without ID! Please fix server call flags!");
             }
             if (baseItem.ParentId == null)
             {
                 baseItem.ParentId = baseItem.Id;
-                // throw new ArgumentException("Cannot create Song without Parent ID! Please fix server call flags!");
+                // throw new ArgumentException("Cannot create SongData without Parent ID! Please fix server call flags!");
             }
             if (baseItem.ArtistItems == null)
             {
-                throw new ArgumentException("Cannot create Song without Artist Items! Please fix server call flags!");
+                throw new ArgumentException("Cannot create SongData without ArtistData Items! Please fix server call flags!");
             }
             if(baseItem.RunTimeTicks.HasValue)
             {   // TODO: Figure out why the fuck not all songs have a duration value..
@@ -64,8 +54,8 @@ namespace Portajel.Connections.Database
             }
             MusicItemImage musicItemImage = MusicItemImage.Builder(baseItem, server);
 
-            song.ServerId = (Guid)baseItem.Id;
             song.Id = GuidHelper.GenerateNewGuidFromHash(song.Id, server);
+            song.ServerId = (Guid)baseItem.Id;
             song.PlaylistId = baseItem.PlaylistItemId;
             song.AlbumId = (Guid)baseItem.ParentId;
             song.ArtistIdsJson = JsonSerializer.Serialize(baseItem.ArtistItems.Select(baseItem => baseItem.Id).ToArray());

@@ -9,17 +9,17 @@ namespace Portajel.Connections.Services.Discogs;
 
 public class DiscogsConnector : IMediaServerConnector
 {
-    public IMediaDataConnector Album { get; set; }
-    public IMediaDataConnector Artist { get; set; }
-    public IMediaDataConnector Song { get; set; }
-    public IMediaDataConnector Playlist { get; set; }
+    public IMediaDataConnector AlbumData { get; set; }
+    public IMediaDataConnector ArtistData { get; set; }
+    public IMediaDataConnector SongData { get; set; }
+    public IMediaDataConnector PlaylistData { get; set; }
     public IMediaDataConnector Genre { get; set; }
     public Dictionary<string, IMediaDataConnector> GetDataConnectors()=> new()
     {
-        { "Album", Album },
-        { "Artist", Artist },
-        { "Song", Song },
-        { "Playlist", Playlist },
+        { "Album", AlbumData },
+        { "Artist", ArtistData },
+        { "Song", SongData },
+        { "Playlist", PlaylistData },
         { "Genre", Genre }
     };
     public Dictionary<MediaTypes, bool> SupportedReturnTypes { get; set; }
@@ -50,7 +50,7 @@ public class DiscogsConnector : IMediaServerConnector
         throw new NotImplementedException();
     }
 
-    public Task<BaseMusicItem[]> SearchAsync(string searchTerm = "", int? limit = null, int startIndex = 0,
+    public Task<BaseData[]> SearchAsync(string searchTerm = "", int? limit = null, int startIndex = 0,
         ItemSortBy setSortTypes = ItemSortBy.Name, SortOrder setSortOrder = SortOrder.Ascending,
         CancellationToken cancellationToken = default)
     {

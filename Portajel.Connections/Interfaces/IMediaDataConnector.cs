@@ -29,7 +29,7 @@ public interface IMediaDataConnector
     {
         SyncStatusInfo = syncStatus;
     }
-    Task<BaseMusicItem[]> GetAllAsync(
+    Task<BaseData[]> GetAllAsync(
         int? limit = null, 
         int startIndex = 0, 
         bool? getFavourite = null,
@@ -40,11 +40,11 @@ public interface IMediaDataConnector
         string serverUrl = "", 
         CancellationToken cancellationToken = default
     );
-    Task<BaseMusicItem> GetAsync(
+    Task<BaseData> GetAsync(
         Guid id, 
         string serverUrl = "", 
         CancellationToken cancellationToken = default);
-    Task<BaseMusicItem[]> GetSimilarAsync(
+    Task<BaseData[]> GetSimilarAsync(
         Guid id, 
         int setLimit, 
         string serverUrl = "",
@@ -66,7 +66,7 @@ public interface IMediaDataConnector
         CancellationToken cancellationToken = default
     );
     Task<bool> AddRange(
-        BaseMusicItem[] musicItems, 
+        BaseData[] musicItems, 
         CancellationToken cancellationToken = default
     );
 }

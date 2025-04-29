@@ -19,7 +19,7 @@ namespace Portajel.Connections.Services.Jellyfin
             SyncStatusInfo.StatusPercentage = percentage;
         }
 
-        public async Task<BaseMusicItem[]> GetAllAsync(int? limit = null, int startIndex = 0,  bool? getFavourite = null,
+        public async Task<BaseData[]> GetAllAsync(int? limit = null, int startIndex = 0,  bool? getFavourite = null,
             ItemSortBy setSortTypes = ItemSortBy.Album, SortOrder setSortOrder = SortOrder.Ascending, Guid?[] includeIds = null,
             Guid?[] excludeIds = null, string serverUrl = "", CancellationToken cancellationToken = default)
         {
@@ -38,11 +38,11 @@ namespace Portajel.Connections.Services.Jellyfin
             }, cancellationToken);
             if (artistResult?.Items == null) return [];
             var artists = artistResult.Items.Select(a =>
-                new Artist(ArtistData.Builder(a, clientSettings.ServerUrl))).ToArray();
+                ArtistData.Builder(a, clientSettings.ServerUrl)).ToArray();
             return artists;
         }
 
-        public async Task<BaseMusicItem> GetAsync(Guid id, string serverUrl = "",
+        public async Task<BaseData> GetAsync(Guid id, string serverUrl = "",
             CancellationToken cancellationToken = default)
         {
             var runArtistInfo = api.Items.GetAsync(c =>
@@ -73,22 +73,18 @@ namespace Portajel.Connections.Services.Jellyfin
             var artistInfo = runArtistInfo.Result;
             var albumResult = runAlbumInfo.Result;
             if (artistInfo?.Items == null || albumResult?.Items == null || cancellationToken.IsCancellationRequested)
-                return Artist.Empty;
-            if (artistInfo.Items.Count <= 0 || cancellationToken.IsCancellationRequested) return Artist.Empty;
+                return ArtistData.Empty;
+            if (artistInfo.Items.Count <= 0 || cancellationToken.IsCancellationRequested) return ArtistData.Empty;
 
             foreach (BaseItemDto item in artistInfo.Items)
             {
                 ArtistData artistData = ArtistData.Builder(item, clientSettings.ServerUrl);
-                AlbumData[] albumData = albumResult.Items
-                    .Select(album => AlbumData.Builder(album, clientSettings.ServerUrl)).ToArray();
-
-                return new Artist(artistData, albumData);
+                return artistData;
             }
-
-            return Artist.Empty;
+            return ArtistData.Empty;
         }
 
-        public async Task<BaseMusicItem[]> GetSimilarAsync(Guid id, int setLimit, string serverUrl = "",
+        public async Task<BaseData[]> GetSimilarAsync(Guid id, int setLimit, string serverUrl = "",
             CancellationToken cancellationToken = default)
         {
             BaseItemDtoQueryResult result = await api.Artists[id.ToString()].Similar.GetAsync(c =>
@@ -129,7 +125,7 @@ namespace Portajel.Connections.Services.Jellyfin
             throw new NotImplementedException();
         }
 
-        public Task<bool> AddRange(BaseMusicItem[] musicItems, CancellationToken cancellationToken = default)
+        public Task<bool> AddRange(BaseData[] musicItems, CancellationToken cancellationToken = default)
         {
             throw new NotImplementedException();
         }

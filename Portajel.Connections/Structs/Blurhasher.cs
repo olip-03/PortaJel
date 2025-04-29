@@ -8,7 +8,7 @@ namespace Portajel.Connections.Structs
 {
     public static class Blurhasher
     {
-        public static IEnumerable<BaseMusicItem> DownloadMusicItemBitmap(IEnumerable<BaseMusicItem> musicItems, IDbConnector database, string path, int width, int height)
+        public static IEnumerable<BaseData> DownloadMusicItemBitmap(IEnumerable<BaseData> musicItems, IDbConnector database, string path, int width, int height)
         {
             Directory.CreateDirectory(path);
 
@@ -43,26 +43,25 @@ namespace Portajel.Connections.Structs
                 var connectorKey = music.GetType().Name; 
                 switch (connectorKey)
                 {
-                    case "Album":
-                        connectors["Album"].InsertAsync(music);
+                    case "AlbumData":
+                        connectors["Album"].Insert(music);
                         break;
-                    case "Artist":
-                        connectors["Artist"].InsertAsync(music);
+                    case "ArtistData":
+                        connectors["Artist"].Insert(music);
                         break;
-                    case "Song":
-                        connectors["Song"].InsertAsync(music);
+                    case "SongData":
+                        connectors["Song"].Insert(music);
                         break;
-                    case "Playlist":
-                        connectors["Playlist"].InsertAsync(music);
+                    case "PlaylistData":
+                        connectors["Playlist"].Insert(music);
                         break;
-                    case "Genre":
-                        connectors["Genre"].InsertAsync(music);
+                    case "GenreData":
+                        connectors["Genre"].Insert(music);
                         break;
                     default:
                         throw new InvalidOperationException($"Unsupported music item type: {connectorKey}");
                 }
             });
-
             return musicItems;
         }
 

@@ -1,4 +1,5 @@
 ﻿using Portajel.Connections.Data;
+using Portajel.Connections.Database;
 using Portajel.Connections.Enum;
 using Portajel.Connections.Structs;
 using Portajel.Structures.Interfaces;
@@ -12,17 +13,17 @@ namespace Portajel.Droid.Playback
 {
     public class QueueController : IQueueController
     {
-        public List<Song> PreviousQueue { get; set; }
-        public KeyValuePair<MediaTypes, BaseMusicItem> CurrentSong => throw new NotImplementedException();
-        public KeyValuePair<MediaTypes, BaseMusicItem> CurrentColleciton => throw new NotImplementedException();
-        public List<Song> UpNextList { get; set; }
+        public List<SongData> PreviousQueue { get; set; }
+        public KeyValuePair<MediaTypes, BaseData> CurrentSong => throw new NotImplementedException();
+        public KeyValuePair<MediaTypes, BaseData> CurrentColleciton => throw new NotImplementedException();
+        public List<SongData> UpNextList { get; set; }
 
-        public void AddSong(Song toAdd, int index)
+        public void AddSong(SongData toAdd, int index)
         {
             throw new NotImplementedException();
         }
 
-        public void AddSong(Song[] toAdd, int index)
+        public void AddSong(SongData[] toAdd, int index)
         {
             throw new NotImplementedException();
         }
@@ -47,7 +48,7 @@ namespace Portajel.Droid.Playback
             throw new NotImplementedException();
         }
 
-        public void SetCollection(Album collection, int fromIndex)
+        public void SetCollection(AlbumData collection, int fromIndex)
         {
             throw new NotImplementedException();
         }
