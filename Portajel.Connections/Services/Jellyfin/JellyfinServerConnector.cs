@@ -110,7 +110,7 @@ namespace Portajel.Connections.Services.Jellyfin
                             label: "App Version",
                             description: "The version of the Jellyfin Client Application.",
                             value: appVerison,
-                            protectValue: true,
+                            protectValue: false,
                             userVisible: false)
                     },
                     {
@@ -118,7 +118,7 @@ namespace Portajel.Connections.Services.Jellyfin
                             label: "Device Name",
                             description: "The name of the device running this Jellyfin Client Application.",
                             value: deviceName,
-                            protectValue: true,
+                            protectValue: false,
                             userVisible: false)
                     },
                     {
@@ -126,7 +126,7 @@ namespace Portajel.Connections.Services.Jellyfin
                             label: "Device Name",
                             description: "The name of the device running this Jellyfin Client Application.",
                             value: deviceId,
-                            protectValue: true,
+                            protectValue: false,
                             userVisible: false)
                     },
                     {
@@ -210,6 +210,14 @@ namespace Portajel.Connections.Services.Jellyfin
                     _sdkClientSettings.SetAccessToken(authenticationResult.AccessToken);
                     _userDto = authenticationResult.User;
                     _sessionInfo = authenticationResult.SessionInfo;
+                    if(authenticationResult.AccessToken == null)
+                    {
+                        return new AuthResponse()
+                        {
+                            IsSuccess = false,
+                            Message = $"API Error: Login Failure! Could not return Access Token. (Status: Failed)"
+                        };
+                    }
                 }
 
                 AlbumData = new JellyfinServerAlbumConnector(_jellyfinApiClient, _sdkClientSettings, _userDto);
@@ -278,7 +286,7 @@ namespace Portajel.Connections.Services.Jellyfin
                         foreach (var item in items)
                         {
                             // If our DB has this item
-                            if (GetDb(data).Value.Contains(item.Id))
+                            if (GetDb(data).Value.Contains((Guid)item.Id))
                             {
                                 checkCount++;
                             }
@@ -341,8 +349,8 @@ namespace Portajel.Connections.Services.Jellyfin
                         {
                             await UpdateDb(cancellationToken);
                             data.SetSyncStatusInfo(
-                                status: TaskStatus.RanToCompletion, 
-                                serverItemCount: GetDb(data).Value.GetTotalCount(), 
+                                status: TaskStatus.RanToCompletion,
+                                serverItemCount: GetDb(data).Value.GetTotalCount(),
                                 percentage: 100);
                             return;
                         }

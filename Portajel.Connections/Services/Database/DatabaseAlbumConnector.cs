@@ -36,19 +36,19 @@ public class DatabaseAlbumConnector : IDbItemConnector
         {
             case ItemSortBy.DateCreated:
                 filteredCache.AddRange(_database.Table<AlbumData>()
-                    .OrderByDescending(album => album.DateAdded)
+                    .OrderBy(album => album.DateAdded)
                     .Skip(startIndex)
                     .Take((int)limit).ToList());
                 break;
             case ItemSortBy.DatePlayed:
                 filteredCache.AddRange(_database.Table<AlbumData>()
-                    .OrderByDescending(album => album.DatePlayed)
+                    .OrderBy(album => album.DatePlayed)
                     .Skip(startIndex)
                     .Take((int)limit).ToList());
                 break;
             case ItemSortBy.Name:
                 filteredCache.AddRange(_database.Table<AlbumData>()
-                    .OrderByDescending(album => album.Name)
+                    .OrderBy(album => album.Name)
                     .Skip(startIndex)
                     .Take((int)limit).ToList());
                 break;
@@ -63,13 +63,13 @@ public class DatabaseAlbumConnector : IDbItemConnector
             case ItemSortBy.PlayCount:
                 filteredCache.AddRange(
                     _database.Table<AlbumData>()
-                    .OrderByDescending(album => album.PlayCount)
+                    .OrderBy(album => album.PlayCount)
                     .Skip(startIndex)
                     .Take((int)limit).ToList());
                 break;
             default:
                 filteredCache.AddRange(_database.Table<AlbumData>()
-                    .OrderByDescending(album => album.Name)
+                    .OrderBy(album => album.Name)
                     .Skip(startIndex)
                     .Take((int)limit).ToList());
                 break;
@@ -164,17 +164,7 @@ public class DatabaseAlbumConnector : IDbItemConnector
         BaseData[] albums, 
         CancellationToken cancellationToken = default)
     {
-        foreach (var baseMusicItem in albums)
-        {
-            if (baseMusicItem is AlbumData a && a != null)
-            {
-                _database.InsertOrReplace(a);
-            }
-            if (cancellationToken.IsCancellationRequested)
-            {
-                break;
-            }
-        }
+        _database.InsertAll(albums);
         return true;
     }
 }

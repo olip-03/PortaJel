@@ -68,6 +68,21 @@
                 AdditionalData = new Dictionary<string, string> { { "AccessLevel", "Anonymous" } }
             };
         }
+
+        public static AuthResponse Failed(string message)
+        {
+            return new AuthResponse
+            {
+                IsSuccess = false,
+                Token = string.Empty,
+                TokenExpiry = DateTime.MaxValue,
+                Message = message,
+                UserId = "Anonymous",
+                Username = "Anonymous",
+                Roles = new List<string> { "Anonymous" },
+                AdditionalData = new Dictionary<string, string> { { "AccessLevel", "Anonymous" } }
+            };
+        }
     }
 
 }

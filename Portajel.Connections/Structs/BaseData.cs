@@ -7,7 +7,7 @@ namespace Portajel.Connections.Structs
 {
     public abstract class BaseData
     {
-        [PrimaryKey, NotNull, AutoIncrement] public virtual Guid Id { get; set; }
+        [PrimaryKey, AutoIncrement] public virtual Guid? Id { get; set; }
         public Guid ServerId { get; set; }
         [Indexed] public string Name { get; set; } = string.Empty;
         public bool IsFavourite { get; set; }

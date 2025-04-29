@@ -41,7 +41,7 @@ public partial class SearchPage : ContentPage
         {
             try
             {
-                await Task.Delay(500, cancellationToken: cToken.Token);
+                await Task.Delay(300, cancellationToken: cToken.Token);
                 BaseData[] result = await _database.SearchAsync(
                     searchTerm: e.NewTextValue,
                     limit: 50,

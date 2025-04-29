@@ -8,7 +8,7 @@ namespace Portajel.Connections.Database;
 
 public class GenreData: BaseData
 {
-    [PrimaryKey, NotNull, AutoIncrement] public override Guid Id { get; set; }
+    [PrimaryKey, AutoIncrement] public override Guid? Id { get; set; }
     public string AlbumIdsJson { get; set; } = string.Empty;
     public static GenreData Empty { get; } = new();
     public Guid[] GetAlbumIds()

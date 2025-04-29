@@ -7,6 +7,7 @@ using Portajel.Connections.Database;
 using Portajel.Connections.Interfaces;
 using Portajel.Connections.Structs;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -14,10 +15,11 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace Portajel.Structures.Adaptor
-{
+{ 
     public class MusicItemAdaptor : VirtualListViewAdapterBase<object, BaseData>
     {
         private IDbConnector _database;
+        private int total = 0;
         public MusicItemAdaptor(IDbConnector database, int total) 
         {
             _database = database;
@@ -28,14 +30,16 @@ namespace Portajel.Structures.Adaptor
         }
         public override BaseData GetItem(int sectionIndex, int itemIndex)
         {
-            BaseData item = _database.Database.Table<AlbumData>().Skip(itemIndex).Take(1).First();
-            var id = item.Id.ToString();
-            return item;
+            var result = _database.GetDataConnectors()["Album"].GetAll(limit: 1, startIndex: itemIndex, setSortOrder: SortOrder.Descending, setSortTypes: ItemSortBy.Name).First();
+            return result ?? AlbumData.Empty;
         }
         public override int GetNumberOfItemsInSection(int sectionIndex)
         {
-            int count = _database.GetDataConnectors()["Album"].GetTotalCount();
-            return count;
+            if (total <= 0)
+            {
+                total = _database.Database.Table<AlbumData>().Count();
+            }
+            return total;
         }
     }
 }

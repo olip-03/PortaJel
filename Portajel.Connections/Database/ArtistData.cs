@@ -10,7 +10,7 @@ namespace Portajel.Connections.Database
 {
     public class ArtistData : BaseData
     {
-        [PrimaryKey, NotNull, AutoIncrement] public override Guid Id { get; set; }
+        [PrimaryKey, AutoIncrement] public override Guid? Id { get; set; }
         public string? Description { get; set; }
         public string? LogoImgSource { get; set; }
         public string? BackgroundImgSource { get; set; }
@@ -47,7 +47,7 @@ namespace Portajel.Connections.Database
 
             ArtistData toAdd = new();
             toAdd.ServerId = (Guid)baseItem.Id;
-            toAdd.Id = GuidHelper.GenerateNewGuidFromHash(toAdd.Id, server);
+            toAdd.Id = GuidHelper.GenerateNewGuidFromHash(baseItem.Id, server);
             toAdd.ServerAddress = server;
             toAdd.Name = baseItem.Name == null ? string.Empty : baseItem.Name;
             toAdd.DateAdded = baseItem.DateCreated;

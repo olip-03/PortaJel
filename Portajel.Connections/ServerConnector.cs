@@ -41,9 +41,9 @@ public class ServerConnector : IServerConnector
         {
             await t;
         }
-        catch 
-        { 
-            // ignored
+        catch (Exception ex)
+        {
+            return AuthResponse.Failed(ex.Message);
         }
         
         switch (t.Status)

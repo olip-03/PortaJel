@@ -36,6 +36,8 @@ namespace Portajel.Connections.Services.Database
         {
             Database = new SQLiteConnection(appDataDirectory, DbFlags);
 
+            Database.EnableWriteAheadLogging();
+
             Database.CreateTable<AlbumData>();
             Database.CreateTable<SongData>();
             Database.CreateTable<ArtistData>();
@@ -69,49 +71,56 @@ namespace Portajel.Connections.Services.Database
             // Iterate over each data connector
             foreach (var connectorPair in GetDataConnectors())
             {
-                cancellationToken.ThrowIfCancellationRequested();
-
-                var connectorName = connectorPair.Key;
-                var dataConnector = connectorPair.Value;
-
-                switch (connectorName)
+                try
                 {
-                    case "Album":
-                        var matchingAlbums = Database.Table<AlbumData>()
-                            .Take(limit)
-                            .Where(item => item.Name.ToLower().Contains(searchTerm.ToLower()))
-                            .ToList();
-                        resultList.AddRange(matchingAlbums);
-                        break;
-                    case "Artist":
-                        var matchingArtists = Database.Table<ArtistData>()
-                            .Take(limit)
-                            .Where(item => item.Name.ToLower().Contains(searchTerm.ToLower()))
-                            .ToList();
-                        resultList.AddRange(matchingArtists);
-                        break;
-                    case "Song":
-                        var matchingSongs = Database.Table<SongData>()
-                            .Take(limit)
-                            .Where(item => item.Name.ToLower().Contains(searchTerm.ToLower()))
-                            .ToList();
-                        resultList.AddRange(matchingSongs);
-                        break;
-                    case "Playlist":
-                        var matchingPlaylists = Database.Table<PlaylistData>()
-                            .Take(limit)
-                            .Where(item => item.Name.ToLower().Contains(searchTerm.ToLower()))
-                            .ToList();
-                        resultList.AddRange(matchingPlaylists);
-                        break;
-                    case "Genre":
-                        // var matchingItems = (await Database.Table<GenreData>()
-                        //     .Where(item => item.Name.ToLower().Contains(searchTerm.ToLower()))
-                        //     .ToList()
-                        //     )
-                        //     .ToList();
-                        // resultList.InsertRange(matchingItems.Select(item => new Genre(item)));
-                        break;
+                    cancellationToken.ThrowIfCancellationRequested();
+
+                    var connectorName = connectorPair.Key;
+                    var dataConnector = connectorPair.Value;
+
+                    switch (connectorName)
+                    {
+                        case "Album":
+                            var matchingAlbums = Database.Table<AlbumData>()
+                                .Take(limit)
+                                .Where(item => item.Name.ToLower().Contains(searchTerm.ToLower()))
+                                .ToList();
+                            resultList.AddRange(matchingAlbums);
+                            break;
+                        case "Artist":
+                            var matchingArtists = Database.Table<ArtistData>()
+                                .Take(limit)
+                                .Where(item => item.Name.ToLower().Contains(searchTerm.ToLower()))
+                                .ToList();
+                            resultList.AddRange(matchingArtists);
+                            break;
+                        case "Song":
+                            var matchingSongs = Database.Table<SongData>()
+                                .Take(limit)
+                                .Where(item => item.Name.ToLower().Contains(searchTerm.ToLower()))
+                                .ToList();
+                            resultList.AddRange(matchingSongs);
+                            break;
+                        case "Playlist":
+                            var matchingPlaylists = Database.Table<PlaylistData>()
+                                .Take(limit)
+                                .Where(item => item.Name.ToLower().Contains(searchTerm.ToLower()))
+                                .ToList();
+                            resultList.AddRange(matchingPlaylists);
+                            break;
+                        case "Genre":
+                            // var matchingItems = (await Database.Table<GenreData>()
+                            //     .Where(item => item.Name.ToLower().Contains(searchTerm.ToLower()))
+                            //     .ToList()
+                            //     )
+                            //     .ToList();
+                            // resultList.InsertRange(matchingItems.Select(item => new Genre(item)));
+                            break;
+                    }
+                }
+                catch 
+                {
+                    return [];
                 }
             }
 

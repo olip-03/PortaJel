@@ -15,20 +15,10 @@ namespace Portajel
             string mainDir = FileSystem.Current.AppDataDirectory;
 
             // Fire & forget
-            _ = Task.Run(async () =>
-            {
-                try
-                {
-                    await StartupAsync(serverConnector, dbConnector);
-                }
-                catch (Exception ex)
-                {
-                    Debug.WriteLine($"Startup error: {ex.Message}");
-                }
-            });
+            StartupAsync(serverConnector, dbConnector);
         }
 
-        private async Task StartupAsync(IServerConnector serverConnector, IDbConnector dbConnector)
+        private void StartupAsync(IServerConnector serverConnector, IDbConnector dbConnector)
         {
             if (OperatingSystem.IsAndroid())
             {
@@ -36,19 +26,23 @@ namespace Portajel
                 // auth is in the DroidService class.
                 return;
             }
-            var timeoutTask = Task.Delay(TimeSpan.FromSeconds(30));
-
-            var auth = await serverConnector.AuthenticateAsync();
-            var t = serverConnector.Servers.Select(s => s.StartSyncAsync());
-            try
+            _ = Task.Run(async () =>
             {
-                await Task.WhenAll(t);
-                await SaveHelper.SaveData(serverConnector);
-            }
-            catch (Exception)
-            {
-                throw;
-            };
+                await serverConnector.AuthenticateAsync();
+                foreach (var srv in serverConnector.Servers)
+                {
+                    try
+                    {
+                        await srv.StartSyncAsync();
+                        await SaveHelper.SaveData(serverConnector);
+                    }
+                    catch (Exception ex)
+                    {
+                        Trace.TraceError(ex.Message);
+                        continue;
+                    }
+                }
+            });
         }
 
         protected override Window CreateWindow(IActivationState? activationState)

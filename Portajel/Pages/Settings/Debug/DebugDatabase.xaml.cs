@@ -59,9 +59,6 @@ public partial class DebugDatabase : ContentPage, IDisposable
 
     private async Task Tick()
     {
-        // Implement your periodic logic here
-        System.Diagnostics.Debug.WriteLine("Tick at: " + DateTime.Now);
-
         // Example: Update UI on main thread if needed
         await MainThread.InvokeOnMainThreadAsync(() =>
         {
@@ -71,14 +68,13 @@ public partial class DebugDatabase : ContentPage, IDisposable
             {
                 foreach (var item in server.Properties)
                 {
-                    if (!item.Value.UserVisisble) continue;
                     if (item.Value.ProtectValue)
                     {
-                        combination += $"{item.Key}: *****\n";
+                        combination += $"{item.Value.Label}: *****\n";
                     }
                     else
                     {
-                        combination += $"{item.Key}: {item.Value.Value.ToString()}\n";
+                        combination += $"{item.Value.Label}: {item.Value.Value.ToString()}\n";
                     }
                 }
                 combination += "\n";

@@ -6,11 +6,15 @@ using System.Text;
 
 public static class GuidHelper
 {
-    public static Guid GenerateNewGuidFromHash(Guid inputGuid, string inputString)
+    public static Guid GenerateNewGuidFromHash(Guid? inputGuid, string inputString)
     {
+        // Handle null values
+        Guid guidToUse = inputGuid ?? Guid.NewGuid(); // Generate a new GUID if inputGuid is null
+        string stringToUse = inputString ?? string.Empty; // Use an empty string if inputString is null
+
         // Combine the GUID and string into a single byte array
-        byte[] guidBytes = inputGuid.ToByteArray();
-        byte[] stringBytes = Encoding.UTF8.GetBytes(inputString);
+        byte[] guidBytes = guidToUse.ToByteArray();
+        byte[] stringBytes = Encoding.UTF8.GetBytes(stringToUse);
 
         byte[] combinedBytes = new byte[guidBytes.Length + stringBytes.Length];
         Buffer.BlockCopy(guidBytes, 0, combinedBytes, 0, guidBytes.Length);
@@ -29,6 +33,7 @@ public static class GuidHelper
             return new Guid(guidHashBytes);
         }
     }
+
     public static string GetDeviceHash(string deviceCurrentModel, string deviceManufacturer, string deviceName)
     {
         using MD5 md5Hash = MD5.Create();

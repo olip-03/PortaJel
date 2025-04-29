@@ -8,7 +8,7 @@ namespace Portajel.Connections.Database
 {
     public class SongData : BaseData
     {
-        [PrimaryKey, NotNull, AutoIncrement] public override Guid Id { get; set; }
+        [PrimaryKey, AutoIncrement] public override Guid? Id { get; set; }
         public string? PlaylistId { get; set; }
         public Guid AlbumId { get; set; }
         public TimeSpan Duration { get; set; } = new();
@@ -54,7 +54,7 @@ namespace Portajel.Connections.Database
             }
             MusicItemImage musicItemImage = MusicItemImage.Builder(baseItem, server);
 
-            song.Id = GuidHelper.GenerateNewGuidFromHash(song.Id, server);
+            song.Id = GuidHelper.GenerateNewGuidFromHash(baseItem.Id, server);
             song.ServerId = (Guid)baseItem.Id;
             song.PlaylistId = baseItem.PlaylistItemId;
             song.AlbumId = (Guid)baseItem.ParentId;

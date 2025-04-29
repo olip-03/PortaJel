@@ -8,7 +8,7 @@ namespace Portajel.Connections.Database
 {
     public class AlbumData : BaseData
     {
-        [PrimaryKey, NotNull, AutoIncrement] public override Guid Id { get; set; }
+        [PrimaryKey, AutoIncrement] public override Guid? Id { get; set; }
         public string ArtistIdsJson { get; set; } = string.Empty;
         public string ArtistNames { get; set; } = string.Empty;
         public string SongIdsJson { get; set; } = string.Empty;
@@ -71,7 +71,7 @@ namespace Portajel.Connections.Database
             MusicItemImage musicItemImage = MusicItemImage.Builder(baseItem, server);
             AlbumData album = new();
             album.ServerId = (Guid)baseItem.Id;
-            album.Id = GuidHelper.GenerateNewGuidFromHash(album.Id, server);
+            album.Id = GuidHelper.GenerateNewGuidFromHash(baseItem.Id, server);
             album.Name = baseItem.Name == null ? string.Empty : baseItem.Name;
             album.IsFavourite = baseItem.UserData.IsFavorite == null ? false : (bool)baseItem.UserData.IsFavorite;
             // album.PlayCount = albumData.PlayCount; TODO: Implement playcount
