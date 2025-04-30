@@ -59,7 +59,7 @@ public partial class HomePage : ContentPage
                     setSortTypes: Jellyfin.Sdk.Generated.Models.ItemSortBy.DateCreated,
                     setSortOrder: Jellyfin.Sdk.Generated.Models.SortOrder.Descending);
         string cacheDir = Path.Combine(FileSystem.Current.CacheDirectory, "Blurhash");
-        var itemsToAdd = Blurhasher.DownloadMusicItemBitmap(data, _database, cacheDir, 50, 50);
+        var itemsToAdd = Blurhasher.DownloadMusicItemBitmap(data, albumConnector, cacheDir, 50, 50);
         AlbumData[] albums = itemsToAdd.Select(s => (AlbumData)s).ToArray();
         _viewModel.Sample.Clear(); 
         foreach (var album in albums)

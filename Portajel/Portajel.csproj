@@ -25,6 +25,7 @@
 		<!--  -->
 		<PackageReference Include="CommunityToolkit.Maui" Version="11.2.0" />
 		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
+		<PackageReference Include="FFImageLoading.Maui" Version="1.2.7" />
 		<PackageReference Include="Microsoft.Maui.Controls" Version="9.0.50" />
 		<PackageReference Include="Mapsui.Maui" Version="5.0.0-beta.13" />
 		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="9.0.3" />
@@ -52,7 +53,13 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <MauiXaml Update="Components\GenericViewCell.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
 	  <MauiXaml Update="Components\Modal\ModalAddService.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Components\MusicListMedium.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="Pages\HomePage.xaml">

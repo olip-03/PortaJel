@@ -132,15 +132,10 @@ public class DatabasePlaylistConnector : IDbItemConnector, IMediaPlaylistInterfa
             BaseData[] musicItems,
             CancellationToken cancellationToken = default)
     {
-        foreach (var p in musicItems)
+        Parallel.ForEach(musicItems, playlist =>
         {
-            if (p is not PlaylistData playlist) continue;
-            _database.InsertOrReplace(playlist, playlist.GetType());
-            if (cancellationToken.IsCancellationRequested)
-            {
-                return false;
-            }
-        }
+            _database.InsertOrReplace(playlist);
+        });
         return true;
     }
 

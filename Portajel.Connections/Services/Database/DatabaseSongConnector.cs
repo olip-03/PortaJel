@@ -203,16 +203,10 @@ namespace Portajel.Connections.Services.Database
             BaseData[] musicItems,
             CancellationToken cancellationToken = default)
         {
-            foreach (var s in musicItems)
+            Parallel.ForEach(musicItems, song =>
             {
-                if (s is not SongData SongData) continue;
-                _database.InsertOrReplace(SongData, SongData.GetType());
-                if (cancellationToken.IsCancellationRequested)
-                {
-                    return false;
-                }
-            }
-
+                _database.InsertOrReplace(song);
+            });
             return true;
         }
     }

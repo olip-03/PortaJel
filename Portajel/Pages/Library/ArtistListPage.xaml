@@ -1,12 +1,86 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vlv="clr-namespace:Microsoft.Maui.Controls;assembly=VirtualListView"
+             xmlns:music="clr-namespace:Portajel.Connections.Database;assembly=Portajel.Connections"
+             xmlns:components="clr-namespace:Portajel.Components"
+             xmlns:local="clr-namespace:Portajel.Structures.ViewModels.Pages.Library"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             xmlns:converters="clr-namespace:Portajel.Structures.Converters"
+             xmlns:ffimageloading="clr-namespace:FFImageLoading.Maui;assembly=FFImageLoading.Maui"
              x:Class="Portajel.Pages.Library.ArtistListPage"
+             x:DataType="local:AlbumListViewModel"
              Title="ArtistListPage">
-    <VerticalStackLayout>
-        <Label 
-            Text="Artists!"
-            VerticalOptions="Center" 
-            HorizontalOptions="Center" />
-    </VerticalStackLayout>
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <converters:ImageUrlConverter x:Key="ImageUrlConverter" />
+        </ResourceDictionary>
+    </ContentPage.Resources>
+    <vlv:VirtualListView
+    x:Name="vlv"
+    HorizontalOptions="Fill"
+    VerticalOptions="Fill"
+    IsRefreshEnabled="True"
+    RefreshCommand="{Binding RefreshCommand}"
+    Adapter="{Binding Adapter}"
+    SelectionMode="None">
+        <vlv:VirtualListView.ItemTemplate>
+            <DataTemplate x:DataType="music:ArtistData">
+                <vlv:VirtualViewCell>
+                    <Grid>
+                        <Button
+                        BackgroundColor="Transparent"
+                        ZIndex="0" />
+                        <HorizontalStackLayout
+                        ZIndex="5"
+                        Margin="10"
+                        InputTransparent="True"
+                        Spacing="10">
+
+                            <Grid                               
+                            WidthRequest="64"
+                            HeightRequest="64">
+                                <ffimageloading:CachedImage 
+                                LoadingPlaceholder="{Binding ImgBlurhashSource}"
+                                LoadingDelay="100"
+                                CacheType="Memory"
+                                RetryCount="0"
+                                FadeAnimationForCachedImages="False"
+                                LoadingPriority="Lowest"
+                                Source="{Binding ImgSource}"
+                                HeightRequest="64"
+                                WidthRequest="64"
+                                BitmapOptimizations="True"
+                                DownsampleToViewSize="True"
+                                ZIndex="10">
+                                </ffimageloading:CachedImage>
+                                <!--<Image WidthRequest="64" HeightRequest="64" Source="{Binding ImgBlurhashSource, Mode=OneWay}" ZIndex="10">
+                                
+                            </Image>-->
+                            </Grid>
+                            <VerticalStackLayout
+                          VerticalOptions="Center"
+                          Spacing="2">
+                                <Label
+                                FontSize="16"
+                                FontAttributes="Bold"
+                                LineBreakMode="TailTruncation"
+                                MaxLines="1"
+                                Text="{Binding Name}" />
+                            </VerticalStackLayout>
+                        </HorizontalStackLayout>
+                    </Grid>
+                </vlv:VirtualViewCell>
+            </DataTemplate>
+        </vlv:VirtualListView.ItemTemplate>
+
+        <vlv:VirtualListView.EmptyView>
+            <Grid>
+                <Label
+			VerticalOptions="Center"
+			HorizontalOptions="Center"
+			Text="No Items" />
+            </Grid>
+        </vlv:VirtualListView.EmptyView>
+    </vlv:VirtualListView>
 </ContentPage>

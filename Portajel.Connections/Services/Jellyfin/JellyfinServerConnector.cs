@@ -65,7 +65,8 @@ namespace Portajel.Connections.Services.Jellyfin
             string appName = "",
             string appVerison = "",
             string deviceName = "",
-            string deviceId = "")
+            string deviceId = "",
+            string appDataPath = "")
         {
             _database = database;
             Properties =
@@ -134,6 +135,14 @@ namespace Portajel.Connections.Services.Jellyfin
                             label: "Last Sync",
                             description: "The last time a full sync ran for this data.",
                             value: url,
+                            protectValue: false,
+                            userVisible: false)
+                    },
+                    {
+                        "AppDataPath", new ConnectorProperty(
+                            label: "App Data Path",
+                            description: "Application Data Path for storing files.",
+                            value: appDataPath,
                             protectValue: false,
                             userVisible: false)
                     },
@@ -374,6 +383,11 @@ namespace Portajel.Connections.Services.Jellyfin
 
                             data.SetSyncStatusInfo(serverItemCount: newTotal, percentage: (int)newPercent);
 
+                            if (Properties.TryGetValue("AppDataPath", out var appDataPath))
+                            {
+                                Blurhasher.DownloadMusicItemBitmap(items, GetDb(data).Value, appDataPath.Value.ToString(), 128, 128);
+                            }
+
                             GetDb(data).Value.InsertRange(items, cancellationToken);
                             if (items.Length < retrieve)
                             {
@@ -386,6 +400,7 @@ namespace Portajel.Connections.Services.Jellyfin
                         }
                         catch (Exception ex)
                         {
+                            Trace.TraceError(ex.Message);
                             data.SetSyncStatusInfo(status: TaskStatus.Faulted);
                             continue;
                         }

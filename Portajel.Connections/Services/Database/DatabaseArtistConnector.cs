@@ -147,15 +147,10 @@ public class DatabaseArtistConnector : IDbItemConnector
             BaseData[] musicItems,
             CancellationToken cancellationToken = default)
     {
-        foreach (var a in musicItems)
+        Parallel.ForEach(musicItems, artist =>
         {
-            if (a is not ArtistData artist) continue;
             _database.InsertOrReplace(artist);
-            if (cancellationToken.IsCancellationRequested)
-            {
-                return false;
-            }
-        }
+        });
         return true;
     }
 }

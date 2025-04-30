@@ -13,6 +13,7 @@ namespace Portajel.Connections.Database
         public string ArtistNames { get; set; } = string.Empty;
         public string SongIdsJson { get; set; } = string.Empty;
         public string GetSimilarJson { get; set; } = string.Empty;
+        public int Index { get; set; } = 0;
         public static AlbumData Empty { get; } = new();
         public Guid[] GetArtistIds()
         {

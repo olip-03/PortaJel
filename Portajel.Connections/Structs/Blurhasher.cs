@@ -1,4 +1,5 @@
 ﻿using Blurhash;
+using Jellyfin.Sdk.Generated.Models;
 using Portajel.Connections.Interfaces;
 using SkiaSharp;
 using System;
@@ -8,7 +9,7 @@ namespace Portajel.Connections.Structs
 {
     public static class Blurhasher
     {
-        public static IEnumerable<BaseData> DownloadMusicItemBitmap(IEnumerable<BaseData> musicItems, IDbConnector database, string path, int width, int height)
+        public static IEnumerable<BaseData> DownloadMusicItemBitmap(IEnumerable<BaseData> musicItems, IDbItemConnector database, string path, int width, int height)
         {
             Directory.CreateDirectory(path);
 
@@ -39,32 +40,10 @@ namespace Portajel.Connections.Structs
                     music.ImgBlurhashSource = filePath;
                 }
 
-                var connectors = database.GetDataConnectors();
-                var connectorKey = music.GetType().Name; 
-                switch (connectorKey)
-                {
-                    case "AlbumData":
-                        connectors["Album"].Insert(music);
-                        break;
-                    case "ArtistData":
-                        connectors["Artist"].Insert(music);
-                        break;
-                    case "SongData":
-                        connectors["Song"].Insert(music);
-                        break;
-                    case "PlaylistData":
-                        connectors["Playlist"].Insert(music);
-                        break;
-                    case "GenreData":
-                        connectors["Genre"].Insert(music);
-                        break;
-                    default:
-                        throw new InvalidOperationException($"Unsupported music item type: {connectorKey}");
-                }
+                database.Insert(music);
             });
             return musicItems;
         }
-
 
         /// <summary>
         /// Decodes a Blurhash string into a <c>SKBitmap</c>

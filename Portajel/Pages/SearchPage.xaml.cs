@@ -47,7 +47,7 @@ public partial class SearchPage : ContentPage
                     limit: 50,
                     cancellationToken: cToken.Token);
                 string cacheDir = Path.Combine(FileSystem.Current.CacheDirectory, "Blurhash");
-                var itemsToAdd = Blurhasher.DownloadMusicItemBitmap(result.OfType<AlbumData>(), _database, cacheDir, 50, 50); 
+                var itemsToAdd = Blurhasher.DownloadMusicItemBitmap(result.OfType<AlbumData>(), _database.GetDataConnectors()["Album"], cacheDir, 50, 50); 
                 MainThread.BeginInvokeOnMainThread(() =>
                 {
                     _viewModel.Albums.Clear();

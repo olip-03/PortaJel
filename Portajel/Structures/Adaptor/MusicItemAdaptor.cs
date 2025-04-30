@@ -18,26 +18,26 @@ namespace Portajel.Structures.Adaptor
 { 
     public class MusicItemAdaptor : VirtualListViewAdapterBase<object, BaseData>
     {
-        private IDbConnector _database;
+        private IDbItemConnector _database;
         private int total = 0;
-        public MusicItemAdaptor(IDbConnector database, int total) 
+        public MusicItemAdaptor(IDbItemConnector database, int total) 
         {
             _database = database;
         }
-        public MusicItemAdaptor(IDbConnector database)
+        public MusicItemAdaptor(IDbItemConnector database)
         {
             _database = database;
         }
         public override BaseData GetItem(int sectionIndex, int itemIndex)
         {
-            var result = _database.GetDataConnectors()["Album"].GetAll(limit: 1, startIndex: itemIndex, setSortOrder: SortOrder.Descending, setSortTypes: ItemSortBy.Name).First();
+            var result = _database.GetAll(limit: 1, startIndex: itemIndex, setSortOrder: SortOrder.Descending, setSortTypes: ItemSortBy.Name).First();
             return result ?? AlbumData.Empty;
         }
         public override int GetNumberOfItemsInSection(int sectionIndex)
         {
             if (total <= 0)
             {
-                total = _database.Database.Table<AlbumData>().Count();
+                total = _database.GetTotalCount();
             }
             return total;
         }

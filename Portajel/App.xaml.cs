@@ -1,4 +1,6 @@
-﻿using Portajel.Connections;
+﻿using FFImageLoading;
+using FFImageLoading.Config;
+using Portajel.Connections;
 using Portajel.Connections.Interfaces;
 using Portajel.Structures.Functional;
 using System.Diagnostics;
@@ -20,6 +22,14 @@ namespace Portajel
 
         private void StartupAsync(IServerConnector serverConnector, IDbConnector dbConnector)
         {
+            //IConfiguration imgConfig = new Configuration();
+            //imgConfig.DecodingMaxParallelTasks = 4; 
+            //imgConfig.VerboseLogging = false;
+            //imgConfig.VerbosePerformanceLogging = false;
+            //imgConfig.HttpHeadersTimeout = 15; 
+            //imgConfig.HttpReadTimeout = 15;
+            IImageService imgSvc = FFImageLoading.ImageService.Instance;
+
             if (OperatingSystem.IsAndroid())
             {
                 // Sync & auth should occur after binder has connected. Code for 

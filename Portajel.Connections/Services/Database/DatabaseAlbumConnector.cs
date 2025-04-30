@@ -164,7 +164,10 @@ public class DatabaseAlbumConnector : IDbItemConnector
         BaseData[] albums, 
         CancellationToken cancellationToken = default)
     {
-        _database.InsertAll(albums);
+        Parallel.ForEach(albums, album =>
+        {
+            _database.InsertOrReplace(album);
+        });
         return true;
     }
 }

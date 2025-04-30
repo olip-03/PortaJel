@@ -10,6 +10,8 @@ namespace Portajel
 {
     public partial class AppShell : Shell
     {
+        private Color _primaryDark = Color.FromRgba(0, 0, 0, 255);
+
         public AppShell()
         {
             Title = "Portajel";
@@ -22,9 +24,16 @@ namespace Portajel
             Routing.RegisterRoute("settings/debug/map", typeof(DebugMap));
             Routing.RegisterRoute("settings/debug/database", typeof(DebugDatabase));
 
+            var imageColor = Microsoft.Maui.Controls.Application.Current.Resources.TryGetValue("PrimaryDark", out object primaryColor);
+            if (imageColor)
+            {
+                _primaryDark = (Color)primaryColor;
+            }
+
             if (DeviceInfo.Platform == DevicePlatform.WinUI)
             {
                 FlyoutBehavior = FlyoutBehavior.Locked;
+                FlyoutBackdrop = _primaryDark;
                 foreach (var item in DesktopTargetUI())
                 {
                     Items.Add(item);

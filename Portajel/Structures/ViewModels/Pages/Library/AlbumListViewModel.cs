@@ -7,19 +7,13 @@ namespace Portajel.Structures.ViewModels.Pages.Library
 {
     public partial class AlbumListViewModel : ObservableObject
     {
-        private IDbConnector _database;
-        public AlbumListViewModel(IDbConnector database)
+        private IDbItemConnector _database;
+        public AlbumListViewModel(IDbItemConnector database)
         {
             _database = database;
             Adapter = new MusicItemAdaptor(_database);
-            Init();
         }
 
-        private async void Init()
-        {
-            var total = _database.GetDataConnectors()["Album"].GetTotalCount();
-            Adapter = new MusicItemAdaptor(_database, total);
-        }
 
         [ObservableProperty]
         MusicItemAdaptor? adapter;

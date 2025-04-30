@@ -52,7 +52,8 @@ public class ConnectionsPage : ContentPage
             Text = "Add Connection",
             Command = new Command(async () =>
             {
-                JellyfinServerConnector newServer = new JellyfinServerConnector(_database);
+                string dataPath = FileSystem.AppDataDirectory;
+                JellyfinServerConnector newServer = new JellyfinServerConnector(_database, appDataPath: dataPath);
                 await Navigation.PushModalAsync(new ModalAddServer(_server, newServer) { OnLoginSuccess = ((e) => { BuildUI(); }) }, true);
             })
         });

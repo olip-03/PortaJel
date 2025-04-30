@@ -14,6 +14,7 @@ using Portajel.Pages;
 using Portajel.Components;
 using Portajel.Structures.ViewModels.Pages.Library;
 using Portajel.Pages.Library;
+using FFImageLoading.Maui;
 
 namespace Portajel
 {
@@ -24,6 +25,7 @@ namespace Portajel
             // Todo: UpdateDb minimum version requirements so this messaage goes away
             builder
                 .UseMauiApp<App>()
+                .UseFFImageLoading()
                 .UseVirtualListView()
                 .UseMauiCommunityToolkit()
                 .UseSkiaSharp()
@@ -34,7 +36,8 @@ namespace Portajel
                     fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
                     fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
                 });
-            #if DEBUG
+
+#if DEBUG
             builder.Logging.AddDebug();
             #endif
             return builder;
@@ -54,6 +57,10 @@ namespace Portajel
             mauiAppBuilder.Services.AddSingleton<ConnectionsPage>();
             mauiAppBuilder.Services.AddSingleton<DebugDatabase>();
             mauiAppBuilder.Services.AddSingleton<AlbumListPage>();
+            mauiAppBuilder.Services.AddSingleton<ArtistListPage>();
+            mauiAppBuilder.Services.AddSingleton<GenreListPage>();
+            mauiAppBuilder.Services.AddSingleton<PlaylistListPage>();
+            mauiAppBuilder.Services.AddSingleton<SongListPage>();
             return mauiAppBuilder;
         }
     }
