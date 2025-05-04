@@ -22,8 +22,7 @@ public partial class AlbumListPage : ContentPage
         InitializeComponent();
         BindingContext = _vm;
 
-        ImageService.Instance.SetPauseWork(false);
-        var list = vlv;
+        //ImageService.Instance.SetPauseWork(true);
     }
 
     protected override void OnNavigatedTo(NavigatedToEventArgs args)

@@ -48,12 +48,12 @@
                                         Margin="10"
                                         MaximumWidthRequest="210"
                                         InputTransparent="True">
-                                        <Image
+                                        <!--<Image
                                             Source="{Binding ImgSource}"
                                             BackgroundColor="LightBlue"
                                             Aspect="AspectFill"
                                             WidthRequest="200"
-                                            HeightRequest="200"/>
+                                            HeightRequest="200"/>-->
                                         <Label 
                                             Text="{Binding Name}" 
                                             FontSize="16"

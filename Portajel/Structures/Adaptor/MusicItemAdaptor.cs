@@ -31,6 +31,7 @@ namespace Portajel.Structures.Adaptor
         public override BaseData GetItem(int sectionIndex, int itemIndex)
         {
             var result = _database.GetAll(limit: 1, startIndex: itemIndex, setSortOrder: SortOrder.Descending, setSortTypes: ItemSortBy.Name).First();
+            result.Index = itemIndex;
             return result ?? AlbumData.Empty;
         }
         public override int GetNumberOfItemsInSection(int sectionIndex)

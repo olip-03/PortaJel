@@ -4,27 +4,59 @@
 	xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
 	xmlns:vlv="clr-namespace:Microsoft.Maui.Controls;assembly=VirtualListView"
     xmlns:music="clr-namespace:Portajel.Connections.Database;assembly=Portajel.Connections"
-	xmlns:local="clr-namespace:VirtualListViewSample"
-	x:Class="VirtualListViewSample.GenericViewCell"
+	xmlns:local="clr-namespace:Portajel.Components"
+    xmlns:ffimageloading="clr-namespace:FFImageLoading.Maui;assembly=FFImageLoading.Maui"
+	x:Class="Portajel.Components.GenericViewCell"
 	x:Name="self"
-	UnselectedBackground="#ffffff"
-	SelectedBackground="#efefef"
+    HorizontalOptions="Fill"
 	SemanticProperties.Description="{Binding Name}"
 	SemanticProperties.HeadingLevel="Level3"
 	x:DataType="music:AlbumData">
-	<vlv:VirtualViewCell.Content>
-		<Grid RowDefinitions="Auto, Auto" ColumnDefinitions="Auto,*">
-			<ContentView
-				Grid.Row="0"
-				Grid.Column="0"
-				Grid.ColumnSpan="2"
-				HorizontalOptions="Fill"
-				HeightRequest="1.4"
-				Background="#f8f8f8"
-				IsVisible="{DynamicResource IsNotFirstItemInSection}" />
-
-			<Label Text="{Binding Index}" Grid.Row="1" Grid.Column="0" FontSize="20" TextColor="#afafaf" Margin="8,6,0,6" VerticalOptions="Center" HorizontalOptions="End" />
-            <Label Text="{Binding Name}" TextColor="Black" Grid.Column="1" Grid.Row="1" FontSize="20" Margin="8,6,0,6"  />
+    <vlv:VirtualViewCell.Content>
+        <Grid ColumnDefinitions="84, Auto" 
+              RowDefinitions="42, 42" 
+              HorizontalOptions="Fill">
+            <Button 
+                Grid.Row="0"
+                Grid.Column="0"
+                Grid.ColumnSpan="2"
+                Grid.RowSpan="2"
+                BackgroundColor="Transparent"
+                HorizontalOptions="Fill"
+                ZIndex="0">
+            </Button>
+            
+            <ffimageloading:CachedImage 
+                x:Name="Image"
+                Grid.Column="0"
+                Grid.RowSpan="2"
+                LoadingPlaceholder="{Binding ImgBlurhashSource}"
+                LoadingDelay="500"
+                CacheType="Memory"
+                RetryCount="0"
+                FadeAnimationForCachedImages="False"
+                LoadingPriority="Lowest"
+                Source="{Binding ImgSource}"
+                HeightRequest="64"
+                WidthRequest="64"
+                BitmapOptimizations="True"
+                DownsampleToViewSize="True"
+                ZIndex="10">
+            </ffimageloading:CachedImage>
+            <Label 
+                    VerticalOptions="End"
+                    Grid.Column="1"
+                    Text="{Binding Name}" 
+                    FontSize="16"
+                    FontAttributes="Bold"
+                    LineBreakMode="TailTruncation"
+                    MaxLines="1"/>
+            <Label 
+                                    Grid.Column="1"
+                                    Grid.Row="1"
+                    Text="{Binding ArtistNames}"
+                    LineBreakMode="TailTruncation"
+                    MaxLines="1"/>
         </Grid>
-	</vlv:VirtualViewCell.Content>
+    </vlv:VirtualViewCell.Content>
 </vlv:VirtualViewCell>

@@ -5,6 +5,7 @@ using Portajel.Connections.Structs;
 using Portajel.Connections.Services;
 using SkiaSharp;
 using System.IO;
+using Portajel.Connections.Enum;
 
 namespace Portajel.Connections.Database
 {
@@ -17,6 +18,7 @@ namespace Portajel.Connections.Database
         public string? BackgroundImgBlurhashSource { get; set; }
         public bool IsPartial { get; set; } = true;
         public string AlbumIdsJson { get; set;} = string.Empty;
+        public override MediaTypes MediaType { get; set; } = MediaTypes.Artist;
         public static ArtistData Empty { get; } = new();
 
         public Guid[] GetAlbumIds()

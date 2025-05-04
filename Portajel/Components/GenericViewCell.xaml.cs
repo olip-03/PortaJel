@@ -10,11 +10,10 @@ using Microsoft.Maui.Controls;
 using Microsoft.Maui.Controls.Xaml;
 using NetTopologySuite.Index.HPRtree;
 
-namespace VirtualListViewSample
+namespace Portajel.Components
 {
     public partial class GenericViewCell : VirtualViewCell
     {
-        readonly CachedImage cachedImage = null;
         public GenericViewCell()
         {
             InitializeComponent();
@@ -23,14 +22,14 @@ namespace VirtualListViewSample
         protected override void OnBindingContextChanged()
         {
             // you can also put cachedImage.Source = null; here to prevent showing old images occasionally
-            cachedImage.Source = null;
+            Image.Source = null;
             var item = BindingContext as AlbumData;
 
             if (item == null)
             {
                 return;
             }
-            cachedImage.Source = item.ImgSource;
+            Image.Source = item.ImgSource;
             base.OnBindingContextChanged();
         }
     }

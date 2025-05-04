@@ -1,5 +1,6 @@
 ﻿using Portajel.Connections.Data;
 using Portajel.Connections.Database;
+using Portajel.Connections.Enum;
 using SkiaSharp;
 using SQLite;
 
@@ -9,7 +10,9 @@ namespace Portajel.Connections.Structs
     {
         [PrimaryKey, AutoIncrement] public virtual Guid? Id { get; set; }
         public Guid ServerId { get; set; }
+        public virtual MediaTypes MediaType { get; set; } = MediaTypes.Album;
         [Indexed] public string Name { get; set; } = string.Empty;
+        public int Index { get; set; }
         public bool IsFavourite { get; set; }
         public int PlayCount { get; set; }
         public DateTimeOffset? DateAdded { get; set; }

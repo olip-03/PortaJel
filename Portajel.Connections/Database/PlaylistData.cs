@@ -3,6 +3,7 @@ using SQLite;
 using System.Text.Json;
 using Portajel.Connections.Structs;
 using Portajel.Connections.Services;
+using Portajel.Connections.Enum;
 
 namespace Portajel.Connections.Database
 {
@@ -12,6 +13,7 @@ namespace Portajel.Connections.Database
         public string SongIdsJson { get; set; } = string.Empty;
         public string Path { get; set; } = string.Empty;
         public bool IsPartial { get; set; } = true;
+        public override MediaTypes MediaType { get; set; } = MediaTypes.Playlist;
         public static PlaylistData Empty { get; set; } = new();
         public Guid[] GetSongIds()
         {
