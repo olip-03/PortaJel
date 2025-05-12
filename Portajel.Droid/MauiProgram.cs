@@ -11,6 +11,8 @@ using PortaJel.Droid.Services;
 using Portajel.Structures.Functional;
 using Portajel.Services;
 using Microsoft.Maui.Handlers;
+using Portajel.Components;
+using Portajel.Droid.Render;
 
 namespace Portajel.Droid
 {
@@ -39,8 +41,10 @@ namespace Portajel.Droid
             builder.Services.AddSingleton<IMediaController, MediaController>();
             builder.Services.AddSingleton<DroidServiceBinder>();
             builder.UseSharedMauiApp();
-
-
+                //.ConfigureMauiHandlers((handlers) =>
+                //{
+                //    handlers.AddHandler(typeof(BottomNavBar), typeof(NavShellRenderer));
+                //});
             return builder.Build();
         }
     }

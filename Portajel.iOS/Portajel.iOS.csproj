@@ -21,4 +21,8 @@
 		<ProjectReference Include="..\Portajel\Portajel.csproj" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <Folder Include="Render\" />
+	</ItemGroup>
+
 </Project>

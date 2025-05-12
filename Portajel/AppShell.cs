@@ -6,6 +6,7 @@ using System.Diagnostics;
 using Microsoft.Maui.Controls.PlatformConfiguration.AndroidSpecific;
 using ShellItem = Microsoft.Maui.Controls.ShellItem;
 using Portajel.Pages.Views;
+using Portajel.Components;
 
 namespace Portajel
 {
@@ -47,7 +48,6 @@ namespace Portajel
                 foreach (var item in MobileTargetUI())
                 {
                     Items.Add(item);
-                    Padding = new Thickness(64);
                 }
             }            
         }
@@ -166,7 +166,6 @@ namespace Portajel
         private ShellItem[] MobileTargetUI()
         {
             var tabBar = new TabBar();
-
             var homeTab = new Tab
             {
                 Title = "Home",

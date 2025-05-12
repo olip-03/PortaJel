@@ -5,6 +5,7 @@
 		android:icon="@mipmap/appicon"
 		android:label="PortaJel"
 		android:supportsRtl="true"
+		android:hardwareAccelerated="true"
 		android:usesCleartextTraffic="true"
 		android:debuggable="true">
 		<service

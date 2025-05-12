@@ -24,16 +24,25 @@ namespace Portajel.Droid
 
                 // This is the core call to enable edge-to-edge
                 WindowCompat.SetDecorFitsSystemWindows(Window, false);
+                Window.SetFlags(WindowManagerFlags.HardwareAccelerated, WindowManagerFlags.HardwareAccelerated);
                 Window.SetFlags(WindowManagerFlags.LayoutNoLimits, WindowManagerFlags.LayoutNoLimits);
+                ViewCompat.SetOnApplyWindowInsetsListener(this.Window.DecorView, new WindowInsetsHandler());
 
-                // Optional: Make status and navigation bars transparent
-                // You might need to adjust colors based on your app's theme
                 activity.Window.SetStatusBarColor(Android.Graphics.Color.Transparent);
                 activity.Window.SetNavigationBarColor(Android.Graphics.Color.Transparent);
             }
-
-
             base.OnCreate(savedInstanceState);
+        }
+
+        public class WindowInsetsHandler : Java.Lang.Object, IOnApplyWindowInsetsListener
+        {
+            public WindowInsetsCompat OnApplyWindowInsets(Android.Views.View view, WindowInsetsCompat insets)
+            {
+                var systemBars = insets.GetInsets(WindowInsetsCompat.Type.SystemBars());
+                view.SetPadding(view.PaddingLeft, 0, view.PaddingRight, systemBars.Bottom);
+
+                return insets;
+            }
         }
 
         public Thickness GetSafeAreaInsets()
