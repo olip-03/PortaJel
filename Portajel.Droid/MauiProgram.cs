@@ -10,6 +10,7 @@ using Portajel.Droid.Services;
 using PortaJel.Droid.Services;
 using Portajel.Structures.Functional;
 using Portajel.Services;
+using Microsoft.Maui.Handlers;
 
 namespace Portajel.Droid
 {
@@ -38,6 +39,8 @@ namespace Portajel.Droid
             builder.Services.AddSingleton<IMediaController, MediaController>();
             builder.Services.AddSingleton<DroidServiceBinder>();
             builder.UseSharedMauiApp();
+
+
             return builder.Build();
         }
     }

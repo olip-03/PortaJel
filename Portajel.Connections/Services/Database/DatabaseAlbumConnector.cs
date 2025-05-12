@@ -13,9 +13,7 @@ namespace Portajel.Connections.Services.Database;
 public class DatabaseAlbumConnector : IDbItemConnector
 {
     private readonly SQLiteConnection _database;
-
     public MediaTypes MediaType { get; set; } = MediaTypes.Album;
-
     public DatabaseAlbumConnector(SQLiteConnection database)
     {
         _database = database;

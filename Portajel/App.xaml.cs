@@ -1,9 +1,12 @@
 ﻿using FFImageLoading;
 using FFImageLoading.Config;
+using Microsoft.Maui.Controls.PlatformConfiguration;
+using Microsoft.Maui.Handlers;
 using Portajel.Connections;
 using Portajel.Connections.Interfaces;
 using Portajel.Structures.Functional;
 using System.Diagnostics;
+using Microsoft.Maui.Platform;
 
 namespace Portajel
 {
@@ -55,6 +58,7 @@ namespace Portajel
             });
         }
 
+
         protected override Window CreateWindow(IActivationState? activationState)
         {
             Window window = new Window(new AppShell());
@@ -88,6 +92,7 @@ namespace Portajel
                     }
                 };
             }
+
             return window;
         }
     }

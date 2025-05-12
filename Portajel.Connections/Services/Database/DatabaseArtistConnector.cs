@@ -34,28 +34,31 @@ public class DatabaseArtistConnector : IDbItemConnector
         {
             case ItemSortBy.DateCreated:
                 filteredCache.AddRange(_database.Table<ArtistData>()
-                    .OrderByDescending(album => album.DateAdded)
+                    .OrderBy(album => album.DateAdded)
+                    .Skip(startIndex)
                     .Take((int)limit).ToList());
                 break;
             case ItemSortBy.Name:
                 filteredCache.AddRange(_database.Table<ArtistData>()
-                    .OrderByDescending(album => album.Name)
+                    .OrderBy(album => album.Name)
+                    .Skip(startIndex)
                     .Take((int)limit).ToList());
                 break;
             case ItemSortBy.Random:
                 var firstTake = _database.Table<ArtistData>().ToList();
                 filteredCache = firstTake
                     .OrderBy(AlbumData => Guid.NewGuid())
+                    .Skip(startIndex)
                     .Take((int)limit)
                     .ToList();
                 break;
             default:
                 filteredCache.AddRange(_database.Table<ArtistData>()
-                    .OrderByDescending(album => album.Name)
+                    .OrderBy(album => album.Name)
+                    .Skip(startIndex)
                     .Take((int)limit).ToList());
                 break;
         }
-
         return filteredCache.ToArray();
     }
     

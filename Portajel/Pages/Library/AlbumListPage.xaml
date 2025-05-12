@@ -18,7 +18,9 @@
             <converters:ImageUrlConverter x:Key="ImageUrlConverter" />
         </ResourceDictionary>
     </ContentPage.Resources>
-    <vlv:VirtualListView
+
+    <Grid HorizontalOptions="Fill" VerticalOptions="Fill"> 
+        <vlv:VirtualListView
         x:Name="vlv"
         HorizontalOptions="Fill"
         VerticalOptions="Fill"
@@ -27,5 +29,7 @@
         Adapter="{Binding Adapter}"
         SelectionMode="None"
         ItemTemplateSelector="{StaticResource itemTemplateSelector}">
-    </vlv:VirtualListView>
+        </vlv:VirtualListView>
+    </Grid>
+
 </ContentPage>

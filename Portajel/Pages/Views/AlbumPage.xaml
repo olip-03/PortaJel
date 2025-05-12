@@ -1,12 +1,76 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:music="clr-namespace:Portajel.Connections.Database;assembly=Portajel.Connections"
+             xmlns:ffimageloading="clr-namespace:FFImageLoading.Maui;assembly=FFImageLoading.Maui"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
              x:Class="Portajel.Pages.Views.AlbumPage"
-             Title="AlbumPage">
-    <VerticalStackLayout>
-        <Label 
-            Text="Welcome to .NET MAUI!"
-            VerticalOptions="Center" 
-            HorizontalOptions="Center" />
-    </VerticalStackLayout>
+             Shell.NavBarIsVisible="false"
+             x:DataType="music:AlbumData">
+    <ScrollView>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <Grid BackgroundColor="Pink">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="64"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="64"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                
+                <Grid                     
+                    Grid.Row="0"
+                     Grid.Column="0"
+                     ZIndex="10"
+                     WidthRequest="48"
+                     HeightRequest="48">
+                    <Button 
+                        BackgroundColor="Transparent"
+                        CornerRadius="50">
+                    </Button>
+                    <Image Source="arrowback.png" WidthRequest="32" >
+                        <Image.Behaviors>
+                            <toolkit:IconTintColorBehavior TintColor="{StaticResource Primary}" />
+                        </Image.Behaviors>
+                    </Image>
+                </Grid>
+
+                <Image Source="{Binding ImgBlurhashSource}"
+                    ZIndex="0"
+                    Grid.RowSpan="2"
+                    Grid.ColumnSpan="2"/>
+            </Grid>
+
+            <VerticalStackLayout Grid.Row="0" Padding="12" ZIndex="1">
+                <ffimageloading:CachedImage 
+                     x:Name="Image"
+                     Grid.Column="0"
+                     Grid.RowSpan="2"
+                     Grid.ColumnSpan="2"
+                     LoadingDelay="500"
+                     CacheType="Memory"
+                     RetryCount="0"
+                     WidthRequest="256"
+                     FadeAnimationForCachedImages="False"
+                     LoadingPriority="Highest"
+                     Source="{Binding ImgSource}"
+                     Aspect="Fill"
+                     BitmapOptimizations="True"
+                     DownsampleToViewSize="False"
+                     ZIndex="5">
+                </ffimageloading:CachedImage>
+                
+                <Label Text="{Binding Name}" FontSize="Large" Margin="6, 0"/>
+                <Label Text="{Binding ArtistNames}" FontSize="Medium"/>
+            </VerticalStackLayout>
+        </Grid>
+    </ScrollView>
 </ContentPage>

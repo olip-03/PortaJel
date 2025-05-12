@@ -32,6 +32,7 @@ public class DatabasePlaylistConnector : IDbItemConnector, IMediaPlaylistInterfa
         List<PlaylistData> filteredCache = [];
         filteredCache.AddRange(_database.Table<PlaylistData>()
             .OrderByDescending(playlist => playlist.Name)
+            .Skip(startIndex)
             .Take(limit.Value).ToList());
         return filteredCache.ToArray();
     }

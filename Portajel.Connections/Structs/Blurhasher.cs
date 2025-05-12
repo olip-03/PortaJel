@@ -1,5 +1,6 @@
 ﻿using Blurhash;
 using Jellyfin.Sdk.Generated.Models;
+using Portajel.Connections.Database;
 using Portajel.Connections.Interfaces;
 using SkiaSharp;
 using System;
@@ -15,12 +16,22 @@ namespace Portajel.Connections.Structs
 
             Parallel.ForEach(musicItems, music =>
             {
+                var fileName = $"{music.Id}_{music.ServerId}.png";
+                var filePath = Path.Combine(path, fileName);
+
+                if (music is SongData song)
+                {
+                    fileName = $"{song.AlbumId}_{music.ServerId}.png";
+                    filePath = Path.Combine(path, fileName);
+
+                    music.ImgBlurhashSource = filePath;
+                    return;
+                }
                 if (!string.IsNullOrWhiteSpace(music.ImgBlurhashSource))
                 {
                     return;
                 }
-                var fileName = $"{music.Id}_{music.ServerId}.png";
-                var filePath = Path.Combine(path, fileName);
+
 
                 if (string.IsNullOrEmpty(music.ImgBlurhash))
                 {

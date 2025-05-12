@@ -82,9 +82,9 @@ public partial class DebugDatabase : ContentPage, IDisposable
                 {
                     if(item.Value != null)
                     {
-                        //string json = JsonSerializer.Serialize(item.Value.SyncStatusInfo, new JsonSerializerOptions { WriteIndented = true });
+                        //string json = JsonSerializer.Serialize(ItemData.Value.SyncStatusInfo, new JsonSerializerOptions { WriteIndented = true });
                         //System.Diagnostics.Debug.WriteLine(json);
-                        //combination += item.Key + "\n";
+                        //combination += ItemData.Key + "\n";
                         //combination += json + "\n";
                         combination += $"{item.Key}\n";
                         combination += $"Status: {GetFriendlyTaskStatus(item.Value.SyncStatusInfo.TaskStatus)}\n";

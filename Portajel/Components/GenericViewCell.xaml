@@ -8,15 +8,17 @@
     xmlns:ffimageloading="clr-namespace:FFImageLoading.Maui;assembly=FFImageLoading.Maui"
 	x:Class="Portajel.Components.GenericViewCell"
 	x:Name="self"
+    Opacity="1"
     HorizontalOptions="Fill"
 	SemanticProperties.Description="{Binding Name}"
 	SemanticProperties.HeadingLevel="Level3"
 	x:DataType="music:AlbumData">
     <vlv:VirtualViewCell.Content>
-        <Grid ColumnDefinitions="84, Auto" 
+        <Grid ColumnDefinitions="84, *" 
               RowDefinitions="42, 42" 
               HorizontalOptions="Fill">
             <Button 
+                Clicked="Button_Clicked"
                 Grid.Row="0"
                 Grid.Column="0"
                 Grid.ColumnSpan="2"
@@ -30,7 +32,6 @@
                 x:Name="Image"
                 Grid.Column="0"
                 Grid.RowSpan="2"
-                LoadingPlaceholder="{Binding ImgBlurhashSource}"
                 LoadingDelay="500"
                 CacheType="Memory"
                 RetryCount="0"
@@ -39,24 +40,32 @@
                 Source="{Binding ImgSource}"
                 HeightRequest="64"
                 WidthRequest="64"
+                Aspect="Fill"
                 BitmapOptimizations="True"
                 DownsampleToViewSize="True"
                 ZIndex="10">
             </ffimageloading:CachedImage>
+            <Image Source="{Binding ImgBlurhashSource}"
+                   Aspect="Fill"
+                   Grid.Column="0"
+                   Grid.RowSpan="2"
+                   HeightRequest="64"
+                   WidthRequest="64"
+                   ZIndex="5"/>
             <Label 
-                    VerticalOptions="End"
-                    Grid.Column="1"
-                    Text="{Binding Name}" 
-                    FontSize="16"
-                    FontAttributes="Bold"
-                    LineBreakMode="TailTruncation"
-                    MaxLines="1"/>
+                VerticalOptions="End"
+                Grid.Column="1"
+                Text="{Binding Name}" 
+                FontSize="16"
+                FontAttributes="Bold"
+                LineBreakMode="TailTruncation"
+                MaxLines="1"/>
             <Label 
-                                    Grid.Column="1"
-                                    Grid.Row="1"
-                    Text="{Binding ArtistNames}"
-                    LineBreakMode="TailTruncation"
-                    MaxLines="1"/>
+                Grid.Column="1"
+                Grid.Row="1"
+                Text="{Binding ArtistNames}"
+                LineBreakMode="TailTruncation"
+                MaxLines="1"/>
         </Grid>
     </vlv:VirtualViewCell.Content>
 </vlv:VirtualViewCell>
