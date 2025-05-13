@@ -5,8 +5,11 @@
              xmlns:components="clr-namespace:Portajel.Components"
              xmlns:local="clr-namespace:Portajel.Pages"
              x:DataType="local:SearchPageViewModel"
-             x:Class="Portajel.Pages.SearchPage"
-             Title="SearchPage">
+             x:Class="Portajel.Pages.SearchPage">
+    <Shell.TitleView>
+        <Grid/>
+    </Shell.TitleView>
+    
     <Grid RowDefinitions="Auto,*" 
           RowSpacing="0">
         <SearchBar Grid.Row="0"

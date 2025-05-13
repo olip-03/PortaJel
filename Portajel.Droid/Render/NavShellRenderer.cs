@@ -11,7 +11,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-[assembly: ExportRenderer(typeof(AppShell), typeof(NavShellRenderer))]
+// https://vladislavantonyuk.github.io/articles/Customizing-.NET-MAUI-Shell/
+// [assembly: ExportRenderer(typeof(AppShell), typeof(NavShellRenderer))]
 namespace Portajel.Droid.Render
 {
     public class NavShellRenderer : ShellRenderer
@@ -22,7 +23,7 @@ namespace Portajel.Droid.Render
 
         protected override IShellBottomNavViewAppearanceTracker CreateBottomNavViewAppearanceTracker(ShellItem shellItem)
         {
-            return new BottomNavViewAppearanceTracker(this, shellItem);
+            return new BottomNavViewAppearanceTracker(this, shellItem.CurrentItem);
         }
     }
 }

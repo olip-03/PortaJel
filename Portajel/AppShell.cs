@@ -165,7 +165,7 @@ namespace Portajel
         }
         private ShellItem[] MobileTargetUI()
         {
-            var tabBar = new TabBar();
+            var tabBar = new BottomNavBar();
             var homeTab = new Tab
             {
                 Title = "Home",

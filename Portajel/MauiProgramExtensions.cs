@@ -35,11 +35,12 @@ namespace Portajel
                 {
                     fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
                     fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
-                });
+                })
+                ;
 
 #if DEBUG
             builder.Logging.AddDebug();
-            #endif
+#endif
             return builder;
         }
 

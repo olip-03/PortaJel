@@ -10,8 +10,10 @@
              xmlns:converters="clr-namespace:Portajel.Structures.Converters"
              xmlns:ffimageloading="clr-namespace:FFImageLoading.Maui;assembly=FFImageLoading.Maui"
              x:Class="Portajel.Pages.Library.AlbumListPage"
-             x:DataType="local:AlbumListViewModel"
-             Title="AlbumListPage">
+             x:DataType="local:AlbumListViewModel">
+    <Shell.TitleView>
+        <Grid/>
+    </Shell.TitleView>
     <ContentPage.Resources>
         <ResourceDictionary>
             <adaptors:ItemTemplateSelector x:Key="itemTemplateSelector" />

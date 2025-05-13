@@ -40,11 +40,11 @@ namespace Portajel.Droid
 
             builder.Services.AddSingleton<IMediaController, MediaController>();
             builder.Services.AddSingleton<DroidServiceBinder>();
-            builder.UseSharedMauiApp();
-                //.ConfigureMauiHandlers((handlers) =>
-                //{
-                //    handlers.AddHandler(typeof(BottomNavBar), typeof(NavShellRenderer));
-                //});
+            builder.UseSharedMauiApp().ConfigureMauiHandlers((handlers) =>
+            {
+                handlers.AddHandler(typeof(AppShell), typeof(NavShellRenderer));
+            });
+
             return builder.Build();
         }
     }
