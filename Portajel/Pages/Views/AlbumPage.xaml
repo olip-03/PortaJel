@@ -1,22 +1,32 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:Portajel.Structures.ViewModels.Pages.Views"
              xmlns:music="clr-namespace:Portajel.Connections.Database;assembly=Portajel.Connections"
+             xmlns:adaptors="clr-namespace:Portajel.Structures.Adaptor"
              xmlns:ffimageloading="clr-namespace:FFImageLoading.Maui;assembly=FFImageLoading.Maui"
              xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             xmlns:vlv="clr-namespace:Microsoft.Maui.Controls;assembly=VirtualListView"
              x:Class="Portajel.Pages.Views.AlbumPage"
-             Shell.NavBarIsVisible="false"
-             x:DataType="music:AlbumData">
+             Shell.NavBarIsVisible="False"
+             x:DataType="vm:AlbumPageViewModel">
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <adaptors:ItemTemplateSelector x:Key="itemTemplateSelector" />
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
     <ScrollView>
         <Grid>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
+                <RowDefinition Height="64"/>
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
 
-            <Grid BackgroundColor="Pink">
+            <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="64"/>
                     <ColumnDefinition Width="*"/>
@@ -27,16 +37,17 @@
                 </Grid.RowDefinitions>
                 
                 <Grid                     
-                    Grid.Row="0"
+                    Grid.Row="1"
                      Grid.Column="0"
                      ZIndex="10"
+                     VerticalOptions="Start"
                      WidthRequest="48"
                      HeightRequest="48">
-                    <Button 
+                    <Button InputTransparent="False"
                         BackgroundColor="Transparent"
                         CornerRadius="50">
                     </Button>
-                    <Image Source="arrowback.png" WidthRequest="32" >
+                    <Image Source="arrowback.png" WidthRequest="32" InputTransparent="True">
                         <Image.Behaviors>
                             <toolkit:IconTintColorBehavior TintColor="{StaticResource Primary}" />
                         </Image.Behaviors>
@@ -44,32 +55,70 @@
                 </Grid>
 
                 <Image Source="{Binding ImgBlurhashSource}"
-                    ZIndex="0"
-                    Grid.RowSpan="2"
-                    Grid.ColumnSpan="2"/>
+                       ZIndex="0"
+                       Grid.RowSpan="2"
+                       Grid.ColumnSpan="2">
+                </Image>
+
+                <BoxView Grid.RowSpan="2"
+                        Grid.ColumnSpan="2">
+                    <BoxView.Background>
+                        <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                            <GradientStop Color="{StaticResource OffBlack}" Offset="0.0" />
+                            <GradientStop Color="Transparent" Offset="0.1" />
+                            <GradientStop Color="{StaticResource OffBlack}" Offset="1.0" />
+                        </LinearGradientBrush>
+                    </BoxView.Background>
+                </BoxView>
             </Grid>
 
-            <VerticalStackLayout Grid.Row="0" Padding="12" ZIndex="1">
-                <ffimageloading:CachedImage 
-                     x:Name="Image"
-                     Grid.Column="0"
-                     Grid.RowSpan="2"
-                     Grid.ColumnSpan="2"
-                     LoadingDelay="500"
-                     CacheType="Memory"
-                     RetryCount="0"
-                     WidthRequest="256"
-                     FadeAnimationForCachedImages="False"
-                     LoadingPriority="Highest"
-                     Source="{Binding ImgSource}"
-                     Aspect="Fill"
-                     BitmapOptimizations="True"
-                     DownsampleToViewSize="False"
-                     ZIndex="5">
-                </ffimageloading:CachedImage>
-                
-                <Label Text="{Binding Name}" FontSize="Large" Margin="6, 0"/>
-                <Label Text="{Binding ArtistNames}" FontSize="Medium"/>
+            <VerticalStackLayout  Grid.Row="0" Padding="12, 64" ZIndex="0">
+                <Grid      
+                    Grid.RowSpan="2"
+                    Grid.ColumnSpan="2"
+                    WidthRequest="256">
+                    <Image Source="{Binding ImgBlurhashSource}"
+                        ZIndex="1"
+                        WidthRequest="256"
+                        HeightRequest="256"
+                        Aspect="Fill"
+                        Grid.RowSpan="2"
+                        Grid.ColumnSpan="2"/>
+                    <ffimageloading:CachedImage 
+                         x:Name="Image"
+                         Grid.Column="0"
+                         LoadingDelay="500"
+                         CacheType="Memory"
+                         WidthRequest="256"
+                         HeightRequest="256"
+                         Aspect="Fill"
+                         RetryCount="0"
+                         FadeAnimationForCachedImages="False"
+                         LoadingPriority="Highest"
+                         Source="{Binding ImgSource}"
+                         BitmapOptimizations="True"
+                         DownsampleToViewSize="False"
+                         ZIndex="5">
+                    </ffimageloading:CachedImage>
+                </Grid>
+                <Label Text="{Binding Name}" FontSize="32"  HorizontalTextAlignment="Center" Margin="12"/>
+                <Label Text="{Binding ArtistNames}" TextColor="{StaticResource Gray300}" HorizontalTextAlignment="Center" FontSize="Medium"/>
+                <HorizontalStackLayout HorizontalOptions="Center" Margin="24" Grid.Column="1">
+                    <Button></Button>
+                    <Button></Button>
+                    <Button Text="Play"></Button>
+                    <Button></Button>
+                    <Button></Button>
+                </HorizontalStackLayout>
+                <vlv:VirtualListView
+                x:Name="vlv"
+                HorizontalOptions="Fill"
+                VerticalOptions="Fill"
+                IsRefreshEnabled="True"
+                Adapter="{Binding Songs}"
+                SelectionMode="None"
+                ItemTemplateSelector="{StaticResource itemTemplateSelector}">
+                </vlv:VirtualListView>
             </VerticalStackLayout>
         </Grid>
     </ScrollView>

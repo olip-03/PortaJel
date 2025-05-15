@@ -20,6 +20,7 @@ namespace Portajel
             string mainDir = FileSystem.Current.AppDataDirectory;
 
             // Fire & forget
+            Sharpnado.Tabs.Initializer.Initialize(false, false);
             StartupAsync(serverConnector, dbConnector);
         }
 

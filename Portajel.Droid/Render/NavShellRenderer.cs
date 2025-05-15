@@ -25,5 +25,10 @@ namespace Portajel.Droid.Render
         {
             return new BottomNavViewAppearanceTracker(this, shellItem.CurrentItem);
         }
+
+        protected override IShellToolbarAppearanceTracker CreateToolbarAppearanceTracker()
+        {
+            return new ToolbarAppearanceTracker(this);
+        }
     }
 }

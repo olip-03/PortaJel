@@ -20,61 +20,18 @@ namespace Portajel.Droid
             var activity = this;
             if (activity?.Window != null)
             {
-                var test = GetSafeAreaInsets();
-
                 // This is the core call to enable edge-to-edge
                 WindowCompat.SetDecorFitsSystemWindows(Window, false);
                 Window.SetFlags(WindowManagerFlags.HardwareAccelerated, WindowManagerFlags.HardwareAccelerated);
                 Window.SetFlags(WindowManagerFlags.LayoutNoLimits, WindowManagerFlags.LayoutNoLimits);
-                ViewCompat.SetOnApplyWindowInsetsListener(this.Window.DecorView, new WindowInsetsHandler());
 
                 activity.Window.SetStatusBarColor(Android.Graphics.Color.Transparent);
                 activity.Window.SetNavigationBarColor(Android.Graphics.Color.Transparent);
             }
             base.OnCreate(savedInstanceState);
         }
-
-        public class WindowInsetsHandler : Java.Lang.Object, IOnApplyWindowInsetsListener
-        {
-            public WindowInsetsCompat OnApplyWindowInsets(Android.Views.View view, WindowInsetsCompat insets)
-            {
-                var systemBars = insets.GetInsets(WindowInsetsCompat.Type.SystemBars());
-                view.SetPadding(view.PaddingLeft, 0, view.PaddingRight, systemBars.Bottom);
-
-                return insets;
-            }
-        }
-
-        public Thickness GetSafeAreaInsets()
-        {
-            if (DeviceInfo.Platform != DevicePlatform.Android)
-                return new Thickness(0);
-
-            var activity = this;
-            var insets = AndroidX.Core.View.ViewCompat.GetRootWindowInsets(activity.Window.DecorView)
-                ?.GetInsets(AndroidX.Core.View.WindowInsetsCompat.Type.SystemBars());
-
-            Resources resources = ApplicationContext.Resources;
-            int resourceId = resources.GetIdentifier("navigation_bar_height", "dimen", "android");
-            if (resourceId > 0)
-            {
-                var size = resources.GetDimensionPixelSize(resourceId);
-            }
-
-            if (insets == null)
-                return new Thickness(0);
-
-            return new Thickness(
-                insets.Left,
-                insets.Top,
-                insets.Right,
-                insets.Bottom);
-        }
-
-
         public override ActionMode? OnWindowStartingActionMode(ActionMode.ICallback? callback)
         {
-
             return base.OnWindowStartingActionMode(callback);
         }
     }

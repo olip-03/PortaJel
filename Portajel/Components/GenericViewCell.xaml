@@ -6,6 +6,7 @@
     xmlns:music="clr-namespace:Portajel.Connections.Database;assembly=Portajel.Connections"
 	xmlns:local="clr-namespace:Portajel.Components"
     xmlns:ffimageloading="clr-namespace:FFImageLoading.Maui;assembly=FFImageLoading.Maui"
+    xmlns:sn="clr-namespace:Sharpnado.Tasks;assembly=Sharpnado.TaskMonitor"
 	x:Class="Portajel.Components.GenericViewCell"
 	x:Name="self"
     Opacity="1"

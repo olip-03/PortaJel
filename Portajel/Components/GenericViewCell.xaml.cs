@@ -13,6 +13,8 @@ using Portajel.Structures;
 using Portajel.Connections;
 using Jellyfin.Sdk.Generated.Models;
 using Portajel.Connections.Structs;
+using Sharpnado.Tabs;
+using CommunityToolkit.Maui.Views;
 
 namespace Portajel.Components
 {

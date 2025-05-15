@@ -5,15 +5,13 @@
              xmlns:comp="clr-namespace:Portajel.Components"
              xmlns:music="clr-namespace:Portajel.Connections.Database;assembly=Portajel.Connections"
              x:Class="Portajel.Pages.HomePage"
-             x:DataType="local:HomePageViewModel">
-    <Shell.TitleView>
-        <Grid/>
-    </Shell.TitleView>
-    <!--<ContentPage.ToolbarItems>
+             x:DataType="local:HomePageViewModel"
+             Title="PortaJel">
+    <ContentPage.ToolbarItems>
         <ToolbarItem Text="Settings"
                      Clicked="NavigateSettings"
                      IconImageSource="settings.png" />
-    </ContentPage.ToolbarItems>-->
+    </ContentPage.ToolbarItems>
 
     <ScrollView x:Name="ScrollViewMain" Orientation="Vertical">
         <Grid>

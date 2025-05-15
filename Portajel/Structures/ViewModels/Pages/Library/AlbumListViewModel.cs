@@ -14,9 +14,8 @@ namespace Portajel.Structures.ViewModels.Pages.Library
             Adapter = new MusicItemAdaptor(_database);
         }
 
-
         [ObservableProperty]
-        MusicItemAdaptor? adapter;
+        public MusicItemAdaptor? adapter;
 
         [RelayCommand]
         async Task Refresh(Action completion)

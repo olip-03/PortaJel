@@ -1,6 +1,9 @@
 ﻿using Android.Graphics.Drawables;
 using Android.Views;
+using AndroidX.Core.View;
+using CommunityToolkit.Maui.Core.Platform;
 using Google.Android.Material.BottomNavigation;
+using Microsoft.Maui.Controls;
 using Microsoft.Maui.Controls.Platform;
 using Microsoft.Maui.Controls.Platform.Compatibility;
 using Microsoft.Maui.Platform;
@@ -22,25 +25,20 @@ namespace Portajel.Droid.Render
         public override void SetAppearance(BottomNavigationView bottomView, IShellAppearanceElement appearance)
         {
             base.SetAppearance(bottomView, appearance);
-            var backgroundDrawable = new GradientDrawable();
-            backgroundDrawable.SetShape(ShapeType.Rectangle);
-            backgroundDrawable.SetCornerRadius(30);
-            backgroundDrawable.SetColor(appearance.EffectiveTabBarBackgroundColor.ToPlatform());
-            bottomView.SetBackground(backgroundDrawable);
+
+            // var windowInsets = new WindowInsetsHandler();
+          
+            var nbId = bottomView.Resources.GetIdentifier("navigation_bar_height", "dimen", "android");
+            var navBar = bottomView.Resources.GetDimensionPixelSize(nbId);
+
             var layoutParams = bottomView.LayoutParameters;
             if (layoutParams is ViewGroup.MarginLayoutParams marginLayoutParams)
             {
-                var margin = 30;
-                marginLayoutParams.BottomMargin = margin;
-                marginLayoutParams.LeftMargin = margin;
-                marginLayoutParams.RightMargin = margin;
+                marginLayoutParams.BottomMargin = navBar;
+                marginLayoutParams.LeftMargin = 0;
+                marginLayoutParams.RightMargin = 0;
                 bottomView.LayoutParameters = layoutParams;
             }
-        }
-        protected override void SetBackgroundColor(BottomNavigationView bottomView, Color color)
-        {
-            base.SetBackgroundColor(bottomView, color);
-            bottomView.RootView?.SetBackgroundColor(shellContext.Shell.CurrentPage.BackgroundColor.ToPlatform());
         }
     }
 }
