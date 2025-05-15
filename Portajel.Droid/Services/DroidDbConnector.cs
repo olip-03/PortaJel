@@ -22,7 +22,7 @@ namespace Portajel.Services
             _serviceConnection.AppServiceConnection.Binder?.Database != null ? 
             _serviceConnection.AppServiceConnection.Binder.Database.GetDataConnectors() : 
             throw new Exception("Cannot retrieve value without Binder.");
-        public Task<BaseData[]> SearchAsync(
+        public Task<BaseData[]> Search(
             string searchTerm = "",
             int limit = 50, 
             int startIndex = 0, 
@@ -30,7 +30,7 @@ namespace Portajel.Services
             SortOrder setSortOrder = SortOrder.Ascending, 
             CancellationToken cancellationToken = default) => 
             _serviceConnection.AppServiceConnection.Binder?.Database != null ?
-            _serviceConnection.AppServiceConnection.Binder.Database.SearchAsync(
+            _serviceConnection.AppServiceConnection.Binder.Database.Search(
                 searchTerm, 
                 limit, 
                 startIndex, 

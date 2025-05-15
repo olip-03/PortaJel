@@ -12,7 +12,6 @@
              Title="Artist"
              x:Class="Portajel.Pages.Library.ArtistListPage"
              x:DataType="local:AlbumListViewModel">
-
     <ContentPage.Resources>
         <ResourceDictionary>
             <converters:ImageUrlConverter x:Key="ImageUrlConverter" />

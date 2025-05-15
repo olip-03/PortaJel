@@ -1,6 +1,7 @@
 using FFImageLoading;
 using FFImageLoading.Config;
 using Portajel.Connections.Interfaces;
+using Portajel.Connections.Services;
 using Portajel.Structures.Functional;
 using Portajel.Structures.ViewModels.Pages.Library;
 using System.Diagnostics;
@@ -9,25 +10,16 @@ namespace Portajel.Pages.Library;
 
 public partial class AlbumListPage : ContentPage
 {
+    private BaseLibraryPage baseLibraryPage = new();
+
     private double scroll = 0;
 
-    private ListHelper listHelper;
     private AlbumListViewModel _vm;
     private CancellationTokenSource CancellationTokenSource = new();
 
 	public AlbumListPage(IDbConnector database)
 	{
-        IConfiguration imgConfig = new Configuration();
-        imgConfig.DecodingMaxParallelTasks = 4;
-        imgConfig.VerboseLogging = false;
-        imgConfig.VerbosePerformanceLogging = false;
-        imgConfig.HttpHeadersTimeout = 15;
-        imgConfig.HttpReadTimeout = 15;
-        ImageService.Instance.Initialize(imgConfig);
-
-        listHelper = new(ImageService.Instance);
-
-        _vm = new(database.GetDataConnectors()["Album"]);
+        _vm = new(database.Connectors.Album);
         InitializeComponent();
         BindingContext = _vm;
 

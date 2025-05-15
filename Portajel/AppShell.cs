@@ -194,7 +194,7 @@ namespace Portajel
             libraryTab.Items.Add(new ShellContent
             {
                 Title = "Playlists",
-                ContentTemplate = new DataTemplate(typeof(Pages.Library.PlaylistListPage))
+                ContentTemplate = new DataTemplate(typeof(Pages.Library.AlbumListPage))
             });
             libraryTab.Items.Add(new ShellContent
             {
@@ -204,17 +204,17 @@ namespace Portajel
             libraryTab.Items.Add(new ShellContent
             {
                 Title = "Artists",
-                ContentTemplate = new DataTemplate(typeof(Pages.Library.ArtistListPage))
+                ContentTemplate = new DataTemplate(typeof(Pages.Library.AlbumListPage))
             });
             libraryTab.Items.Add(new ShellContent
             {
                 Title = "Songs",
-                ContentTemplate = new DataTemplate(typeof(Pages.Library.SongListPage))
+                ContentTemplate = new DataTemplate(typeof(Pages.Library.AlbumListPage))
             });
             libraryTab.Items.Add(new ShellContent
             {
                 Title = "Genres",
-                ContentTemplate = new DataTemplate(typeof(Pages.Library.GenreListPage))
+                ContentTemplate = new DataTemplate(typeof(Pages.Library.AlbumListPage))
             });
 
             tabBar.Items.Add(homeTab);

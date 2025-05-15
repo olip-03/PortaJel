@@ -39,7 +39,7 @@ public partial class HomePage : ContentPage
                 {
                     try
                     {
-                        albumConnector = _database.GetDataConnectors()["Album"];
+                        albumConnector = _GetDataConnectors()[MediaCapabilities.Album];
                         break;
                     }
                     catch (Exception)

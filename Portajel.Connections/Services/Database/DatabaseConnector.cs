@@ -21,16 +21,10 @@ namespace Portajel.Connections.Services.Database
         public IDbItemConnector PlaylistData { get; set; }
         public IDbItemConnector Genre { get; set; }
 
+        public DbConnectors Connectors { get; } 
+
         // TODO: Storing Radio Stations in Db
         // First we need to implement the API functions 
-        public Dictionary<string, IDbItemConnector> GetDataConnectors() => new()
-        {
-            { "Album", AlbumData },
-            { "Artist", ArtistData },
-            { "Song", SongData },
-            { "Playlist", PlaylistData },
-            { "Genre", Genre }
-        };
 
         public DatabaseConnector(string appDataDirectory)
         {
@@ -42,15 +36,18 @@ namespace Portajel.Connections.Services.Database
             Database.CreateTable<SongData>();
             Database.CreateTable<ArtistData>();
             Database.CreateTable<PlaylistData>();
+            Database.CreateTable<GenreData>();
 
-            AlbumData = new DatabaseAlbumConnector(Database);
-            ArtistData = new DatabaseArtistConnector(Database);
-            SongData = new DatabaseSongConnector(Database);
-            PlaylistData = new DatabasePlaylistConnector(Database);
-            Genre = new DatabaseGenreConnector(Database);
+            Connectors = new(
+                new DatabaseAlbumConnector(Database),
+                new DatabaseArtistConnector(Database),
+                new DatabaseSongConnector(Database),
+                new DatabasePlaylistConnector(Database),
+                new DatabaseGenreConnector(Database)
+            );
         }
 
-        public async Task<BaseData[]> SearchAsync(
+        public BaseData[] Search(
             string searchTerm = "", 
             int limit = 50, 
             int startIndex = 0,
@@ -69,7 +66,7 @@ namespace Portajel.Connections.Services.Database
             var resultList = new List<BaseData>();
 
             // Iterate over each data connector
-            foreach (var connectorPair in GetDataConnectors())
+            foreach (var connectorPair in Connectors.GetDataConnectors())
             {
                 try
                 {
@@ -80,35 +77,35 @@ namespace Portajel.Connections.Services.Database
 
                     switch (connectorName)
                     {
-                        case "Album":
+                        case MediaCapabilities.Album:
                             var matchingAlbums = Database.Table<AlbumData>()
                                 .Take(limit)
                                 .Where(item => item.Name.ToLower().Contains(searchTerm.ToLower()))
                                 .ToList();
                             resultList.AddRange(matchingAlbums);
                             break;
-                        case "Artist":
+                        case MediaCapabilities.Artist:
                             var matchingArtists = Database.Table<ArtistData>()
                                 .Take(limit)
                                 .Where(item => item.Name.ToLower().Contains(searchTerm.ToLower()))
                                 .ToList();
                             resultList.AddRange(matchingArtists);
                             break;
-                        case "Song":
+                        case MediaCapabilities.Song:
                             var matchingSongs = Database.Table<SongData>()
                                 .Take(limit)
                                 .Where(item => item.Name.ToLower().Contains(searchTerm.ToLower()))
                                 .ToList();
                             resultList.AddRange(matchingSongs);
                             break;
-                        case "Playlist":
+                        case MediaCapabilities.Playlist:
                             var matchingPlaylists = Database.Table<PlaylistData>()
                                 .Take(limit)
                                 .Where(item => item.Name.ToLower().Contains(searchTerm.ToLower()))
                                 .ToList();
                             resultList.AddRange(matchingPlaylists);
                             break;
-                        case "Genre":
+                        case MediaCapabilities.Genre:
                             // var matchingItems = (await Database.Table<GenreData>()
                             //     .Where(item => item.Name.ToLower().Contains(searchTerm.ToLower()))
                             //     .ToList()
@@ -120,7 +117,7 @@ namespace Portajel.Connections.Services.Database
                 }
                 catch 
                 {
-                    return [];
+                    return Array.Empty<BaseData>();
                 }
             }
 
