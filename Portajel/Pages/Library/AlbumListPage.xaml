@@ -12,7 +12,7 @@
              Shell.NavBarIsVisible="True"
              Title="Album"
              x:Class="Portajel.Pages.Library.AlbumListPage"
-             x:DataType="local:AlbumListViewModel">
+             x:DataType="local:DatabaseBindViewModel">
     <ContentPage.Resources>
         <ResourceDictionary>
             <adaptors:ItemTemplateSelector x:Key="itemTemplateSelector" />

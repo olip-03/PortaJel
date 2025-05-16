@@ -26,6 +26,14 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <Compile Remove="Services\**" />
+	  <EmbeddedResource Remove="Services\**" />
+	  <MauiCss Remove="Services\**" />
+	  <MauiXaml Remove="Services\**" />
+	  <None Remove="Services\**" />
+	</ItemGroup>
+
+	<ItemGroup>
 		<!--  -->
 		<PackageReference Include="CommunityToolkit.Maui" Version="11.2.0" />
 		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
@@ -148,10 +156,6 @@
 	  <None Update="Pages\Settings\Debug\DebugConnections.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </None>
-	</ItemGroup>
-
-	<ItemGroup>
-	  <Folder Include="Services\" />
 	</ItemGroup>
 
 </Project>

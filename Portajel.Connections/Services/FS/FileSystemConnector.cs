@@ -24,8 +24,14 @@ public class FileSystemConnector : IMediaServerConnector
         { "Playlist", PlaylistData },
         { "Genre", Genre }
     };
-
-    public Dictionary<MediaTypes, bool> SupportedReturnTypes { get; set; }
+    public Dictionary<MediaCapabilities, bool> SupportedReturnTypes { get; set; } = new()
+    {
+        { MediaCapabilities.Album, true },
+        { MediaCapabilities.Artist, true },
+        { MediaCapabilities.Song, true },
+        { MediaCapabilities.Playlist, true },
+        { MediaCapabilities.Genre, true }
+    };
     public string Name { get; } = "File System";
     public string Description { get; } = "Enables connections to a local file system.";
     public string Image { get; } = "icon-spotify.png"; 

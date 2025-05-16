@@ -21,10 +21,13 @@ namespace Portajel.Connections.Services.Spotify
             { "Playlist", PlaylistData },
             { "Genre", Genre }
         };
-
-        public Dictionary<MediaTypes, bool> SupportedReturnTypes { get; set; } = new Dictionary<MediaTypes, bool>
+        public Dictionary<MediaCapabilities, bool> SupportedReturnTypes { get; set; } = new()
         {
-            { MediaTypes.Playlist, true }
+            { MediaCapabilities.Album, true },
+            { MediaCapabilities.Artist, true },
+            { MediaCapabilities.Song, true },
+            { MediaCapabilities.Playlist, true },
+            { MediaCapabilities.Genre, true }
         };
         public string Name { get; } = "Spotify";
         public string Description { get; } = "Enables connections to Spotify.";

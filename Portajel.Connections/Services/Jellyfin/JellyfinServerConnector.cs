@@ -41,15 +41,14 @@ namespace Portajel.Connections.Services.Jellyfin
             { "Playlist", PlaylistData },
             { "Genre", Genre }
         };
-        public Dictionary<MediaTypes, bool> SupportedReturnTypes { get; set; } =
-            new()
-            {
-                { MediaTypes.Album, true },
-                { MediaTypes.Artist, true },
-                { MediaTypes.Song, true },
-                { MediaTypes.Playlist, true },
-                { MediaTypes.Genre, true },
-            };
+        public Dictionary<MediaCapabilities, bool> SupportedReturnTypes { get; set; } = new()
+        {
+            { MediaCapabilities.Album, true },
+            { MediaCapabilities.Artist, true },
+            { MediaCapabilities.Song, true },
+            { MediaCapabilities.Playlist, true },
+            { MediaCapabilities.Genre, true }
+        };
         public string Name { get; } = "JellyFin";
         public string Description { get; } = "Enables connections to the Jellyfin Media Server.";
         public string Image { get; } = "icon_jellyfin.png";
@@ -486,7 +485,7 @@ namespace Portajel.Connections.Services.Jellyfin
             }
             return true;
         }
-        private KeyValuePair<string, IDbItemConnector> GetDb(IMediaDataConnector mediaDataConnector)
+        private KeyValuePair<MediaCapabilities, IDbItemConnector> GetDb(IMediaDataConnector mediaDataConnector)
         {
             if(_database == null)
             {
@@ -494,7 +493,7 @@ namespace Portajel.Connections.Services.Jellyfin
             }
             try
             {
-                var returnVal = _database.GetDataConnectors().First(d => d.Value.MediaType == mediaDataConnector.MediaType);
+                var returnVal = _database.Connectors.GetDataConnectors().First(d => d.Value.MediaType == mediaDataConnector.MediaType);
                 return returnVal;
             }
             catch (Exception)

@@ -7,11 +7,11 @@ namespace Portajel.Connections.Interfaces
 {
     public interface IMediaServerConnector
     {
+        Dictionary<MediaCapabilities, bool> SupportedReturnTypes { get; set; }
         Dictionary<string, IMediaDataConnector> GetDataConnectors();
         public string Name { get; }
         public string Description { get; }
         public string Image { get; }
-        Dictionary<MediaTypes, bool> SupportedReturnTypes { get; set; }
         public Dictionary<string, ConnectorProperty> Properties { get; set; }
         public SyncStatusInfo SyncStatus { get; set; }
         Task<AuthResponse> AuthenticateAsync(

@@ -41,13 +41,13 @@ public partial class SearchPage : ContentPage
         {
             try
             {
-                await Task.Delay(300, cancellationToken: cToken.Token);
-                BaseData[] result = await _database.Search(
+                await Task.Delay(300, cToken.Token);
+                BaseData[] result = _database.Search(
                     searchTerm: e.NewTextValue,
                     limit: 50,
                     cancellationToken: cToken.Token);
                 string cacheDir = Path.Combine(FileSystem.Current.CacheDirectory, "Blurhash");
-                var itemsToAdd = Blurhasher.DownloadMusicItemBitmap(result.OfType<AlbumData>(), _GetDataConnectors()[MediaCapabilities.Album], cacheDir, 50, 50); 
+                var itemsToAdd = Blurhasher.DownloadMusicItemBitmap(result.OfType<AlbumData>(), _database.Connectors.Album, cacheDir, 50, 50); 
                 MainThread.BeginInvokeOnMainThread(() =>
                 {
                     _viewModel.Albums.Clear();

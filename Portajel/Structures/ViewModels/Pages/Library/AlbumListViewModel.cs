@@ -5,17 +5,16 @@ using Portajel.Structures.Adaptor;
 
 namespace Portajel.Structures.ViewModels.Pages.Library
 {
-    public partial class AlbumListViewModel : ObservableObject
+    public partial class DatabaseBindViewModel : ObservableObject
     {
         private IDbItemConnector _database;
-        public AlbumListViewModel(IDbItemConnector database)
+        public DatabaseBindViewModel(IDbItemConnector database)
         {
             _database = database;
             Adapter = new MusicItemAdaptor(_database);
         }
 
-        [ObservableProperty]
-        public MusicItemAdaptor? adapter;
+        public MusicItemAdaptor? Adapter { get; set; }
 
         [RelayCommand]
         async Task Refresh(Action completion)

@@ -18,11 +18,11 @@ namespace Portajel.Services
         public SQLiteConnection Database =>
             (_serviceConnection.AppServiceConnection.Binder?.Database.Database) ?? throw new Exception("Cannot retrieve value without Binder.");
 
-        public Dictionary<string, IDbItemConnector> GetDataConnectors() => 
-            _serviceConnection.AppServiceConnection.Binder?.Database != null ? 
-            _serviceConnection.AppServiceConnection.Binder.Database.GetDataConnectors() : 
+        public DbConnectors Connectors =>
+            _serviceConnection.AppServiceConnection.Binder?.Database != null ?
+            _serviceConnection.AppServiceConnection.Binder.Database.Connectors :
             throw new Exception("Cannot retrieve value without Binder.");
-        public Task<BaseData[]> Search(
+        public BaseData[] Search(
             string searchTerm = "",
             int limit = 50, 
             int startIndex = 0, 
@@ -38,6 +38,12 @@ namespace Portajel.Services
                 setSortOrder, 
                 cancellationToken) :
             throw new Exception("Cannot retrieve value without Binder.");
+
+        BaseData[] IDbConnector.Search(string searchTerm, int limit, int startIndex, ItemSortBy setSortTypes, SortOrder setSortOrder, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
+        }
+
         public DroidDbConnector(DroidServiceController serviceConnection)
         {
             _serviceConnection = serviceConnection;

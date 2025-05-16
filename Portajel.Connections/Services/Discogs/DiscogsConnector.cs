@@ -1,6 +1,7 @@
 using Jellyfin.Sdk.Generated.Models;
 using Portajel.Connections.Enum;
 using Portajel.Connections.Interfaces;
+using Portajel.Connections.Services;
 using Portajel.Connections.Structs;
 
 namespace Portajel.Connections.Services.Discogs;
@@ -22,7 +23,6 @@ public class DiscogsConnector : IMediaServerConnector
         { "Playlist", PlaylistData },
         { "Genre", Genre }
     };
-    public Dictionary<MediaTypes, bool> SupportedReturnTypes { get; set; }
     public string Name { get; } = "Discogs";
     public string Description { get; } = "Enables connections to a Discogs.";
     public string Image { get; } = "icon-spotify.png";
@@ -30,7 +30,16 @@ public class DiscogsConnector : IMediaServerConnector
     public SyncStatusInfo SyncStatus { get; set; } = new();
     public List<Action<CancellationToken>> StartSyncActions { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
     public List<Action<CancellationToken>> AuthenticateActions { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-    public Task<AuthResponse> AuthenticateAsync(CancellationToken cancellationToken = default)
+    public Dictionary<MediaCapabilities, bool> SupportedReturnTypes { get; set; } = new ()
+    {
+        { MediaCapabilities.Album, true },
+        { MediaCapabilities.Artist, true },
+        { MediaCapabilities.Song, true },
+        { MediaCapabilities.Playlist, true },
+        { MediaCapabilities.Genre, true }
+    };
+
+public Task<AuthResponse> AuthenticateAsync(CancellationToken cancellationToken = default)
     {
         throw new NotImplementedException();
     }
