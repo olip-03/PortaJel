@@ -1,7 +1,8 @@
 using Android.App;
 using Android.Runtime;
 using Microsoft.Maui.Controls.PlatformConfiguration.AndroidSpecific;
-using Microsoft.Maui.Handlers;
+using Microsoft.Maui;
+using Microsoft.Maui.Hosting;
 using Microsoft.Maui.Platform;
 
 namespace Portajel.Droid

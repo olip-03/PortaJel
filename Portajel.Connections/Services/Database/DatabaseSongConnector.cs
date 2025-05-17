@@ -29,26 +29,22 @@ namespace Portajel.Connections.Services.Database
             Guid?[]? excludeIds = null,
             CancellationToken cancellationToken = default)
         {
+            // Start with base query
             var query = _database.Table<SongData>();
+
+            // Set default limit if null
+            limit ??= _database.Table<SongData>().Count();
 
             // Apply includeIds filter
             if (includeIds != null && includeIds.Any())
             {
                 query = query.Where(song => includeIds.Contains(song.Id));
             }
-            else if(includeIds != null)
-            {
-                return [];
-            }
 
-            // Apply excludeIds filter
+            // Apply excludeIds filter - FIXED the condition that was checking includeIds instead of excludeIds
             if (excludeIds != null && excludeIds.Any())
             {
                 query = query.Where(song => !excludeIds.Contains(song.Id));
-            }
-            else if(includeIds != null)
-            {
-                return [];
             }
 
             // Apply getFavourite filter
@@ -57,7 +53,18 @@ namespace Portajel.Connections.Services.Database
                 query = query.Where(song => song.IsFavourite == getFavourite.Value);
             }
 
-            // Apply sorting
+            // Handle special case for Random sorting
+            if (setSortTypes == ItemSortBy.Random)
+            {
+                var allSongs = query.ToList();
+                return allSongs
+                    .OrderBy(_ => Guid.NewGuid())
+                    .Skip(startIndex)
+                    .Take((int)limit)
+                    .ToArray();
+            }
+
+            // Apply sorting for non-random cases
             switch (setSortTypes)
             {
                 case ItemSortBy.DateCreated:
@@ -80,15 +87,6 @@ namespace Portajel.Connections.Services.Database
                         ? query.OrderBy(song => song.PlayCount)
                         : query.OrderByDescending(song => song.PlayCount);
                     break;
-                case ItemSortBy.Random:
-                    // For random sorting, fetch data first and then shuffle
-                    var allSongDatas = query.ToList();
-                    allSongDatas = allSongDatas.OrderBy(song => Guid.NewGuid()).ToList();
-                    if (limit.HasValue)
-                    {
-                        allSongDatas = allSongDatas.Take(limit.Value).ToList();
-                    }
-                    break;
                 default:
                     query = setSortOrder == SortOrder.Ascending
                         ? query.OrderBy(song => song.Name)
@@ -96,22 +94,11 @@ namespace Portajel.Connections.Services.Database
                     break;
             }
 
-            // Apply pagination
-            if (startIndex > 0)
-            {
-                query = query.Skip(startIndex);
-            }
-
-            if (limit.HasValue)
-            {
-                query = query.Take(limit.Value);
-            }
-
-            // Execute the query
-            var filteredCache = query.ToList();
-
-            // Convert to BaseData[]
-            return filteredCache.ToArray();
+            // Apply pagination and execute query
+            return query
+                .Skip(startIndex)
+                .Take((int)limit)
+                .ToArray();
         }
 
         public BaseData Get(

@@ -39,11 +39,11 @@ namespace Portajel.Connections.Services.Database
             Database.CreateTable<GenreData>();
 
             Connectors = new(
-                new DatabaseAlbumConnector(Database),
-                new DatabaseArtistConnector(Database),
-                new DatabaseSongConnector(Database),
-                new DatabasePlaylistConnector(Database),
-                new DatabaseGenreConnector(Database)
+                album: new DatabaseAlbumConnector(Database),
+                artist: new DatabaseArtistConnector(Database),
+                genre: new DatabaseGenreConnector(Database),
+                playlist: new DatabasePlaylistConnector(Database),
+                song: new DatabaseSongConnector(Database)
             );
         }
 

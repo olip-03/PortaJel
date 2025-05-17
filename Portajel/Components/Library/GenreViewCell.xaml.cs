@@ -16,13 +16,13 @@ using Portajel.Connections.Structs;
 using Sharpnado.Tabs;
 using CommunityToolkit.Maui.Views;
 
-namespace Portajel.Components
+namespace Portajel.Components.Library
 {
-    public partial class GenericViewCell : VirtualViewCell
+    public partial class GenreViewCell : VirtualViewCell
     {
         private BaseData ItemData = null;
 
-        public GenericViewCell()
+        public GenreViewCell()
         {
             InitializeComponent();
         }

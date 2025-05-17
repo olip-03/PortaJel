@@ -17,6 +17,7 @@ using System.Linq;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
+using Microsoft.Maui.ApplicationModel;
 using static Android.Graphics.ColorSpace;
 
 namespace PortaJel.Droid.Services

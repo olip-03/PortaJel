@@ -1,4 +1,4 @@
-﻿using Portajel.Components;
+﻿using Portajel.Components.Library;
 using Portajel.Connections.Enum;
 using Portajel.Connections.Structs;
 
@@ -8,25 +8,35 @@ public class ItemTemplateSelector : VirtualListViewItemTemplateSelector
 {
 	public ItemTemplateSelector() : base()
 	{
-		GenericTemplate = new DataTemplate(typeof(GenericViewCell));
-	}
+		AlbumTemplate = new DataTemplate(typeof(AlbumViewCell));
+        ArtistTemplate = new DataTemplate(typeof(ArtistViewCell));
+        GenreTemplate = new DataTemplate(typeof(GenreViewCell));
+        PlaylistTemplate = new DataTemplate(typeof(PlaylistViewCell));
+        SongTemplate = new DataTemplate(typeof(SongViewCell));
+    }
 
-	readonly DataTemplate GenericTemplate;
+	readonly DataTemplate AlbumTemplate;
+    readonly DataTemplate ArtistTemplate;
+    readonly DataTemplate GenreTemplate;
+    readonly DataTemplate PlaylistTemplate;
+    readonly DataTemplate SongTemplate;
 
-	public override DataTemplate SelectTemplate(object item, int sectionIndex, int itemIndex)
+    public override DataTemplate SelectTemplate(object item, int sectionIndex, int itemIndex)
 	{
 		if (item is BaseData trackInfo)
 		{
-			var genreId = trackInfo.MediaType;
-
-			if (genreId == MediaTypes.Album)
-				return GenericTemplate;
-			//if (genreId == 1 || genreId == 3 || genreId == 4 || genreId == 5 || genreId == 13)
-			//	return HeavyTemplate;
-			//else if (genreId == 10 || genreId == 19 || genreId == 18 || genreId == 21 || genreId == 22)
-			//	return FilmTemplate;
-		}
-
-		return GenericTemplate;
+			var mediaType = trackInfo.MediaType;
+			if (mediaType == MediaTypes.Album)
+				return AlbumTemplate;
+			if(mediaType == MediaTypes.Artist)
+				return ArtistTemplate;
+            if (mediaType == MediaTypes.Genre)
+                return GenreTemplate;
+            if (mediaType == MediaTypes.Playlist)
+                return PlaylistTemplate;
+            if (mediaType == MediaTypes.Song)
+                return SongTemplate;
+        }
+		return AlbumTemplate;
 	}
 }

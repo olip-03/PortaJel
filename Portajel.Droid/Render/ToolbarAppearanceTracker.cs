@@ -2,6 +2,7 @@
 using Android.Views;
 using Microsoft.Maui.Controls.Platform;
 using Microsoft.Maui.Controls.Platform.Compatibility;
+using Microsoft.Maui.Controls;
 using Microsoft.Maui.Platform;
 using Portajel.Pages.Views;
 using System;

@@ -13,6 +13,7 @@ using Portajel.Services;
 using Microsoft.Maui.Handlers;
 using Portajel.Components;
 using Portajel.Droid.Render;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Portajel.Droid
 {

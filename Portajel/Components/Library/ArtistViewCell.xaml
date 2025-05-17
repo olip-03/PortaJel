@@ -7,13 +7,13 @@
 	xmlns:local="clr-namespace:Portajel.Components"
     xmlns:ffimageloading="clr-namespace:FFImageLoading.Maui;assembly=FFImageLoading.Maui"
     xmlns:sn="clr-namespace:Sharpnado.Tasks;assembly=Sharpnado.TaskMonitor"
-	x:Class="Portajel.Components.GenericViewCell"
+	x:Class="Portajel.Components.Library.ArtistViewCell"
 	x:Name="self"
     Opacity="1"
     HorizontalOptions="Fill"
 	SemanticProperties.Description="{Binding Name}"
 	SemanticProperties.HeadingLevel="Level3"
-	x:DataType="music:AlbumData">
+	x:DataType="music:ArtistData">
     <vlv:VirtualViewCell.Content>
         <Grid ColumnDefinitions="84, *" 
               RowDefinitions="42, 42" 
@@ -28,11 +28,17 @@
                 HorizontalOptions="Fill"
                 ZIndex="0">
             </Button>
-            
-            <ffimageloading:CachedImage 
-                x:Name="Image"
+
+            <Border 
                 Grid.Column="0"
                 Grid.RowSpan="2"
+                StrokeShape="RoundRectangle 64"
+                HeightRequest="64"
+                WidthRequest="64"
+                StrokeThickness="0"
+                ZIndex="10">
+                <ffimageloading:CachedImage 
+                x:Name="Image"
                 LoadingDelay="500"
                 CacheType="Memory"
                 RetryCount="0"
@@ -43,28 +49,31 @@
                 WidthRequest="64"
                 Aspect="Fill"
                 BitmapOptimizations="True"
-                DownsampleToViewSize="True"
-                ZIndex="10">
-            </ffimageloading:CachedImage>
-            <Image Source="{Binding ImgBlurhashSource}"
-                   Aspect="Fill"
+                DownsampleToViewSize="True">
+                </ffimageloading:CachedImage>
+            </Border>
+            <Border
                    Grid.Column="0"
                    Grid.RowSpan="2"
+                   StrokeThickness="0"
+                   StrokeShape="RoundRectangle 64"
                    HeightRequest="64"
                    WidthRequest="64"
-                   ZIndex="5"/>
+                   ZIndex="5">
+                <Image Source="{Binding ImgBlurhashSource}"
+                   Aspect="Fill"
+                   HeightRequest="64"
+                   WidthRequest="64"
+                   />
+            </Border>
+
             <Label 
-                VerticalOptions="End"
+                VerticalOptions="Center"
                 Grid.Column="1"
+                Grid.RowSpan="2"
                 Text="{Binding Name}" 
                 FontSize="16"
                 FontAttributes="Bold"
-                LineBreakMode="TailTruncation"
-                MaxLines="1"/>
-            <Label 
-                Grid.Column="1"
-                Grid.Row="1"
-                Text="{Binding ArtistNames}"
                 LineBreakMode="TailTruncation"
                 MaxLines="1"/>
         </Grid>

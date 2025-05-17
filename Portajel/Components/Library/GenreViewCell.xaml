@@ -1,0 +1,81 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<vlv:VirtualViewCell
+	xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+	xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+	xmlns:vlv="clr-namespace:Microsoft.Maui.Controls;assembly=VirtualListView"
+    xmlns:music="clr-namespace:Portajel.Connections.Database;assembly=Portajel.Connections"
+	xmlns:local="clr-namespace:Portajel.Components"
+    xmlns:ffimageloading="clr-namespace:FFImageLoading.Maui;assembly=FFImageLoading.Maui"
+    xmlns:sn="clr-namespace:Sharpnado.Tasks;assembly=Sharpnado.TaskMonitor"
+	x:Class="Portajel.Components.Library.GenreViewCell"
+	x:Name="self"
+    Opacity="1"
+    HorizontalOptions="Fill"
+	SemanticProperties.Description="{Binding Name}"
+	SemanticProperties.HeadingLevel="Level3"
+	x:DataType="music:GenreData">
+    <vlv:VirtualViewCell.Content>
+        <Grid ColumnDefinitions="84, *" 
+              RowDefinitions="42, 42" 
+              HorizontalOptions="Fill">
+            <Button 
+                Clicked="Button_Clicked"
+                Grid.Row="0"
+                Grid.Column="0"
+                Grid.ColumnSpan="2"
+                Grid.RowSpan="2"
+                BackgroundColor="Transparent"
+                HorizontalOptions="Fill"
+                ZIndex="0">
+            </Button>
+
+            <Border 
+                Grid.Column="0"
+                Grid.RowSpan="2"
+                StrokeShape="RoundRectangle 4"
+                HeightRequest="64"
+                WidthRequest="64"
+                StrokeThickness="0"
+                ZIndex="10">
+                <ffimageloading:CachedImage 
+                x:Name="Image"
+                LoadingDelay="500"
+                CacheType="Memory"
+                RetryCount="0"
+                FadeAnimationForCachedImages="False"
+                LoadingPriority="Lowest"
+                Source="{Binding ImgSource}"
+                HeightRequest="64"
+                WidthRequest="64"
+                Aspect="Fill"
+                BitmapOptimizations="True"
+                DownsampleToViewSize="True">
+                </ffimageloading:CachedImage>
+            </Border>
+            <Border
+                   Grid.Column="0"
+                   Grid.RowSpan="2"
+                   StrokeThickness="0"
+                   StrokeShape="RoundRectangle 4"
+                   HeightRequest="64"
+                   WidthRequest="64"
+                   ZIndex="5">
+                <Image Source="{Binding ImgBlurhashSource}"
+                   Aspect="Fill"
+                   HeightRequest="64"
+                   WidthRequest="64"
+                   />
+            </Border>
+
+            <Label 
+                VerticalOptions="Center"
+                Grid.Column="1"
+                Grid.RowSpan="2"
+                Text="{Binding Name}" 
+                FontSize="16"
+                FontAttributes="Bold"
+                LineBreakMode="TailTruncation"
+                MaxLines="1"/>
+        </Grid>
+    </vlv:VirtualViewCell.Content>
+</vlv:VirtualViewCell>

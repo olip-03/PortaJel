@@ -19,6 +19,10 @@ using Portajel.Services;
 using AndroidX.Core.App;
 using AndroidX.Core.Content;
 using Android.Opengl;
+using System.IO;
+using Microsoft.Maui.Storage;
+using Microsoft.Maui.ApplicationModel;
+using Microsoft.Maui.Platform;
 
 namespace Portajel.Droid.Services
 {
