@@ -147,7 +147,8 @@ namespace Portajel.Connections.Services.Jellyfin
                     },
                 };
         }
-        public async Task<AuthResponse> AuthenticateAsync(CancellationToken cancellationToken = default)
+        public AuthStatusInfo AuthStatus { get; set; } = new AuthStatusInfo();
+        public async Task<AuthStatusInfo> AuthenticateAsync(CancellationToken cancellationToken = default)
         {
             // At the beginning of AuthenticateAsync method, add validation
             if (Properties["AppName"].Value == null ||
@@ -158,12 +159,15 @@ namespace Portajel.Connections.Services.Jellyfin
                 Properties["Username"].Value == null ||
                 Properties["Password"].Value == null)
             {
-                return new AuthResponse()
+                AuthStatus = new AuthStatusInfo()
                 {
-                    IsSuccess = false,
+                    State = AuthState.Failed,
                     Message = "Missing required properties for authentication"
                 };
+                return AuthStatus;
             }
+            
+            AuthStatus = AuthStatusInfo.CreateInProgress();
             try
             {
                 ServiceCollection serviceCollection = new ServiceCollection();
@@ -220,9 +224,9 @@ namespace Portajel.Connections.Services.Jellyfin
                     _sessionInfo = authenticationResult.SessionInfo;
                     if(authenticationResult.AccessToken == null)
                     {
-                        return new AuthResponse()
+                        return new AuthStatusInfo()
                         {
-                            IsSuccess = false,
+                            State = AuthState.Failed,
                             Message = $"API Error: Login Failure! Could not return Access Token. (Status: Failed)"
                         };
                     }
@@ -241,20 +245,23 @@ namespace Portajel.Connections.Services.Jellyfin
                 Trace.WriteLine($"Status code: {apiEx.ResponseStatusCode}");
                 Trace.WriteLine($"Source: {apiEx.Source}");
 
-                return new AuthResponse()
+                AuthStatus =  new AuthStatusInfo()
                 {
-                    IsSuccess = false,
+                    State = AuthState.Failed,
                     Message = $"API Error: {apiEx.Message} (Status: {apiEx.ResponseStatusCode})"
                 };
+                return AuthStatus;
             }
             catch (Exception ex)
             {
-                Trace.WriteLine(ex.StackTrace);
-                return new AuthResponse()
+                Trace.WriteLine($"Error: {ex.Message}");
+                Trace.WriteLine($"Source: {ex.StackTrace}");
+                AuthStatus =  new AuthStatusInfo()
                 {
-                    IsSuccess = false,
+                    State = AuthState.Failed,
                     Message = $"{ex.Message}"
                 };
+                return AuthStatus;
             }
 
             var actions = AuthenticateActions.Select(a => Task.Run(() =>
@@ -262,7 +269,8 @@ namespace Portajel.Connections.Services.Jellyfin
                 a.Invoke(cancellationToken);
             }));
             _ = Task.WhenAll(actions);
-            return AuthResponse.Ok();
+            AuthStatus =  AuthStatusInfo.Ok();
+            return AuthStatus;
         }
         public async Task<bool> UpdateDb(CancellationToken cancellationToken = default)
         {

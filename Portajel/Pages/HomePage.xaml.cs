@@ -99,7 +99,7 @@ public class HomePageViewModel : INotifyPropertyChanged
     public ObservableCollection<AlbumData> RecentlyAdded { get; set; } = [];
     public ObservableCollection<AlbumData> FavouriteItems { get; set; } = [];
 
-    public int PageMargin = 10;
+    public int PageMargin { get; set; } = 10;
     public ObservableCollection<AlbumData> Sample
     {
         get => RecentlyAdded;

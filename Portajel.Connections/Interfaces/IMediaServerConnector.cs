@@ -14,7 +14,8 @@ namespace Portajel.Connections.Interfaces
         public string Image { get; }
         public Dictionary<string, ConnectorProperty> Properties { get; set; }
         public SyncStatusInfo SyncStatus { get; set; }
-        Task<AuthResponse> AuthenticateAsync(
+        public AuthStatusInfo AuthStatus { get; set; }
+        Task<AuthStatusInfo> AuthenticateAsync(
             CancellationToken cancellationToken = default);
         Task<bool> UpdateDb(
             CancellationToken cancellationToken = default);

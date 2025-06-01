@@ -84,7 +84,7 @@ public partial class ViewConnectionPage : ContentPage, IQueryAttributable
         var toast = Toast.Make("Saving...", ToastDuration.Short, 14);
         var server = _server.Servers.First(s => s.GetAddress() == url);
 
-        AuthResponse checkSrv = await server.AuthenticateAsync();
+        AuthStatusInfo checkSrv = await server.AuthenticateAsync();
 
         if (checkSrv.IsSuccess)
         {

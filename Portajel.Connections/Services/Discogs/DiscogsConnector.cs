@@ -29,6 +29,7 @@ public class DiscogsConnector : IMediaServerConnector
     public Dictionary<string, ConnectorProperty> Properties { get; set; }
     public SyncStatusInfo SyncStatus { get; set; } = new();
     public List<Action<CancellationToken>> StartSyncActions { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+    public AuthStatusInfo AuthStatus { get; set; } = new AuthStatusInfo();
     public List<Action<CancellationToken>> AuthenticateActions { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
     public Dictionary<MediaCapabilities, bool> SupportedReturnTypes { get; set; } = new ()
     {
@@ -39,7 +40,7 @@ public class DiscogsConnector : IMediaServerConnector
         { MediaCapabilities.Genre, true }
     };
 
-public Task<AuthResponse> AuthenticateAsync(CancellationToken cancellationToken = default)
+public Task<AuthStatusInfo> AuthenticateAsync(CancellationToken cancellationToken = default)
     {
         throw new NotImplementedException();
     }

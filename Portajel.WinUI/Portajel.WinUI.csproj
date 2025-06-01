@@ -20,6 +20,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+		<PackageReference Include="CommunityToolkit.Maui" Version="11.2.0" />
 		<PackageReference Include="Microsoft.Windows.CsWinRT" Version="2.2.0" />
 		<PackageReference Include="Microsoft.Maui.Controls" Version="9.0.50" />
 		<PackageReference Include="Mapsui.Maui" Version="5.0.0-beta.13" />
@@ -30,6 +31,7 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\Portajel\Portajel.csproj" />
+		<ProjectReference Include="..\Portajel.Connections\Portajel.Connections.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>

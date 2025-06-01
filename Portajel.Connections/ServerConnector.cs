@@ -17,7 +17,7 @@ public class ServerConnector : IServerConnector
     {
         
     }
-    public async Task<AuthResponse> AuthenticateAsync(CancellationToken cancellationToken = default)
+    public async Task<AuthStatusInfo> AuthenticateAsync(CancellationToken cancellationToken = default)
     {
         int failed = 0;
         var tasks = Servers.Select(server => Task.Run(() =>
@@ -43,7 +43,7 @@ public class ServerConnector : IServerConnector
         }
         catch (Exception ex)
         {
-            return AuthResponse.Failed(ex.Message);
+            return AuthStatusInfo.Failed(ex.Message);
         }
         
         switch (t.Status)
@@ -56,7 +56,7 @@ public class ServerConnector : IServerConnector
                 break;
         }
         
-        return AuthResponse.Ok();
+        return AuthStatusInfo.Ok();
     }
     public async Task<bool> StartSyncAsync(CancellationToken cancellationToken = default)
     {

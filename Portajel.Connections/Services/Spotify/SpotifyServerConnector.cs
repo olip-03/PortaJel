@@ -55,8 +55,8 @@ namespace Portajel.Connections.Services.Spotify
         public SyncStatusInfo SyncStatus { get; set; } = new();
         public List<Action<CancellationToken>> StartSyncActions { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
         public List<Action<CancellationToken>> AuthenticateActions { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-
-        public Task<AuthResponse> AuthenticateAsync(CancellationToken cancellationToken = default)
+        public AuthStatusInfo AuthStatus { get; set; } = new AuthStatusInfo();
+        public Task<AuthStatusInfo> AuthenticateAsync(CancellationToken cancellationToken = default)
         {
             throw new NotImplementedException();
         }

@@ -13,7 +13,7 @@ namespace Portajel.Connections.Interfaces
     {
         List<IMediaServerConnector> Servers { get; }
         Dictionary<string, ConnectorProperty> Properties { get; }
-        Task<AuthResponse> AuthenticateAsync(CancellationToken cancellationToken = default);
+        Task<AuthStatusInfo> AuthenticateAsync(CancellationToken cancellationToken = default);
         Task<bool> StartSyncAsync(CancellationToken cancellationToken = default);
         Task<BaseData[]> SearchAsync(
             string searchTerm = "",

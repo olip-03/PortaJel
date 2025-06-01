@@ -46,7 +46,7 @@ public class FileSystemConnector : IMediaServerConnector
                 userVisible: true)
         }
     };
-
+    
     public SyncStatusInfo SyncStatus { get; set; } = new();
     public List<Action<CancellationToken>> StartSyncActions { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
     public List<Action<CancellationToken>> AuthenticateActions { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
@@ -67,10 +67,10 @@ public class FileSystemConnector : IMediaServerConnector
         PlaylistData = new FileSystemPlaylistConnector(_database);
         Genre = new FileSystemGenreConnector(_database);
     }
-    
-    public Task<AuthResponse> AuthenticateAsync(CancellationToken cancellationToken = default)
+    public AuthStatusInfo AuthStatus { get; set; } = new AuthStatusInfo();
+    public Task<AuthStatusInfo> AuthenticateAsync(CancellationToken cancellationToken = default)
     {
-        return Task.FromResult(AuthResponse.Unneccesary());
+        return Task.FromResult(AuthStatusInfo.Unneccesary());
     }
     
     public Task<bool> UpdateDb(CancellationToken cancellationToken = default)

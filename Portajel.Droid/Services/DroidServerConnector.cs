@@ -72,7 +72,7 @@ namespace Portajel.Services
         {
             return new NullReferenceException("Service not initalized! Check back later.");
         }
-        public async Task<AuthResponse> AuthenticateAsync(CancellationToken cancellationToken = default)
+        public async Task<AuthStatusInfo> AuthenticateAsync(CancellationToken cancellationToken = default)
         {
             if (_serviceConnection.Binder == null)
                 throw GetNullReferenceException();
