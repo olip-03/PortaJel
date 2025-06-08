@@ -50,7 +50,7 @@ public partial class ModalAddServer : ContentPage
         _server.Properties["DeviceName"].Value = DeviceInfo.Name;
         _server.Properties["DeviceID"].Value = DeviceInfo.Current.Idiom.ToString();
         AuthStatusInfo statusInfo = await _server.AuthenticateAsync();
-        if (statusInfo.IsSuccess)
+        if (statusInfo.State == AuthState.Success )
         {
             _serverConnector.AddServer(_server);
             await SaveHelper.SaveData(_serverConnector);

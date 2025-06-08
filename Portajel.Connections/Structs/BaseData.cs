@@ -10,6 +10,7 @@ namespace Portajel.Connections.Structs
     {
         [PrimaryKey, AutoIncrement] public virtual Guid? Id { get; set; }
         public Guid ServerId { get; set; }
+        public Guid GlobalId { get; set; }
         public virtual MediaTypes MediaType { get; set; } = MediaTypes.Album;
         [Indexed] public string Name { get; set; } = string.Empty;
         public int Index { get; set; }

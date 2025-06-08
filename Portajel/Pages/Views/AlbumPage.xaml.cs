@@ -50,7 +50,7 @@ namespace Portajel.Pages.Views
         private async void GetNewAlbumData()
         {
             if (_viewModel.Id == null) return;
-            var servers = _server.GetServers();
+            var servers = _server.Servers;
 
             var tasks = servers.Select(async server =>
             {

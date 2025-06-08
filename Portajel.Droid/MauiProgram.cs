@@ -3,6 +3,7 @@ using Portajel.Connections.Services.Database;
 using Portajel.Connections;
 using Portajel.Droid.Playback;
 using Portajel.Structures.Interfaces;
+using Portajel;
 using Microsoft.Maui.Hosting;
 using Portajel.Pages.Settings.Debug;
 using Portajel.Pages.Settings;

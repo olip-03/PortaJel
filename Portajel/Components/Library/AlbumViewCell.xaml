@@ -18,54 +18,11 @@
         <Grid ColumnDefinitions="84, *" 
               RowDefinitions="42, 42" 
               HorizontalOptions="Fill">
-            <Button 
-                Clicked="Button_Clicked"
-                Grid.Row="0"
-                Grid.Column="0"
-                Grid.ColumnSpan="2"
-                Grid.RowSpan="2"
-                BackgroundColor="Transparent"
-                HorizontalOptions="Fill"
-                ZIndex="0">
-            </Button>
-
-            <Border 
-                Grid.Column="0"
-                Grid.RowSpan="2"
-                StrokeShape="RoundRectangle 4"
-                HeightRequest="64"
-                WidthRequest="64"
-                StrokeThickness="0"
-                ZIndex="10">
-                <ffimageloading:CachedImage 
-                x:Name="Image"
-                LoadingDelay="500"
-                CacheType="Memory"
-                RetryCount="0"
-                FadeAnimationForCachedImages="False"
-                LoadingPriority="Lowest"
-                Source="{Binding ImgSource}"
-                HeightRequest="64"
-                WidthRequest="64"
-                Aspect="Fill"
-                BitmapOptimizations="True"
-                DownsampleToViewSize="True">
-                </ffimageloading:CachedImage>
-            </Border>
-            <Border
-                   Grid.Column="0"
-                   Grid.RowSpan="2"
-                   StrokeThickness="0"
-                   StrokeShape="RoundRectangle 4"
-                   HeightRequest="64"
-                   WidthRequest="64"
-                   ZIndex="5">
-                <Image Source="{Binding ImgBlurhashSource}"
-                   Aspect="Fill"
-                   HeightRequest="64"
-                   WidthRequest="64"
-                   />
-            </Border>
+            <local:MusicItemImage
+	            x:Name="Image"
+	            ImageSource="{Binding ImgSource}"
+	            BackgroundSource="{Binding ImgBlurhashSource}">
+            </local:MusicItemImage>
             <Label 
                 VerticalOptions="End"
                 Grid.Column="1"

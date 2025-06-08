@@ -9,6 +9,7 @@
 	<ItemGroup>
 		<PackageReference Include="Blurhash.Core" Version="4.0.0" />
 		<PackageReference Include="Jellyfin.Sdk" Version="2024.10.28" />
+		<PackageReference Include="MetaBrainz.MusicBrainz" Version="6.1.0" />
 		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.0" />
 		<PackageReference Include="Microsoft.Extensions.Http" Version="9.0.0" />
 		<PackageReference Include="SkiaSharp" Version="3.116.1" />

@@ -30,7 +30,7 @@ public class ServerConnectorSettings
             };
             var serverProperties = JsonSerializer.Deserialize<List<Dictionary<string, ConnectorProperty>>>(json, options);
             if (serverProperties == null) return;
-            ServerConnector = new ServerConnector { Servers = new List<IMediaServerConnector>() };
+            ServerConnector = new ServerConnector { Servers = new MediaServerList() };
             foreach (var props in serverProperties)
             {
                 if (props.TryGetValue("ConnectorType", out var typeProperty))
@@ -69,7 +69,7 @@ public class ServerConnectorSettings
                     if (server != null)
                     {
                         server.Properties = props;
-                        ServerConnector.AddServer(server);
+                        ServerConnector.Servers.Add(server);
                     }
                 }
 

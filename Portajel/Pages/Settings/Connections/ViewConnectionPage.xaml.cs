@@ -86,7 +86,7 @@ public partial class ViewConnectionPage : ContentPage, IQueryAttributable
 
         AuthStatusInfo checkSrv = await server.AuthenticateAsync();
 
-        if (checkSrv.IsSuccess)
+        if (checkSrv.State == AuthState.Success)
         {
             await SaveHelper.SaveData(_server);
             toast = Toast.Make("Saved data successfully", ToastDuration.Short, 14);

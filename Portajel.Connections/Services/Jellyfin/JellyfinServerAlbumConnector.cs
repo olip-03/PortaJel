@@ -31,7 +31,7 @@ namespace Portajel.Connections.Services.Jellyfin
             string serverUrl = "", 
             CancellationToken cancellationToken = default)
         {
-            BaseItemDtoQueryResult serverResults = await api.Items.GetAsync(c =>
+            BaseItemDtoQueryResult? serverResults = await api.Items.GetAsync(c =>
             {
                 c.QueryParameters.UserId = user.Id;
                 c.QueryParameters.IsFavorite = getFavourite;
@@ -42,7 +42,7 @@ namespace Portajel.Connections.Services.Jellyfin
                 c.QueryParameters.Limit = limit;
                 c.QueryParameters.StartIndex = startIndex;
                 c.QueryParameters.Recursive = true;
-                c.QueryParameters.Fields = [ItemFields.DateCreated, ItemFields.DateLastSaved, ItemFields.DateLastMediaAdded];
+                c.QueryParameters.Fields = [ItemFields.DateCreated, ItemFields.DateLastSaved, ItemFields.DateLastMediaAdded, ItemFields.ProviderIds];
                 c.QueryParameters.EnableImages = true;
                 c.QueryParameters.EnableTotalRecordCount = true;
             }, cancellationToken).ConfigureAwait(false);

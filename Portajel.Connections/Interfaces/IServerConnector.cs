@@ -11,7 +11,7 @@ namespace Portajel.Connections.Interfaces
 {
     public interface IServerConnector
     {
-        List<IMediaServerConnector> Servers { get; }
+        MediaServerList Servers { get; }
         Dictionary<string, ConnectorProperty> Properties { get; }
         Task<AuthStatusInfo> AuthenticateAsync(CancellationToken cancellationToken = default);
         Task<bool> StartSyncAsync(CancellationToken cancellationToken = default);
@@ -27,6 +27,5 @@ namespace Portajel.Connections.Interfaces
         public void AddServer(IMediaServerConnector server);
         public void RemoveServer(IMediaServerConnector server);
         public void RemoveServer(string address);
-        public IMediaServerConnector[] GetServers();
     }
 }

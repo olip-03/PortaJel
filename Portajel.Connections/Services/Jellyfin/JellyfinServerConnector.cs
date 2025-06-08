@@ -150,7 +150,6 @@ namespace Portajel.Connections.Services.Jellyfin
         public AuthStatusInfo AuthStatus { get; set; } = new AuthStatusInfo();
         public async Task<AuthStatusInfo> AuthenticateAsync(CancellationToken cancellationToken = default)
         {
-            // At the beginning of AuthenticateAsync method, add validation
             if (Properties["AppName"].Value == null ||
                 Properties["AppVersion"].Value == null ||
                 Properties["DeviceName"].Value == null ||
@@ -349,13 +348,14 @@ namespace Portajel.Connections.Services.Jellyfin
                 a.Invoke(cancellationToken);
             }));
             _ = Task.WhenAll(actions);
+            int maxConcurrency = TaskScheduler.Current.MaximumConcurrencyLevel;
             int maxTasks = 500;
             await UpdateSyncStatus(cancellationToken);
             var tasks = GetDataConnectors().Values.Select(data => Task.Run(async () =>
             {
                 try
                 {
-                    int workers = GetDataConnectors().Values.Where(d => d.SyncStatusInfo.TaskStatus == TaskStatus.Running).Count();
+                    int workers = GetDataConnectors().Values.Count(d => d.SyncStatusInfo.TaskStatus == TaskStatus.Running);
                     int retrieve = maxTasks / workers;
                     if (Properties.TryGetValue("LastSync", out var maxTasksProperty))
                     {
@@ -408,6 +408,7 @@ namespace Portajel.Connections.Services.Jellyfin
                         catch (Exception ex)
                         {
                             Trace.TraceError(ex.Message);
+                            Trace.TraceError(ex.StackTrace);
                             data.SetSyncStatusInfo(status: TaskStatus.Faulted);
                             continue;
                         }

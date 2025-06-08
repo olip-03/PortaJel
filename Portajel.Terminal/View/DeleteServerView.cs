@@ -19,7 +19,7 @@ public class DeleteServerView: IView
     public string[] Contents { get; } = [];
     public bool FormSubmitted { get; set; } = false;
     public List<FormItem> Form { get; } = [];
-    public Dictionary<string, Action> Selections
+    public Dictionary<string, Action?> Selections
     {
         get
         {

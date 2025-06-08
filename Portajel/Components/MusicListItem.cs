@@ -88,7 +88,6 @@ public class MusicListItem : ContentView
             ZIndex = 0
         };
 
-        // Create horizontal layout for image and text
         HorizontalStackLayout horizontalLayout = new HorizontalStackLayout
         {
             ZIndex = 5,
@@ -97,7 +96,6 @@ public class MusicListItem : ContentView
             Spacing = 10
         };
 
-        // Create image with bindings
         Image image = new Image
         {
             BackgroundColor = Colors.LightBlue,

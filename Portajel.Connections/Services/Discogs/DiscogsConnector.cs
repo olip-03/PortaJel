@@ -40,7 +40,7 @@ public class DiscogsConnector : IMediaServerConnector
         { MediaCapabilities.Genre, true }
     };
 
-public Task<AuthStatusInfo> AuthenticateAsync(CancellationToken cancellationToken = default)
+    public Task<AuthStatusInfo> AuthenticateAsync(CancellationToken cancellationToken = default)
     {
         throw new NotImplementedException();
     }

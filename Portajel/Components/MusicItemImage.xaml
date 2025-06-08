@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:ffimageloading="clr-namespace:FFImageLoading.Maui;assembly=FFImageLoading.Maui"
+             x:Class="Portajel.Components.MusicItemImage"
+             x:Name="Root">
+    <Border StrokeThickness="0">
+        <Grid HeightRequest="{Binding ImageSize, Source={x:Reference Root}}" 
+              WidthRequest="{Binding ImageSize, Source={x:Reference Root}}">
+            <ffimageloading:CachedImage 
+                x:Name="Image"
+                LoadingDelay="500"
+                CacheType="Memory"
+                RetryCount="0"
+                FadeAnimationForCachedImages="False"
+                LoadingPriority="Highest"
+                Source="{Binding ImageSource, Source={x:Reference Root}}"
+                HeightRequest="64"
+                WidthRequest="64"
+                Aspect="Fill"
+                ZIndex="2"
+                BitmapOptimizations="True"
+                DownsampleToViewSize="True">
+            </ffimageloading:CachedImage>
+            <!-- <Image Source="{Binding ImgBlurhashSource}" -->
+            <!--        Aspect="Fill" -->
+            <!--        ZIndex="1" -->
+            <!--        HeightRequest="64" -->
+            <!--        WidthRequest="64"/> -->
+        </Grid>
+    </Border>
+</ContentView>

@@ -34,7 +34,7 @@ namespace Portajel.Services
         {
             _serviceConnection = serverConnectior.AppServiceConnection;
         }
-        public List<IMediaServerConnector> Servers
+        public MediaServerList Servers
         {
             get
             {

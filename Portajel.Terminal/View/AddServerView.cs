@@ -42,7 +42,7 @@ public class AddServerView: IView
         new FormItem("Username"),
         new FormItem("Password"),
     };
-    public Dictionary<string, Action> Selections { get; } = new();
+    public Dictionary<string, Action?> Selections { get; } = new();
     public int Selected { get; set; }
 
     private void AddAndStartAuth()
@@ -56,7 +56,7 @@ public class AddServerView: IView
             appVerison: "0.0.1",
             deviceName: Environment.MachineName, 
             deviceId: Environment.MachineName, 
-            appDataPath: Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)
+            appDataPath: Program.AppDataPath
         ));
         Task.Run(async () =>
         {
