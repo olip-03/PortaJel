@@ -1,0 +1,11 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="clr-namespace:Portajel.Desktop.Structures.ViewModel"
+             x:DataType="vm:HomeViewModel"
+             x:Class="Portajel.Desktop.Pages.HomeView">
+    <StackPanel HorizontalAlignment="Center"
+                VerticalAlignment="Center">
+        <TextBlock Text="Hi, I'm the first view!" />
+        <TextBlock Text="{Binding UrlPathSegment}" />
+    </StackPanel>
+</UserControl>

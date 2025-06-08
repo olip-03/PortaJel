@@ -185,4 +185,52 @@
 	  </None>
 	</ItemGroup>
 
+	<ItemGroup>
+	  <AdditionalFiles Update="App.xaml">
+	    <DependentUpon>App.xaml</DependentUpon>
+	  </AdditionalFiles>
+	  <AdditionalFiles Update="Pages\HomePage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	    <DependentUpon>HomePage.xaml</DependentUpon>
+	  </AdditionalFiles>
+	  <AdditionalFiles Update="Pages\LibraryPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	    <DependentUpon>LibraryPage.xaml</DependentUpon>
+	  </AdditionalFiles>
+	  <AdditionalFiles Update="Pages\SearchPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	    <DependentUpon>SearchPage.xaml</DependentUpon>
+	  </AdditionalFiles>
+	  <AdditionalFiles Update="Pages\Views\AlbumPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	    <DependentUpon>AlbumPage.xaml</DependentUpon>
+	  </AdditionalFiles>
+	  <AdditionalFiles Update="Pages\Views\ArtistPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	    <DependentUpon>ArtistPage.xaml</DependentUpon>
+	  </AdditionalFiles>
+	  <AdditionalFiles Update="Pages\Settings\DebugPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	    <DependentUpon>DebugPage.xaml</DependentUpon>
+	  </AdditionalFiles>
+	  <AdditionalFiles Update="Pages\Settings\SettingsPage.xaml">
+	    <DependentUpon>SettingsPage.xaml</DependentUpon>
+	  </AdditionalFiles>
+	  <AdditionalFiles Update="Pages\Settings\Debug\DebugDatabase.xaml">
+	    <DependentUpon>DebugDatabase.xaml</DependentUpon>
+	  </AdditionalFiles>
+	  <AdditionalFiles Update="Pages\Settings\Debug\DebugMap.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	    <DependentUpon>DebugMap.xaml</DependentUpon>
+	  </AdditionalFiles>
+	  <AdditionalFiles Update="Pages\Settings\Debug\DebugRadio.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	    <DependentUpon>DebugRadio.xaml</DependentUpon>
+	  </AdditionalFiles>
+	  <AdditionalFiles Update="Pages\Settings\Connections\ViewConnectionPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	    <DependentUpon>ViewConnectionPage.xaml</DependentUpon>
+	  </AdditionalFiles>
+	</ItemGroup>
+
 </Project>
