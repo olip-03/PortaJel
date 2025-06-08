@@ -1,0 +1,181 @@
+{
+  "format": 1,
+  "restore": {
+    "/home/oli/Projects/Dotnet/PortaJel/Portajel.Terminal/Portajel.Terminal.csproj": {}
+  },
+  "projects": {
+    "/home/oli/Projects/Dotnet/PortaJel/Portajel.Connections/Portajel.Connections.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/home/oli/Projects/Dotnet/PortaJel/Portajel.Connections/Portajel.Connections.csproj",
+        "projectName": "Portajel.Connections",
+        "projectPath": "/home/oli/Projects/Dotnet/PortaJel/Portajel.Connections/Portajel.Connections.csproj",
+        "packagesPath": "/home/oli/.nuget/packages/",
+        "outputPath": "/home/oli/Projects/Dotnet/PortaJel/Portajel.Connections/obj/",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "/home/oli/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net9.0"
+        ],
+        "sources": {
+          "/home/oli/.dotnet/library-packs": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net9.0": {
+            "targetAlias": "net9.0",
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        },
+        "SdkAnalysisLevel": "9.0.300"
+      },
+      "frameworks": {
+        "net9.0": {
+          "targetAlias": "net9.0",
+          "dependencies": {
+            "Blurhash.Core": {
+              "target": "Package",
+              "version": "[4.0.0, )"
+            },
+            "Jellyfin.Sdk": {
+              "target": "Package",
+              "version": "[2024.10.28, )"
+            },
+            "MetaBrainz.MusicBrainz": {
+              "target": "Package",
+              "version": "[6.1.0, )"
+            },
+            "Microsoft.Extensions.DependencyInjection": {
+              "target": "Package",
+              "version": "[9.0.0, )"
+            },
+            "Microsoft.Extensions.Http": {
+              "target": "Package",
+              "version": "[9.0.0, )"
+            },
+            "SkiaSharp": {
+              "target": "Package",
+              "version": "[3.116.1, )"
+            },
+            "sqlite-net": {
+              "target": "Package",
+              "version": "[1.6.292, )"
+            },
+            "sqlite-net-pcl": {
+              "target": "Package",
+              "version": "[1.9.172, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/home/oli/.dotnet/sdk/9.0.300/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "/home/oli/Projects/Dotnet/PortaJel/Portajel.Terminal/Portajel.Terminal.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/home/oli/Projects/Dotnet/PortaJel/Portajel.Terminal/Portajel.Terminal.csproj",
+        "projectName": "Portajel.Terminal",
+        "projectPath": "/home/oli/Projects/Dotnet/PortaJel/Portajel.Terminal/Portajel.Terminal.csproj",
+        "packagesPath": "/home/oli/.nuget/packages/",
+        "outputPath": "/home/oli/Projects/Dotnet/PortaJel/Portajel.Terminal/obj/",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "/home/oli/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net9.0"
+        ],
+        "sources": {
+          "/home/oli/.dotnet/library-packs": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net9.0": {
+            "targetAlias": "net9.0",
+            "projectReferences": {
+              "/home/oli/Projects/Dotnet/PortaJel/Portajel.Connections/Portajel.Connections.csproj": {
+                "projectPath": "/home/oli/Projects/Dotnet/PortaJel/Portajel.Connections/Portajel.Connections.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        },
+        "SdkAnalysisLevel": "9.0.300"
+      },
+      "frameworks": {
+        "net9.0": {
+          "targetAlias": "net9.0",
+          "dependencies": {
+            "SkiaSharp": {
+              "target": "Package",
+              "version": "[3.119.0, )"
+            },
+            "SkiaSharp.NativeAssets.Linux.NoDependencies": {
+              "target": "Package",
+              "version": "[3.119.0, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/home/oli/.dotnet/sdk/9.0.300/PortableRuntimeIdentifierGraph.json"
+        }
+      },
+      "runtimes": {
+        "linux-x64": {
+          "#import": []
+        }
+      }
+    }
+  }
+}

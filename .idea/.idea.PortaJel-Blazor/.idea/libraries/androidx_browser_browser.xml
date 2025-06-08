@@ -1,0 +1,10 @@
+<component name="libraryTable">
+  <library name="androidx.browser.browser">
+    <CLASSES>
+      <root url="file:///tmp/JetBrains/xamarinAarPackages/androidx.browser.browser/classes.jar" />
+      <root url="file:///tmp/JetBrains/xamarinAarPackages/androidx.browser.browser/res" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

@@ -1,0 +1,10 @@
+<component name="libraryTable">
+  <library name="androidx.cardview.cardview">
+    <CLASSES>
+      <root url="file:///tmp/JetBrains/xamarinAarPackages/androidx.cardview.cardview/classes.jar" />
+      <root url="file:///tmp/JetBrains/xamarinAarPackages/androidx.cardview.cardview/res" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

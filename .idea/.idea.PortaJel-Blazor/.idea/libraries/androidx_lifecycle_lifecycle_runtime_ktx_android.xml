@@ -1,0 +1,10 @@
+<component name="libraryTable">
+  <library name="androidx.lifecycle.lifecycle-runtime-ktx-android">
+    <CLASSES>
+      <root url="file:///tmp/JetBrains/xamarinAarPackages/androidx.lifecycle.lifecycle-runtime-ktx-android/classes.jar" />
+      <root url="file:///tmp/JetBrains/xamarinAarPackages/androidx.lifecycle.lifecycle-runtime-ktx-android/res" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
