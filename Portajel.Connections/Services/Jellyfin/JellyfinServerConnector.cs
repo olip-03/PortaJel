@@ -33,6 +33,8 @@ namespace Portajel.Connections.Services.Jellyfin
         public IMediaDataConnector SongData { get; set; } = null!;
         public IMediaDataConnector PlaylistData { get; set; } = null!;
         public IMediaDataConnector Genre { get; set; } = null!;
+
+        public IFeedConnector? Feeds { get; } = null!;
         public Dictionary<string, IMediaDataConnector> GetDataConnectors() => new()
         {
             { "Album", AlbumData },
@@ -68,6 +70,7 @@ namespace Portajel.Connections.Services.Jellyfin
             string appDataPath = "")
         {
             _database = database;
+            Feeds = new JellyfinFeedConnector(_database, url);
             Properties =
                 new()
                 {

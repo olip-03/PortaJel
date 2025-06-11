@@ -1,29 +1,8 @@
-﻿using Android.App;
-using Android.Content;
-using Android.Content.PM;
-using Android.Locations;
-using Android.OS;
-using AndroidX.Startup;
-using Java.IO;
-using Java.Nio.Channels;
-using Jellyfin.Sdk.Generated.Models;
-using Microsoft.Extensions.DependencyInjection;
-using Portajel.Connections;
-using Portajel.Connections.Enum;
+﻿using Jellyfin.Sdk.Generated.Models;
 using Portajel.Connections.Interfaces;
 using Portajel.Connections.Services;
-using Portajel.Connections.Services.Database;
 using Portajel.Connections.Structs;
-using Portajel.Droid.Services;
-using Portajel.Structures.Functional;
 using PortaJel.Droid.Services;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.Json;
-using System.Threading.Tasks;
-using Xamarin.Google.Crypto.Tink.Shaded.Protobuf;
 
 namespace Portajel.Services
 {
@@ -43,6 +22,17 @@ namespace Portajel.Services
                 return _serviceConnection.Binder.Server.Servers;
             }
         }
+
+        public MediaFeedList Feeds
+        {
+            get
+            {
+                if (_serviceConnection.Binder == null)
+                    throw GetNullReferenceException();
+                return _serviceConnection.Binder.Server.Feeds;
+            }
+        }
+
         public Dictionary<string, ConnectorProperty> Properties
         {
             get

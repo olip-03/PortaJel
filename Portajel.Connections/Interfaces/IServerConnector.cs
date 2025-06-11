@@ -12,6 +12,7 @@ namespace Portajel.Connections.Interfaces
     public interface IServerConnector
     {
         MediaServerList Servers { get; }
+        public MediaFeedList Feeds { get; } 
         Dictionary<string, ConnectorProperty> Properties { get; }
         Task<AuthStatusInfo> AuthenticateAsync(CancellationToken cancellationToken = default);
         Task<bool> StartSyncAsync(CancellationToken cancellationToken = default);

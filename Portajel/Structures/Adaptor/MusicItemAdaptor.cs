@@ -19,7 +19,6 @@ namespace Portajel.Structures.Adaptor
     public class MusicItemAdaptor : VirtualListViewAdapterBase<object, BaseData>
     {
         private IDbItemConnector _database;
-        private int total = 0;
         public MusicItemAdaptor(IDbItemConnector database, int total) 
         {
             _database = database;
@@ -36,11 +35,8 @@ namespace Portajel.Structures.Adaptor
         }
         public override int GetNumberOfItemsInSection(int sectionIndex)
         {
-            if (total <= 0)
-            {
-                total = _database.GetTotalCount();
-            }
-            return total;
+            // If this happens to be too slow cache it and use a private int total
+            return _database.GetTotalCount();
         }
     }
 }

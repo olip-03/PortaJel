@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -13,7 +14,8 @@ public partial class MusicItemImage : ContentView
             nameof(ImageSource),
             typeof(ImageSource),
             typeof(MusicItemImage),
-            null);
+            null, propertyChanged: OnPropertyChanged);
+
     public static readonly BindableProperty BackgroundSourceProperty =
         BindableProperty.Create(
             nameof(BackgroundSource),
@@ -58,5 +60,10 @@ public partial class MusicItemImage : ContentView
     public MusicItemImage()
     {
         InitializeComponent();
+    }
+    
+    private static void OnPropertyChanged(BindableObject bindable, object oldValue, object newValue)
+    {
+        
     }
 }

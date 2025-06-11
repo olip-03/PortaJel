@@ -1,8 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.IO;
+using System.Net.Http;
+using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Maui.Controls;
 using SkiaSharp;
 using SkiaSharp.Views.Maui;
 using SkiaSharp.Views.Maui.Controls;
@@ -11,41 +12,45 @@ namespace Portajel.Components
 {
     public class MusicImage : SKCanvasView, IDisposable
     {
-        private SKShader? _shader = null;
+        private SKBitmap? _bitmap = null;
+        private CancellationTokenSource? _cancellationTokenSource;
+        private readonly object _bitmapLock = new object();
+        private static readonly HttpClient _httpClient = new HttpClient();
 
-        public static readonly BindableProperty BlurHashProperty =
+        public static readonly BindableProperty ImageSourceProperty =
             BindableProperty.Create(
-                nameof(BlurHash),
-                typeof(string),
+                nameof(ImageSource),
+                typeof(ImageSource),
                 typeof(MusicImage),
-                defaultValue: string.Empty,
-                propertyChanged: OnBlurHashChanged);
-        public string BlurHash
+                defaultValue: null,
+                propertyChanged: OnImageSourceChanged
+            );
+
+        public static readonly BindableProperty PlaceholderColorProperty =
+            BindableProperty.Create(
+                nameof(PlaceholderColor),
+                typeof(Color),
+                typeof(MusicImage),
+                defaultValue: Colors.LightGray
+            );
+
+        public ImageSource? ImageSource
         {
-            get => (string)GetValue(BlurHashProperty);
-            set => SetValue(BlurHashProperty, value);
+            get => (ImageSource?)GetValue(ImageSourceProperty);
+            set => SetValue(ImageSourceProperty, value);
         }
 
-        private int _width => 64;
-        private int _height => 64;
-
-        // Property to set the BlurHash
-        private static void OnBlurHashChanged(BindableObject bindable, object oldValue, object newValue)
+        public Color PlaceholderColor
         {
-            if (bindable is MusicImage musicImage && newValue is string blurHash)
-            {
-                musicImage.CreateShaderFromBlurHash();
-                musicImage.InvalidateSurface();
-            }
+            get => (Color)GetValue(PlaceholderColorProperty);
+            set => SetValue(PlaceholderColorProperty, value);
         }
 
-        // Set the dimensions for the generated image
-        public void SetSize(int width, int height)
+        private static void OnImageSourceChanged(BindableObject bindable, object oldValue, object newValue)
         {
-            if (!string.IsNullOrEmpty(BlurHash))
+            if (bindable is MusicImage musicImage)
             {
-                CreateShaderFromBlurHash();
-                InvalidateSurface();
+                _ = musicImage.LoadImageAsync();
             }
         }
 
@@ -55,229 +60,165 @@ namespace Portajel.Components
         }
 
         protected override void OnParentSet()
-        { 
+        {
             base.OnParentSet();
-            if (!string.IsNullOrEmpty(BlurHash))
+            if (ImageSource != null)
             {
-                CreateShaderFromBlurHash();
+                _ = LoadImageAsync();
             }
         }
 
-        private void CreateShaderFromBlurHash()
+        private async Task LoadImageAsync()
         {
-            if (string.IsNullOrEmpty(BlurHash))
+            if (ImageSource == null)
+            {
+                ClearBitmap();
                 return;
+            }
 
-            // Decode the BlurHash
-            var decoded = BlurHashDecode(BlurHash);
+            _cancellationTokenSource?.Cancel();
+            _cancellationTokenSource = new CancellationTokenSource();
+            var cancellationToken = _cancellationTokenSource.Token;
 
-            // Create a bitmap from the decoded data
-            using var bitmap = GenerateBitmapFromBlurHash(decoded, _width, _height);
+            try
+            {
+                var bitmap = await Task.Run(() => LoadImageInternal(ImageSource, cancellationToken), cancellationToken);
 
-            // Create shader from bitmap
-            _shader?.Dispose();
-            _shader = SKShader.CreateBitmap(bitmap, SKShaderTileMode.Clamp, SKShaderTileMode.Clamp);
+                if (cancellationToken.IsCancellationRequested)
+                {
+                    bitmap?.Dispose();
+                    return;
+                }
+
+                lock (_bitmapLock)
+                {
+                    _bitmap?.Dispose();
+                    _bitmap = bitmap;
+                }
+
+                InvalidateSurface();
+            }
+            catch (OperationCanceledException)
+            {
+                // Expected when cancelled
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error loading image: {ex.Message}");
+                ClearBitmap();
+            }
+        }
+
+        private void ClearBitmap()
+        {
+            lock (_bitmapLock)
+            {
+                _bitmap?.Dispose();
+                _bitmap = null;
+            }
+            InvalidateSurface();
+        }
+
+        private async Task<SKBitmap?> LoadImageInternal(ImageSource imageSource, CancellationToken cancellationToken)
+        {
+            Stream? stream = null;
+            try
+            {
+                stream = await GetImageStreamAsync(imageSource, cancellationToken);
+                if (stream == null) return null;
+
+                cancellationToken.ThrowIfCancellationRequested();
+
+                return SKBitmap.Decode(stream);
+            }
+            finally
+            {
+                stream?.Dispose();
+            }
+        }
+
+        private async Task<Stream?> GetImageStreamAsync(ImageSource imageSource, CancellationToken cancellationToken)
+        {
+            return imageSource switch
+            {
+                FileImageSource fileSource => await GetFileStreamAsync(fileSource),
+                UriImageSource uriSource => await GetUriStreamAsync(uriSource, cancellationToken),
+                StreamImageSource streamSource => await streamSource.Stream(cancellationToken),
+                _ => null
+            };
+        }
+
+        private async Task<Stream?> GetFileStreamAsync(FileImageSource fileSource)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(fileSource.File)) return null;
+                return await FileSystem.OpenAppPackageFileAsync(fileSource.File);
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
+        private async Task<Stream?> GetUriStreamAsync(UriImageSource uriSource, CancellationToken cancellationToken)
+        {
+            try
+            {
+                if (uriSource.Uri == null) return null;
+                var response = await _httpClient.GetAsync(uriSource.Uri, cancellationToken);
+                response.EnsureSuccessStatusCode();
+                return await response.Content.ReadAsStreamAsync();
+            }
+            catch
+            {
+                return null;
+            }
         }
 
         private void OnPaintSurface(object? sender, SKPaintSurfaceEventArgs e)
         {
             var canvas = e.Surface.Canvas;
-            canvas.Clear(SKColors.White);
+            var size = Math.Min(e.Info.Width, e.Info.Height);
+            var rect = new SKRect(0, 0, size, size);
 
-            if (_shader != null)
+            canvas.Clear(PlaceholderColor.ToSKColor());
+
+            SKBitmap? currentBitmap;
+            lock (_bitmapLock)
             {
-                float scale = Math.Min(e.Info.Width / _width, e.Info.Height / _height);
-                var matrix = SKMatrix.CreateScale(scale, scale);
-                _shader.WithLocalMatrix(matrix);
-                using var paint = new SKPaint
-                {
-                    Shader = _shader
-                };
-
-                // Draw a rectangle covering the whole canvas
-                canvas.DrawRect(0, 0, e.Info.Width, e.Info.Height, paint);
-            }
-        }
-
-        #region BlurHash Implementation
-        // BlurHash implementation converted from TypeScript to C#
-        private static readonly string Base83Chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz#$%*+,-.:;=?@[]^_{|}~";
-
-        private static double SRGBToLinear(int value)
-        {
-            double v = value / 255.0;
-            if (v <= 0.04045)
-                return v / 12.92;
-            else
-                return Math.Pow((v + 0.055) / 1.055, 2.4);
-        }
-
-        private static int LinearToSRGB(double value)
-        {
-            double v = Math.Max(0, Math.Min(1, value));
-            if (v <= 0.0031308)
-                return (int)(v * 12.92 * 255 + 0.5);
-            else
-                return (int)((1.055 * Math.Pow(v, 1 / 2.4) - 0.055) * 255 + 0.5);
-        }
-
-        private static double SignPow(double value, double exp)
-        {
-            return Math.Sign(value) * Math.Pow(Math.Abs(value), exp);
-        }
-
-        private static int Decode83(string str, int start, int count)
-        {
-            int value = 0;
-            for (int i = start; i < start + count; i++)
-            {
-                if (i >= str.Length)
-                    break;
-
-                int digit = Base83Chars.IndexOf(str[i]);
-                if (digit == -1)
-                    continue;
-
-                value = value * 83 + digit;
-            }
-            return value;
-        }
-
-        private static double[] DecodeDC(int value)
-        {
-            int intR = value >> 16;
-            int intG = (value >> 8) & 255;
-            int intB = value & 255;
-            return new double[] { SRGBToLinear(intR), SRGBToLinear(intG), SRGBToLinear(intB) };
-        }
-
-        private static double[] DecodeAC(int value, double maximumValue)
-        {
-            int quantR = (int)Math.Floor(value / (19.0 * 19.0));
-            int quantG = (int)Math.Floor(value / 19.0) % 19;
-            int quantB = value % 19;
-
-            return new double[]
-            {
-                SignPow((quantR - 9) / 9.0, 2.0) * maximumValue,
-                SignPow((quantG - 9) / 9.0, 2.0) * maximumValue,
-                SignPow((quantB - 9) / 9.0, 2.0) * maximumValue
-            };
-        }
-
-        private class BlurHashResult
-        {
-            public int NumX { get; set; }
-            public int NumY { get; set; }
-            public double[][] Colors { get; set; } = Array.Empty<double[]>();
-        }
-
-        private static BlurHashResult BlurHashDecode(string blurHash, double punch = 1.0)
-        {
-            if (string.IsNullOrEmpty(blurHash) || blurHash.Length < 6)
-            {
-                return new BlurHashResult
-                {
-                    NumX = 0,
-                    NumY = 0,
-                    Colors = Array.Empty<double[]>()
-                };
+                currentBitmap = _bitmap;
             }
 
-            int sizeFlag = Decode83(blurHash, 0, 1);
-            int numY = (int)Math.Floor(sizeFlag / 9.0) + 1;
-            int numX = (sizeFlag % 9) + 1;
-
-            int quantisedMaximumValue = Decode83(blurHash, 1, 1);
-            double maximumValue = (quantisedMaximumValue + 1) / 166.0;
-
-            int numColors = numX * numY;
-            var colors = new double[numColors][];
-
-            for (int i = 0; i < numColors; i++)
+            if (currentBitmap != null)
             {
-                if (i == 0)
-                {
-                    int value = Decode83(blurHash, 2, 4);
-                    colors[i] = DecodeDC(value);
-                }
-                else
-                {
-                    int value = Decode83(blurHash, 4 + i * 2, 2);
-                    colors[i] = DecodeAC(value, maximumValue * punch);
-                }
+                canvas.DrawBitmap(currentBitmap, rect);
             }
-
-            return new BlurHashResult
-            {
-                NumX = numX,
-                NumY = numY,
-                Colors = colors
-            };
-        }
-
-        private static SKBitmap GenerateBitmapFromBlurHash(BlurHashResult decoded, int width, int height)
-        {
-            // Create an image info and bitmap
-            var info = new SKImageInfo(width, height);
-            var bitmap = new SKBitmap(info);
-
-            if (decoded.NumX == 0 || decoded.NumY == 0 || decoded.Colors.Length == 0)
-                return bitmap;
-
-            // Create a canvas to draw on the bitmap
-            using var canvas = new SKCanvas(bitmap);
-            canvas.Clear();
-
-            using var paint = new SKPaint();
-
-            // Process each pixel
-            for (int y = 0; y < height; y++)
-            {
-                for (int x = 0; x < width; x++)
-                {
-                    double r = 0, g = 0, b = 0;
-
-                    for (int j = 0; j < decoded.NumY; j++)
-                    {
-                        for (int i = 0; i < decoded.NumX; i++)
-                        {
-                            double basis = Math.Cos(Math.PI * x * i / width) *
-                                          Math.Cos(Math.PI * y * j / height);
-                            int colorIndex = i + j * decoded.NumX;
-
-                            if (colorIndex < decoded.Colors.Length)
-                            {
-                                var color = decoded.Colors[colorIndex];
-                                if (color.Length >= 3)
-                                {
-                                    r += color[0] * basis;
-                                    g += color[1] * basis;
-                                    b += color[2] * basis;
-                                }
-                            }
-                        }
-                    }
-
-                    // Convert linear RGB to sRGB
-                    byte pixelR = (byte)LinearToSRGB(r);
-                    byte pixelG = (byte)LinearToSRGB(g);
-                    byte pixelB = (byte)LinearToSRGB(b);
-
-                    // Draw a 1x1 rectangle at this position
-                    paint.Color = new SKColor(pixelR, pixelG, pixelB);
-                    canvas.DrawRect(x, y, 1, 1, paint);
-                }
-            }
-
-            return bitmap;
         }
 
         public void Dispose()
         {
-            _shader?.Dispose();
-            _shader = null;
+            _cancellationTokenSource?.Cancel();
+            _cancellationTokenSource?.Dispose();
+
+            lock (_bitmapLock)
+            {
+                _bitmap?.Dispose();
+                _bitmap = null;
+            }
         }
-        #endregion
+    }
+
+    public static class ColorExtensions
+    {
+        public static SKColor ToSKColor(this Color color)
+        {
+            return new SKColor(
+                (byte)(color.Red * 255),
+                (byte)(color.Green * 255),
+                (byte)(color.Blue * 255),
+                (byte)(color.Alpha * 255)
+            );
+        }
     }
 }

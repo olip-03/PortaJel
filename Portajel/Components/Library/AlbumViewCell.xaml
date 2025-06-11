@@ -4,7 +4,7 @@
 	xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
 	xmlns:vlv="clr-namespace:Microsoft.Maui.Controls;assembly=VirtualListView"
     xmlns:music="clr-namespace:Portajel.Connections.Database;assembly=Portajel.Connections"
-	xmlns:local="clr-namespace:Portajel.Components"
+	xmlns:comp="clr-namespace:Portajel.Components"
     xmlns:ffimageloading="clr-namespace:FFImageLoading.Maui;assembly=FFImageLoading.Maui"
     xmlns:sn="clr-namespace:Sharpnado.Tasks;assembly=Sharpnado.TaskMonitor"
 	x:Class="Portajel.Components.Library.AlbumViewCell"
@@ -18,11 +18,11 @@
         <Grid ColumnDefinitions="84, *" 
               RowDefinitions="42, 42" 
               HorizontalOptions="Fill">
-            <local:MusicItemImage
-	            x:Name="Image"
-	            ImageSource="{Binding ImgSource}"
-	            BackgroundSource="{Binding ImgBlurhashSource}">
-            </local:MusicItemImage>
+	        <comp:MusicImage Grid.RowSpan="2"
+							 ImageSource="{Binding ImgBlurhashSource}"
+	                         ZIndex="1"
+	                         HeightRequest="64"
+	                         WidthRequest="64"/>
             <Label 
                 VerticalOptions="End"
                 Grid.Column="1"

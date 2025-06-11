@@ -10,7 +10,8 @@ namespace Portajel.Connections;
 //  https://media.olisshittyserver.xyz/api-docs/swagger/index.html
 public class ServerConnector : IServerConnector
 {
-    public MediaServerList Servers { get; set; } = [];
+    public MediaServerList Servers { get; } = [];
+    public MediaFeedList Feeds { get; } = [];
     public Dictionary<string, ConnectorProperty> Properties { get; set; } = [];
     public List<Action<IMediaServerConnector>> AddServerActions { get; set; } = new();
     public ServerConnector()

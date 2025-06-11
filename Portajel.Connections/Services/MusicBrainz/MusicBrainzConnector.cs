@@ -9,11 +9,11 @@ namespace Portajel.Connections.Services.MusicBrainz;
 public class MusicBrainzConnector: IMediaServerConnector
 {
     public Dictionary<MediaCapabilities, bool> SupportedReturnTypes { get; set; }
+    public IFeedConnector? Feeds { get; }
     public Dictionary<string, IMediaDataConnector> GetDataConnectors()
     {
         throw new NotImplementedException();
     }
-
     public string Name { get; } = "MusicBrainz";
     public string Description { get; } = "Connection to MusicBrainz";
     public string Image { get; }
@@ -22,7 +22,6 @@ public class MusicBrainzConnector: IMediaServerConnector
     public AuthStatusInfo AuthStatus { get; set; }
     public async Task<AuthStatusInfo> AuthenticateAsync(CancellationToken cancellationToken = default)
     {
-        
         return AuthStatusInfo.Ok();
     }
 

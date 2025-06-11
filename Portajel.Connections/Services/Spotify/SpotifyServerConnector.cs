@@ -12,6 +12,7 @@ namespace Portajel.Connections.Services.Spotify
         public IMediaDataConnector SongData { get; set; } = null;
         public IMediaDataConnector PlaylistData { get; set; } = new SpotifyServerPlaylistConnector();
         public IMediaDataConnector Genre { get; set; } = null;
+        public IFeedConnector? Feeds { get; }
 
         public Dictionary<string, IMediaDataConnector> GetDataConnectors() => new()
         {

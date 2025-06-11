@@ -71,18 +71,20 @@ namespace Portajel.Connections.Database
             }
 
             MusicItemImage musicItemImage = MusicItemImage.Builder(baseItem, server);
-            AlbumData album = new();
-            album.ServerId = (Guid)baseItem.Id;
-            album.Id = GuidHelper.GenerateNewGuidFromHash(baseItem.Id, server);
-            album.Name = baseItem.Name == null ? string.Empty : baseItem.Name;
-            album.IsFavourite = baseItem.UserData.IsFavorite == null ? false : (bool)baseItem.UserData.IsFavorite;
-            // album.PlayCount = albumData.PlayCount; TODO: Implement playcount
-            album.DateAdded = baseItem.DateCreated;
-            album.DatePlayed = baseItem.UserData.LastPlayedDate;
-            album.ServerAddress = server;
-            album.ImgSource = musicItemImage.Source;
-            album.ImgBlurhash = musicItemImage.Blurhash;
-            album.ArtistIdsJson = JsonSerializer.Serialize(baseItem.ArtistItems.Select(idPair => idPair.Id).ToArray());
+            AlbumData album = new()
+            {
+                ServerId = (Guid)baseItem.Id,
+                Id = GuidHelper.GenerateNewGuidFromHash(baseItem.Id, server),
+                Name = baseItem.Name ?? string.Empty,
+                IsFavourite = baseItem.UserData.IsFavorite ?? false,
+                PlayCount = baseItem.UserData.PlayCount ?? 0,
+                DateAdded = baseItem.DateCreated,
+                DatePlayed = baseItem.UserData.LastPlayedDate,
+                ServerAddress = server,
+                ImgSource = musicItemImage.Source,
+                ImgBlurhash = musicItemImage.Blurhash,
+                ArtistIdsJson = JsonSerializer.Serialize(baseItem.ArtistItems.Select(idPair => idPair.Id).ToArray())
+            };
             if (songIds != null)
             {
                 album.SongIdsJson = JsonSerializer.Serialize(songIds);
@@ -91,6 +93,16 @@ namespace Portajel.Connections.Database
             {
                 album.SongIdsJson = JsonSerializer.Serialize(songDataItems.Select(s => s.Id).ToArray());
                 album.DatePlayed = songDataItems.OrderBy(s => s.DatePlayed).First().DatePlayed;
+            }
+            
+            if (baseItem.ProviderIds != null && baseItem.ProviderIds.AdditionalData.TryGetValue("MusicBrainzAlbum", out var value))
+            {
+                Guid.TryParse(value.ToString(), out var albumId);
+                album.GlobalId = albumId;
+            }
+            else
+            {
+                album.GlobalId = album.ServerId;
             }
 
             string artistNames = string.Empty;

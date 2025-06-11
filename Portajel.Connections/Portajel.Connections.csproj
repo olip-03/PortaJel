@@ -17,8 +17,4 @@
 		<PackageReference Include="sqlite-net-pcl" Version="1.9.172" />
 		<PackageReference Include="Blurhash.Core" Version="4.0.0" />
 	</ItemGroup>
-
-	<ItemGroup>
-	  <Folder Include="Database\Radio\Channels\" />
-	</ItemGroup>
 </Project>

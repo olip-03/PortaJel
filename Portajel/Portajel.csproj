@@ -231,6 +231,29 @@
 	    <Generator>MSBuild:Compile</Generator>
 	    <DependentUpon>ViewConnectionPage.xaml</DependentUpon>
 	  </AdditionalFiles>
+	  <AdditionalFiles Update="Components\Library\AlbumViewCell.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	    <DependentUpon>AlbumViewCell.xaml</DependentUpon>
+	  </AdditionalFiles>
+	  <AdditionalFiles Update="Components\Library\ArtistViewCell.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	    <DependentUpon>ArtistViewCell.xaml</DependentUpon>
+	  </AdditionalFiles>
+	  <AdditionalFiles Update="Components\Library\GenreViewCell.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	    <DependentUpon>GenreViewCell.xaml</DependentUpon>
+	  </AdditionalFiles>
+	  <AdditionalFiles Update="Components\Library\PlaylistViewCell.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	    <DependentUpon>PlaylistViewCell.xaml</DependentUpon>
+	  </AdditionalFiles>
+	  <AdditionalFiles Update="Components\Library\SongViewCell.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	    <DependentUpon>SongViewCell.xaml</DependentUpon>
+	  </AdditionalFiles>
+	  <AdditionalFiles Update="Components\MusicItemImage.xaml">
+	    <DependentUpon>MusicItemImage.xaml</DependentUpon>
+	  </AdditionalFiles>
 	</ItemGroup>
 
 </Project>

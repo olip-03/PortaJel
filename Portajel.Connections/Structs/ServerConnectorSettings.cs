@@ -30,34 +30,17 @@ public class ServerConnectorSettings
             };
             var serverProperties = JsonSerializer.Deserialize<List<Dictionary<string, ConnectorProperty>>>(json, options);
             if (serverProperties == null) return;
-            ServerConnector = new ServerConnector { Servers = new MediaServerList() };
             foreach (var props in serverProperties)
             {
                 if (props.TryGetValue("ConnectorType", out var typeProperty))
                 {
                     IMediaServerConnector server = null;
-                    // Convert the Value to string or int as needed
                     var connectorTypeValue = typeProperty.Value?.ToString();
-
-                    // Option 1: If the enum values match the numeric values
                     if (int.TryParse(connectorTypeValue, out int connectorTypeInt))
                     {
                         switch (connectorTypeInt)
                         {
-                            case 3: // Assuming 3 means JellyFin
-                                server = new JellyfinServerConnector(database)
-                                {
-                                    Properties = props
-                                };
-                                break;
-                        }
-                    }
-                    // Option 2: Or if you expect string values in some cases
-                    else
-                    {
-                        switch (connectorTypeValue)
-                        {
-                            case "JellyFin":
+                            case 3: // JellyFin
                                 server = new JellyfinServerConnector(database)
                                 {
                                     Properties = props

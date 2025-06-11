@@ -79,7 +79,7 @@ public class DatabaseAlbumConnector : IDbItemConnector
         CancellationToken cancellationToken = default)
     {
         // Filter the cache based on the provided parameters
-        return _database.Table<AlbumData>().Where(album => album.Id == id).FirstOrDefault();
+        return _database.Table<AlbumData>().FirstOrDefault(album => album.Id == id);
     }
 
     public bool Contains(
