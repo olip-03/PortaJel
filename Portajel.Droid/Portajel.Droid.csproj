@@ -1,29 +1,25 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFramework>net9.0-android</TargetFramework>
-		<SupportedOSPlatformVersion>21.0</SupportedOSPlatformVersion>
+		<TargetFrameworks>net9.0-android</TargetFrameworks>
 		<OutputType>Exe</OutputType>
 		<RootNamespace>Portajel</RootNamespace>
-		<Nullable>enable</Nullable>
-		<ImplicitUsings>enable</ImplicitUsings>
 		<UseMaui>true</UseMaui>
-		<TargetFrameworks>net9.0-android</TargetFrameworks>
-	</PropertyGroup>
+		<SingleProject>true</SingleProject>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
 
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-	  <AndroidCreatePackagePerAbi>True</AndroidCreatePackagePerAbi>
-	  <Debugger>Xamarin</Debugger>
-	</PropertyGroup>
+		<!-- Display Version -->
+		<ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
+		<ApplicationVersion>1</ApplicationVersion>
 
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-	  <AndroidCreatePackagePerAbi>True</AndroidCreatePackagePerAbi>
-	  <Debugger>Xamarin</Debugger>
+		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">21.0</SupportedOSPlatformVersion>
 	</PropertyGroup>
 
 	<ItemGroup>
+		<PackageReference Include="Microsoft.Maui.Controls" Version="9.0.50" />
+		<PackageReference Include="Microsoft.Maui.Controls.Compatibility" Version="9.0.50" />
 		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="9.0.3" />
-		<PackageReference Include="Microsoft.Maui.Controls" Version="9.0.3" />
 		<PackageReference Include="SkiaSharp" Version="3.116.1" />
 		<PackageReference Include="Xamarin.AndroidX.Browser" Version="1.8.0.8" />
 		<PackageReference Include="Xamarin.AndroidX.Lifecycle.LiveData" Version="2.8.7.2" />
@@ -35,7 +31,4 @@
 		<ProjectReference Include="..\Portajel\Portajel.csproj" />
 	</ItemGroup>
 
-	<ItemGroup>
-	  <PackageReference Update="Microsoft.Maui.Controls" Version="9.0.50" />
-	</ItemGroup>
 </Project>

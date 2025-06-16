@@ -1,18 +1,13 @@
 ﻿using Jellyfin.Sdk.Generated.Models;
 using Portajel.Connections.Services;
 using Portajel.Connections.Structs;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Portajel.Connections.Interfaces
 {
     public interface IServerConnector
     {
         MediaServerList Servers { get; }
-        public MediaFeedList Feeds { get; } 
+        public IFeedConnector? Feeds { get; } 
         Dictionary<string, ConnectorProperty> Properties { get; }
         Task<AuthStatusInfo> AuthenticateAsync(CancellationToken cancellationToken = default);
         Task<bool> StartSyncAsync(CancellationToken cancellationToken = default);

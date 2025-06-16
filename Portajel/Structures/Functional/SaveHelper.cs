@@ -65,10 +65,10 @@ namespace Portajel.Structures.Functional
             string path = Path.Combine(cacheDir, $"blur/{blurhash}.png");
             try
             {
-                using var image = SKImage.FromBitmap(blurhash);
-                using var data = image.Encode(SKEncodedImageFormat.Png, 100); // Format and quality
-                using var stream = File.OpenWrite(path);
-                data.SaveTo(stream);
+                // using var image = SKImage.FromBitmap(blurhash);
+                // using var data = image.Encode(SKEncodedImageFormat.Png, 100); // Format and quality
+                // using var stream = File.OpenWrite(path);
+                // data.SaveTo(stream);
             }
             catch (Exception e)
             {

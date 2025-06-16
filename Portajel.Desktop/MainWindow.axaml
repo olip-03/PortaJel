@@ -10,33 +10,131 @@
         x:DataType="vm:MainWindowViewModel"
         Title="Portajel.Desktop">
     <Grid>
-        <Grid.RowDefinitions>   
-            <RowDefinition Height="*" />
-            <RowDefinition Height="Auto" />
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-        <rxui:RoutedViewHost Grid.Row="0" Router="{Binding Router}">
+        <Grid.ColumnDefinitions>   
+            <ColumnDefinition Width="Auto" MinWidth="200" />
+            <ColumnDefinition Width="1" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+        
+        <Grid Grid.ColumnSpan="3" Grid.Column="0" Grid.Row="0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>   
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Border Background="{Binding PanelColor}"
+                    BorderBrush="#545B62"
+                    Height="42"
+                    BorderThickness="0 0 0 1">
+                <Grid>
+                    <Label FontSize="18" Content="Portajel" VerticalAlignment="Center" Margin="6 0"/>
+                    
+                    <TextBox Watermark="Search" VerticalAlignment="Center" Width="300" MaxWidth="500" HorizontalAlignment="Center"/>
+                    
+                    <Button Margin="6 0" Content="Settings" HorizontalAlignment="Right" CornerRadius="32"/>
+                </Grid>
+            </Border>
+        </Grid>
+        
+        <Border Grid.Column="0" Grid.Row="1" 
+                Background="{Binding PanelColor}"
+                BorderBrush="#545B62"
+                BorderThickness="0 0 1 0">
+            <StackPanel Orientation="Vertical">
+                <StackPanel.Styles>
+                    <Style Selector="StackPanel > TextBlock">
+                        <Setter Property="VerticalAlignment" Value="Center"/>
+                    </Style>
+                </StackPanel.Styles>
+                <Button Command="{Binding GoHome}" 
+                        HorizontalAlignment="Stretch"
+                        CornerRadius="0"
+                        Background="Transparent" 
+                        BorderThickness="0">
+                    <StackPanel Orientation="Horizontal">
+                        <Svg Path="/Resources/Images/home.svg" 
+                             Css=".Background { fill: white; }"
+                             Width="24" Height="24" />
+                        <Label Content="Home"/>
+                    </StackPanel>
+                </Button>
+                
+                <Label Content="Library" Margin="6 12 6 0"/>
+                
+                <Button Command="{Binding GoLibrary}" 
+                        HorizontalAlignment="Stretch" 
+                        CornerRadius="0"
+                        Background="Transparent" 
+                        BorderThickness="0">
+                    <StackPanel Orientation="Horizontal">
+                        <Svg Path="/Resources/Images/album.svg"
+                             Width="24" Height="24" />
+                        <Label Content="Album"/>
+                    </StackPanel>
+                </Button>
+                <Button Command="{Binding GoLibrary}" 
+                        HorizontalAlignment="Stretch" 
+                        CornerRadius="0"
+                        Background="Transparent" 
+                        BorderThickness="0">
+                    <StackPanel Orientation="Horizontal">
+                        <Svg Path="/Resources/Images/artist.svg"
+                             Width="24" Height="24" />
+                        <Label Content="Artist"/>
+                    </StackPanel>
+                </Button>
+                <Button Command="{Binding GoLibrary}" 
+                        HorizontalAlignment="Stretch" 
+                        CornerRadius="0"
+                        Background="Transparent" 
+                        BorderThickness="0">
+                    <StackPanel Orientation="Horizontal">
+                        <Svg Path="/Resources/Images/song.svg"
+                             Width="24" Height="24" />
+                        <Label Content="Song"/>
+                    </StackPanel>
+                </Button>
+                <Button Command="{Binding GoLibrary}" 
+                        HorizontalAlignment="Stretch" 
+                        CornerRadius="0"
+                        Background="Transparent" 
+                        BorderThickness="0">
+                    <StackPanel Orientation="Horizontal">
+                        <Svg Path="/Resources/Images/genre.svg"
+                             Width="24" Height="24" />
+                        <Label Content="Genre"/>
+                    </StackPanel>
+                </Button>
+                
+                <Label Content="Playlists" Margin="6 12 6 0"/>
+
+            </StackPanel>
+        </Border>
+        
+        <GridSplitter Grid.Row="1" Grid.Column="1" Width="1" Background="Transparent" ResizeDirection="Columns"/>
+        
+        <rxui:RoutedViewHost Grid.Column="2" Grid.Row="1" Router="{Binding Router}">
             <rxui:RoutedViewHost.DefaultContent>
-                <TextBlock Text="Default content"
-                           HorizontalAlignment="Center"
-                           VerticalAlignment="Center" />
+                
             </rxui:RoutedViewHost.DefaultContent>
             <rxui:RoutedViewHost.ViewLocator>
                 <!-- See AppViewLocator.cs section below -->
                 <app:AppViewLocator />
             </rxui:RoutedViewHost.ViewLocator>
         </rxui:RoutedViewHost>
-        <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="15">
-            <StackPanel.Styles>
-                <Style Selector="StackPanel > :is(Control)">
-                    <Setter Property="Margin" Value="2"/>
-                </Style>
-                <Style Selector="StackPanel > TextBlock">
-                    <Setter Property="VerticalAlignment" Value="Center"/>
-                </Style>
-            </StackPanel.Styles>
-            <Button Content="Go next" Command="{Binding GoNext}" />
-            <Button Content="Go back" Command="{Binding GoBack}" />
-            <TextBlock Text="{Binding Router.NavigationStack.Count}" />
-        </StackPanel>
+        
+        <Border Grid.ColumnSpan="3" Grid.Column="0" Grid.Row="2" >
+            <Border Background="Transparent"
+                    BorderBrush="#545B62"
+                    Height="56"
+                    BorderThickness="0 1 0 0">
+            </Border>
+        </Border>
     </Grid>
 </Window>

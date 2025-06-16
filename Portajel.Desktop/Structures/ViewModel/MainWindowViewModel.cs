@@ -1,4 +1,5 @@
 using System.Reactive;
+using Avalonia.Media;
 using ReactiveUI;
 
 namespace Portajel.Desktop.Structures.ViewModel;
@@ -10,11 +11,26 @@ public class MainWindowViewModel: ReactiveObject, IScreen
     public RoutingState Router { get; } = new RoutingState();
 
     // The command that navigates a user to first view model.
-    public ReactiveCommand<Unit, IRoutableViewModel> GoNext { get; }
+    public ReactiveCommand<Unit, IRoutableViewModel> GoHome { get; }
 
     // The command that navigates a user back.
-    public ReactiveCommand<Unit, IRoutableViewModel> GoBack => Router.NavigateBack;
-
+    public ReactiveCommand<Unit, IRoutableViewModel> GoLibrary { get; }
+    
+    
+    private SolidColorBrush _panelColor = SolidColorBrush.Parse("#31363B");
+    public SolidColorBrush PanelColor
+    {
+        get => _panelColor;
+        set => this.RaiseAndSetIfChanged(ref _panelColor, value);
+    }
+    
+    private string _testString = "Test";
+    public string TestString
+    {
+        get => _testString;
+        set => this.RaiseAndSetIfChanged(ref _testString, value);
+    }
+    
     public MainWindowViewModel()
     {
         // Manage the routing state. Use the Router.Navigate.Execute
@@ -24,8 +40,11 @@ public class MainWindowViewModel: ReactiveObject, IScreen
         // of a view model, this allows you to pass parameters to 
         // your view models, or to reuse existing view models.
         //
-        GoNext = ReactiveCommand.CreateFromObservable(
-            () => Router.Navigate.Execute(new HomeViewModel(this))
+        GoHome = ReactiveCommand.CreateFromObservable(
+            () => Router.NavigateAndReset.Execute(new HomeViewModel(this))
+        );
+        GoLibrary= ReactiveCommand.CreateFromObservable(
+            () => Router.NavigateAndReset.Execute(new LibraryViewModel(this))
         );
     }
 }

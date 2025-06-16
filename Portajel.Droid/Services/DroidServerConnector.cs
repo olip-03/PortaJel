@@ -23,15 +23,12 @@ namespace Portajel.Services
             }
         }
 
-        public MediaFeedList Feeds
+        public IFeedConnector? Feeds { get
         {
-            get
-            {
-                if (_serviceConnection.Binder == null)
-                    throw GetNullReferenceException();
-                return _serviceConnection.Binder.Server.Feeds;
-            }
-        }
+            if (_serviceConnection.Binder == null)
+                throw GetNullReferenceException();
+            return _serviceConnection.Binder.Server.Feeds;
+        } } 
 
         public Dictionary<string, ConnectorProperty> Properties
         {

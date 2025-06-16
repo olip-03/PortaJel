@@ -6,27 +6,39 @@
     <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+    <!-- Native AOT Settings -->
+    <PublishAot>true</PublishAot>
+    <BuiltInComInteropSupport>false</BuiltInComInteropSupport>
+    <TrimMode>link</TrimMode>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Avalonia" Version="11.3.1" />
     <PackageReference Include="Avalonia.Desktop" Version="11.3.1" />
     <PackageReference Include="Avalonia.ReactiveUI" Version="11.3.1" />
+    <PackageReference Include="Avalonia.Skia" Version="11.3.1" />
     <PackageReference Include="Avalonia.Themes.Fluent" Version="11.3.1" />
     <PackageReference Include="Avalonia.Fonts.Inter" Version="11.3.1" />
-    <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
     <PackageReference Include="Avalonia.Diagnostics" Version="11.3.1">
       <IncludeAssets Condition="'$(Configuration)' != 'Debug'">None</IncludeAssets>
       <PrivateAssets Condition="'$(Configuration)' != 'Debug'">All</PrivateAssets>
     </PackageReference>
+    <PackageReference Include="SkiaSharp" Version="3.116.1" />
+    <!-- CHANGED: Use regular Linux assets instead of NoDependencies -->
+    <PackageReference Include="SkiaSharp.NativeAssets.Linux" Version="3.116.1" />
+    <PackageReference Include="Svg.Controls.Skia.Avalonia" Version="11.3.0.1" />
   </ItemGroup>
 
+  <!-- Rest of your ItemGroups remain the same -->
   <ItemGroup>
     <Compile Update="Pages\HomeView.acs">
       <DependentUpon>HomeView.xaml</DependentUpon>
     </Compile>
     <Compile Update="Pages\HomeView.cs">
       <DependentUpon>HomeView.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="Pages\LibraryView.cs">
+      <DependentUpon>LibraryView.axaml</DependentUpon>
     </Compile>
   </ItemGroup>
 
@@ -40,5 +52,11 @@
     <AdditionalFiles Update="Pages\HomeView.axaml">
       <DependentUpon>HomeView.axaml</DependentUpon>
     </AdditionalFiles>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Components\" />
+    <Folder Include="Resources\" />
+    <AvaloniaResource Include="Resources\Images\*.svg" />
   </ItemGroup>
 </Project>

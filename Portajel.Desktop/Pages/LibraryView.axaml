@@ -1,0 +1,19 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:Portajel.Desktop.Structures.ViewModel"
+             x:Class="Portajel.Desktop.Pages.LibraryView"
+             x:DataType="vm:LibraryViewModel">
+    <Grid>
+        <TabControl Margin="5">
+            <TabItem Header="Tab 1">
+                <TextBlock Margin="5">This is tab 1 content</TextBlock>
+            </TabItem>
+            <TabItem Header="Tab 2">
+                <TextBlock Margin="5">This is tab 2 content</TextBlock>
+            </TabItem>
+            <TabItem Header="Tab 3">
+                <TextBlock Margin="5">This is tab 3 content</TextBlock>
+            </TabItem>
+        </TabControl>
+    </Grid>
+</UserControl>

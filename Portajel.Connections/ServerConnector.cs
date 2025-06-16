@@ -1,6 +1,5 @@
 using System.Diagnostics;
 using Jellyfin.Sdk.Generated.Models;
-using Portajel.Connections.Enum;
 using Portajel.Connections.Interfaces;
 using Portajel.Connections.Services;
 using Portajel.Connections.Structs;
@@ -11,7 +10,7 @@ namespace Portajel.Connections;
 public class ServerConnector : IServerConnector
 {
     public MediaServerList Servers { get; } = [];
-    public MediaFeedList Feeds { get; } = [];
+    public IFeedConnector? Feeds { get; }
     public Dictionary<string, ConnectorProperty> Properties { get; set; } = [];
     public List<Action<IMediaServerConnector>> AddServerActions { get; set; } = new();
     public ServerConnector()

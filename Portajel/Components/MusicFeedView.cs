@@ -15,7 +15,7 @@ public class MusicFeedView : ContentView
     {
         Grid grid = new Grid();
 
-        var mediaFeeds = _server.Feeds.GetEnabled().ToArray();
+        var mediaFeeds = _server.Feeds.AvailableFeeds.Values.Where(f => f.IsEnabled).ToArray();
         for (int i = 0; i < mediaFeeds.Length; i++)
         {
             grid.RowDefinitions.Add(new RowDefinition());

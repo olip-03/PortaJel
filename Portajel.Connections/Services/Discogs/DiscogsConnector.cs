@@ -16,7 +16,6 @@ public class DiscogsConnector : IMediaServerConnector
     public IMediaDataConnector PlaylistData { get; set; }
     public IMediaDataConnector Genre { get; set; }
     public IFeedConnector? Feeds { get; }
-
     public Dictionary<string, IMediaDataConnector> GetDataConnectors()=> new()
     {
         { "Album", AlbumData },

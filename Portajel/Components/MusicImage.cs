@@ -21,6 +21,7 @@ namespace Portajel.Components
             BindableProperty.Create(
                 nameof(ImageSource),
                 typeof(ImageSource),
+                
                 typeof(MusicImage),
                 defaultValue: null,
                 propertyChanged: OnImageSourceChanged
