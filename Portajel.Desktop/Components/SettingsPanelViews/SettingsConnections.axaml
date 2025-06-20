@@ -1,0 +1,48 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:Portajel.Desktop.Structures.ViewModel"
+             x:Class="Portajel.Desktop.Components.SettingsPanelViews.SettingsConnections"
+             x:DataType="vm:SettingsConnectionViewModel">
+    <StackPanel>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Label Grid.Column="0" Content="Connections" VerticalAlignment="Center" FontSize="18" Margin="0,0,0,10"/>
+            <Button Grid.Column="1" HorizontalAlignment="Right" Content="Add new" Command="{Binding NavigateToCommand}"/>
+        </Grid>
+        
+        <Border Padding="6" Background="DimGray" BorderBrush="Gray" BorderThickness="1" MinHeight="56">
+            <ListBox ItemsSource="{Binding Connections}"
+                     x:Name="SettingsList"
+                     SelectionMode="Single"
+                     Background="Transparent"
+                     BorderThickness="0">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <Border Background="Transparent" 
+                                Padding="10,8"
+                                CornerRadius="4"
+                                Cursor="Hand">
+                            <Border.Styles>
+                                <Style Selector="Border:pointerover">
+                                    <Setter Property="Background" Value="#404040"/>
+                                </Style>
+                            </Border.Styles>
+                            <StackPanel>
+                                <TextBlock Text="{Binding Name}" 
+                                           FontWeight="SemiBold" 
+                                           FontSize="14"/>
+                                <TextBlock Text="{Binding Description}" 
+                                           FontSize="12" 
+                                           Opacity="0.7"/>
+                            </StackPanel>
+                        </Border>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </Border>
+        
+    </StackPanel>
+</UserControl>

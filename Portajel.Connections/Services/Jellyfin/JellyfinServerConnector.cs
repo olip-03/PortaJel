@@ -34,7 +34,7 @@ namespace Portajel.Connections.Services.Jellyfin
         public IMediaDataConnector PlaylistData { get; set; } = null!;
         public IMediaDataConnector Genre { get; set; } = null!;
 
-        public IFeedConnector? Feeds { get; } = null!;
+        public IFeedConnector? Feeds { get; private set; } = null!;
         public Dictionary<string, IMediaDataConnector> GetDataConnectors() => new()
         {
             { "Album", AlbumData },
@@ -70,7 +70,6 @@ namespace Portajel.Connections.Services.Jellyfin
             string appDataPath = "")
         {
             _database = database;
-            Feeds = new JellyfinFeedConnector(_database, url);
             Properties =
                 new()
                 {
@@ -233,12 +232,13 @@ namespace Portajel.Connections.Services.Jellyfin
                         };
                     }
                 }
-
+                
                 AlbumData = new JellyfinServerAlbumConnector(_jellyfinApiClient, _sdkClientSettings, _userDto);
                 ArtistData = new JellyfinServerArtistConnector(_jellyfinApiClient, _sdkClientSettings, _userDto);
                 SongData = new JellyfinServerSongConnector(_jellyfinApiClient, _sdkClientSettings, _userDto);
                 PlaylistData = new JellyfinServerPlaylistConnector(_jellyfinApiClient, _sdkClientSettings, _userDto);
                 Genre = new JellyfinServerGenreConnector(_jellyfinApiClient, _sdkClientSettings, _userDto);
+                Feeds = new JellyfinFeedConnector(_database, Properties["URL"].Value.ToString());
             }
             catch (ApiException apiEx)
             {

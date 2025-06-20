@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using CommunityToolkit.Maui.Behaviors;
 using Mapsui.UI.Maui;
 using Microsoft.Maui.Controls;
@@ -52,9 +53,16 @@ public class ConnectionsPage : ContentPage
             Text = "Add Connection",
             Command = new Command(async () =>
             {
-                string dataPath = FileSystem.AppDataDirectory;
-                JellyfinServerConnector newServer = new JellyfinServerConnector(_database, appDataPath: dataPath);
-                await Navigation.PushModalAsync(new ModalAddServer(_server, newServer) { OnLoginSuccess = ((e) => { BuildUI(); }) }, true);
+                try
+                {
+                    string dataPath = FileSystem.AppDataDirectory;
+                    JellyfinServerConnector newServer = new JellyfinServerConnector(_database, appDataPath: dataPath);
+                    await Navigation.PushModalAsync(new ModalAddServer(_server, newServer) { OnLoginSuccess = ((e) => { BuildUI(); }) }, true);
+                }
+                catch (Exception e)
+                {
+                    Trace.WriteLine(e);
+                }
             })
         });
 

@@ -11,11 +11,12 @@ public class MediaServerList: List<IMediaServerConnector>
     
     public void RemoveServer(IMediaServerConnector server)
     {
-        
+        this.Remove(server);
     }
 
     public void RemoveServer(string address)
     {
-        
+        var srv = this.First(s => s.GetAddress() == address);
+        this.Remove(srv);
     }
 }

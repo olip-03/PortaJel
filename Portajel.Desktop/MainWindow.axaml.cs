@@ -1,21 +1,27 @@
 using System;
 using Avalonia.Controls;
 using Avalonia.Input;
+using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using Avalonia.Markup.Xaml.Converters;
 using Avalonia.Media;
 using Avalonia.ReactiveUI;
+using Portajel.Desktop.Components;
 using Portajel.Desktop.Structures.ViewModel;
 using ReactiveUI;
+using SettingsIndex = Portajel.Desktop.Components.SettingsPanelViews;
 
 namespace Portajel.Desktop;
 
 public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
 {
+    private Components.SettingsPanel? _settingsPanel;
     public MainWindow()
     {
         this.WhenActivated(disposables => { });
         AvaloniaXamlLoader.Load(this);
+        
+        _settingsPanel = this.FindControl<Components.SettingsPanel>("SettingsPanel");
         
         this.Activated += OnWindowActivated;
         this.Deactivated += OnWindowDeactivated;
@@ -51,5 +57,20 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
             Opacity = 1
         };
         ViewModel.TestString = "Unactive";
+    }
+
+    private void Button_OnClick(object? sender, RoutedEventArgs e)
+    {
+        if (_settingsPanel.Opacity == 0)
+        {
+            _settingsPanel.Opacity = 1;
+            _settingsPanel.IsHitTestVisible = true;
+            
+        }
+        else
+        {
+            _settingsPanel.Opacity = 0;
+            _settingsPanel.IsHitTestVisible = false;
+        }
     }
 }
