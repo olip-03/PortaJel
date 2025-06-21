@@ -44,7 +44,7 @@ namespace Portajel.Structures.Functional
             }
             return settings.ServerConnector;
         }
-        public static async Task<bool> SaveData(IServerConnector server)
+        public static async Task<bool> SaveData(ServerConnector server)
         {
             try
             {

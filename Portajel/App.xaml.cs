@@ -13,7 +13,7 @@ namespace Portajel
     public partial class App : Application
     {
         public static IServiceProvider Services { get; set; }
-        public App(IServerConnector serverConnector, IDbConnector dbConnector, IServiceProvider services)
+        public App(ServerConnector serverConnector, IDbConnector dbConnector, IServiceProvider services)
         {
             Services = services;
             InitializeComponent();
@@ -24,7 +24,7 @@ namespace Portajel
             StartupAsync(serverConnector, dbConnector);
         }
 
-        private void StartupAsync(IServerConnector serverConnector, IDbConnector dbConnector)
+        private void StartupAsync(ServerConnector serverConnector, IDbConnector dbConnector)
         {
             //IConfiguration imgConfig = new Configuration();
             //imgConfig.DecodingMaxParallelTasks = 4; 
@@ -48,7 +48,6 @@ namespace Portajel
                     try
                     {
                         await srv.StartSyncAsync();
-                        await SaveHelper.SaveData(serverConnector);
                     }
                     catch (Exception ex)
                     {
@@ -56,6 +55,7 @@ namespace Portajel
                         continue;
                     }
                 }
+                await SaveHelper.SaveData(serverConnector);
             });
         }
 

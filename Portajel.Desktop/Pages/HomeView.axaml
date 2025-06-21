@@ -5,7 +5,6 @@
              x:Class="Portajel.Desktop.Pages.HomeView">
     <StackPanel HorizontalAlignment="Center"
                 VerticalAlignment="Center">
-        <TextBlock Text="Hi, I'm the first view!" />
-        <TextBlock Text="{Binding UrlPathSegment}" />
+        <TextBlock Text="Server Feeds Go Here!" />
     </StackPanel>
 </UserControl>

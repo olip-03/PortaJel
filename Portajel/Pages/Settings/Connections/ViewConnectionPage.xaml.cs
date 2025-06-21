@@ -16,10 +16,10 @@ public partial class ViewConnectionPage : ContentPage, IQueryAttributable
     private Dictionary<string, ConnectorProperty> _connectionProperties = new();
     private ViewConnectionViewModel _viewModel = new();
 
-    private IServerConnector _server = default!;
+    private ServerConnector _server = default!;
     private IDbConnector _database = default!;
 
-    public ViewConnectionPage(IServerConnector serverConnector, IDbConnector dbConnector)
+    public ViewConnectionPage(ServerConnector serverConnector, IDbConnector dbConnector)
     {
         _server =  serverConnector;
         _database = dbConnector;

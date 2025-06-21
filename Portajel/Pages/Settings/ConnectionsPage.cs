@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using CommunityToolkit.Maui.Behaviors;
 using Mapsui.UI.Maui;
 using Microsoft.Maui.Controls;
@@ -17,9 +18,9 @@ public class ConnectionsPage : ContentPage
 {
     private Color _primaryDark = Color.FromRgba(0, 0, 0, 255);
 
-    private IServerConnector _server = default!;
+    private ServerConnector _server = default!;
     private IDbConnector _database = default!;
-    public ConnectionsPage(IServerConnector server, IDbConnector dbConnector)
+    public ConnectionsPage(ServerConnector server, IDbConnector dbConnector)
     {
         if (Application.Current is null) return;
         _server = server;
@@ -52,9 +53,16 @@ public class ConnectionsPage : ContentPage
             Text = "Add Connection",
             Command = new Command(async () =>
             {
-                string dataPath = FileSystem.AppDataDirectory;
-                JellyfinServerConnector newServer = new JellyfinServerConnector(_database, appDataPath: dataPath);
-                await Navigation.PushModalAsync(new ModalAddServer(_server, newServer) { OnLoginSuccess = ((e) => { BuildUI(); }) }, true);
+                try
+                {
+                    string dataPath = FileSystem.AppDataDirectory;
+                    JellyfinServerConnector newServer = new JellyfinServerConnector(_database, appDataPath: dataPath);
+                    await Navigation.PushModalAsync(new ModalAddServer(_server, newServer) { OnLoginSuccess = ((e) => { BuildUI(); }) }, true);
+                }
+                catch (Exception e)
+                {
+                    Trace.WriteLine(e);
+                }
             })
         });
 
@@ -145,7 +153,7 @@ public class ConnectionsPage : ContentPage
     private Grid GetSyncChips(IMediaServerConnector serverConnection)
     {
         Grid mainGrid = new Grid();
-        var items = serverConnection.GetDataConnectors();
+        var items = serverConnection.DataConnectors;
 
         for (int i = 0; i < items.Count; i++)
         {

@@ -1,0 +1,41 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:Portajel.Desktop.Structures.ViewModel"
+             xmlns:views="clr-namespace:Portajel.Desktop.Components.SettingsPanelViews"
+             x:Class="Portajel.Desktop.Components.SettingsIndex"
+             x:DataType="vm:SettingsPanelViewModel">
+    <StackPanel>
+        <Label Content="Settings" FontSize="18" Margin="0,0,0,10"/>
+        
+        <views:SettingsConnections DataContext="{Binding ConnectionViewModel}"></views:SettingsConnections>
+        
+        <ListBox ItemsSource="{Binding SettingsCategories}"
+                 x:Name="SettingsList"
+                 SelectionMode="Single"
+                 Background="Transparent"
+                 BorderThickness="0">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <Border Background="Transparent" 
+                            Padding="10,8"
+                            CornerRadius="4"
+                            Cursor="Hand">
+                        <Border.Styles>
+                            <Style Selector="Border:pointerover">
+                                <Setter Property="Background" Value="#404040"/>
+                            </Style>
+                        </Border.Styles>
+                        <StackPanel>
+                            <TextBlock Text="{Binding Name}" 
+                                       FontWeight="SemiBold" 
+                                       FontSize="14"/>
+                            <TextBlock Text="{Binding Description}" 
+                                       FontSize="12" 
+                                       Opacity="0.7"/>
+                        </StackPanel>
+                    </Border>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+    </StackPanel>
+</UserControl>

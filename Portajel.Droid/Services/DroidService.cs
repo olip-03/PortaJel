@@ -162,7 +162,7 @@ namespace Portajel.Droid.Services
                 {
                     try
                     {
-                        foreach (var data in item.GetDataConnectors())
+                        foreach (var data in item.DataConnectors)
                         {
                             if (data.Value != null)
                             {

@@ -11,7 +11,8 @@
     <ScrollView Orientation="Vertical">
         <VerticalStackLayout>
             <Label Text="Connections"/>
-            <comp:ServerConnectionView/>
+            
+            <comp:ServerConnectionView x:Name="ServerConnectionView"/>
             
             <CollectionView
                 ItemsSource="{Binding ListItems}"

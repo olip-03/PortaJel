@@ -1,6 +1,7 @@
 ﻿using CommunityToolkit.Maui.Behaviors;
 using Microsoft.Maui.Controls.Shapes;
 using Portajel.Components.Modal;
+using Portajel.Connections;
 using Portajel.Connections.Interfaces;
 using Portajel.Connections.Services.Jellyfin;
 using Color = Microsoft.Maui.Graphics.Color;
@@ -11,7 +12,7 @@ public class ServerConnectionView : Grid
 {
     private Color _primaryDark = Color.FromRgba(0, 0, 0, 255);
 
-    private IServerConnector _server = default!;
+    private ServerConnector _server = default!;
     private IDbConnector _database = default!;
 
     public ServerConnectionView()
@@ -19,7 +20,7 @@ public class ServerConnectionView : Grid
         
     }
     
-    public ServerConnectionView(IServerConnector server, IDbConnector dbConnector)
+    public ServerConnectionView(ServerConnector server, IDbConnector dbConnector)
     {
         if (Application.Current is null) return;
         
@@ -175,7 +176,7 @@ public class ServerConnectionView : Grid
     private Grid GetSyncChips(IMediaServerConnector serverConnection)
     {
         Grid mainGrid = new Grid();
-        var items = serverConnection.GetDataConnectors();
+        var items = serverConnection.DataConnectors;
 
         for (int i = 0; i < items.Count; i++)
         {

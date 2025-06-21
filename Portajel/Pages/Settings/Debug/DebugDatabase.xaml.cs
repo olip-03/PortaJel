@@ -1,10 +1,4 @@
-using NetTopologySuite.Index.HPRtree;
-using Portajel.Connections;
 using Portajel.Connections.Interfaces;
-using Portajel.Connections.Services.Database;
-using System;
-using System.Text.Json;
-using System.Threading;
 
 namespace Portajel.Pages.Settings.Debug;
 
@@ -78,7 +72,7 @@ public partial class DebugDatabase : ContentPage, IDisposable
                     }
                 }
                 combination += "\n";
-                foreach (var item in server.GetDataConnectors())
+                foreach (var item in server.DataConnectors)
                 {
                     if(item.Value != null)
                     {

@@ -54,11 +54,11 @@ namespace Portajel.Pages.Views
 
             var tasks = servers.Select(async server =>
             {
-                var item = await server.GetDataConnectors()["Album"].GetAsync(_viewModel.Id.Value, _viewModel.ServerAddress);
+                var item = await server.DataConnectors["Album"].GetAsync(_viewModel.Id.Value, _viewModel.ServerAddress);
                 if(item is AlbumData album)
                 {
                     var songIds = album.GetSongIds().Select(id => (Guid?)id).ToArray();
-                    var songData = await server.GetDataConnectors()["Song"].GetAllAsync(includeIds: songIds);
+                    var songData = await server.DataConnectors["Song"].GetAllAsync(includeIds: songIds);
                     var songs = songData.Select(s => (SongData)s);
                     _viewModel = new(songs, album);
                     BindingContext = _viewModel;

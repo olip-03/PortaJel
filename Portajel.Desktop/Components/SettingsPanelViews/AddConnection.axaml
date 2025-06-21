@@ -1,0 +1,47 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:Portajel.Desktop.Structures.ViewModel.Settings"
+             xmlns:li="using:LoadingIndicators.Avalonia"
+             x:Class="Portajel.Desktop.Components.SettingsPanelViews.AddConnection"
+             x:DataType="vm:AddConnectionViewModel">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        
+        <li:LoadingIndicator Grid.RowSpan="3" Grid.ColumnSpan="2" 
+                             Width="96"
+                             Height="96"
+                             HorizontalAlignment="Center" 
+                             VerticalAlignment="Center" 
+                             IsActive="{Binding IsBusy}" 
+                             Mode="Arcs" SpeedRatio="1.2" />
+        
+        <Button Grid.Row="0" Grid.Column="0" Content="←" 
+                Command="{Binding NavigateBackCommand}"
+                Background="Transparent"
+                BorderThickness="0"/>
+        <Label Grid.Row="0" Grid.Column="1" Content="New Connection"     
+               FontSize="18" 
+               HorizontalAlignment="Left"
+               VerticalAlignment="Center"/>
+        
+        <StackPanel Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Margin="0 10" Spacing="10">
+            <TextBox Watermark="Name" Text="{Binding ServerName}"/>
+            <TextBox Watermark="Url" Text="{Binding ServerUrl}"/>
+            <TextBox Watermark="Username" Text="{Binding ServerUsername}"/>
+            <TextBox Watermark="Password" PasswordChar="*" Text="{Binding ServerPassword}"/>
+        </StackPanel>
+        
+        <StackPanel Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Orientation="Horizontal">
+            <Button Content="Connect" Command="{Binding ConnectCommand}"/>
+            <Label Content="{Binding ConnectionMessage}"></Label>
+        </StackPanel>
+    </Grid>
+</UserControl>

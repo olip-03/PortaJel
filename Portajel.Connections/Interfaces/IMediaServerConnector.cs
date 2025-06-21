@@ -9,7 +9,7 @@ namespace Portajel.Connections.Interfaces
     {
         Dictionary<MediaCapabilities, bool> SupportedReturnTypes { get; set; }
         public IFeedConnector? Feeds { get; } 
-        Dictionary<string, IMediaDataConnector> GetDataConnectors();
+        Dictionary<string, IMediaDataConnector> DataConnectors { get; }
         public string Name { get; }
         public string Description { get; }
         public string Image { get; }

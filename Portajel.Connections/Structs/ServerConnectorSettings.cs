@@ -1,4 +1,4 @@
-using System.Text.Json;
+using Newtonsoft.Json;
 using Portajel.Connections.Services;
 using Portajel.Connections.Services.Discogs;
 using Portajel.Connections.Services.FS;
@@ -12,24 +12,20 @@ namespace Portajel.Connections.Structs;
 
 public class ServerConnectorSettings
 {
-    public IServerConnector ServerConnector { get; private init; }
+    public ServerConnector ServerConnector { get; private init; }
     public ServerConnectorSettings(string json, IDbConnector database, string appDataDirectory)
     {
         ServerConnector = new ServerConnector();
         if (string.IsNullOrWhiteSpace(json) || json == "{}")
         {
-            // Return empty list
             return;
         }
 
         try
         {
-            var options = new JsonSerializerOptions
-            {
-                IncludeFields = true
-            };
-            var serverProperties = JsonSerializer.Deserialize<List<Dictionary<string, ConnectorProperty>>>(json, options);
+            var serverProperties = JsonConvert.DeserializeObject<List<Dictionary<string, ConnectorProperty>>>(json);
             if (serverProperties == null) return;
+        
             foreach (var props in serverProperties)
             {
                 if (props.TryGetValue("ConnectorType", out var typeProperty))
@@ -55,7 +51,6 @@ public class ServerConnectorSettings
                         ServerConnector.Servers.Add(server);
                     }
                 }
-
             }
         }
         catch (Exception ex)
@@ -63,7 +58,8 @@ public class ServerConnectorSettings
             return;
         }
     }
-    public ServerConnectorSettings(IServerConnector serverConnector, IMediaServerConnector[] servers)
+    
+    public ServerConnectorSettings(ServerConnector serverConnector, IMediaServerConnector[] servers)
     {
         ServerConnector = serverConnector;
         if (ServerConnector.Servers.Count > 0) return;
@@ -73,12 +69,9 @@ public class ServerConnectorSettings
             ServerConnector.AddServer(srv);
         }
     }
+    
     public string ToJson()
     {
-        var options = new JsonSerializerOptions
-        {
-            WriteIndented = true
-        };
         foreach (var server in ServerConnector.Servers)
         {
             if (!server.Properties.TryAdd("ConnectorType", new ConnectorProperty(
@@ -92,6 +85,9 @@ public class ServerConnectorSettings
                 server.Properties["ConnectorType"].Value = server.GetConnectionType();
             }
         }
-        return JsonSerializer.Serialize(ServerConnector.Servers.Select(s => s.Properties), options);
+        return JsonConvert.SerializeObject(
+            ServerConnector.Servers.Select(s => s.Properties), 
+            Formatting.Indented
+        );
     }
 }
