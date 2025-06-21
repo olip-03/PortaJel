@@ -1,6 +1,7 @@
 using System;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.IO;
 using System.Reactive;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.DependencyInjection;
@@ -8,6 +9,7 @@ using Portajel.Connections;
 using Portajel.Connections.Interfaces;
 using Portajel.Connections.Services;
 using Portajel.Connections.Services.Jellyfin;
+using Portajel.Connections.Structs;
 using ReactiveUI;
 
 namespace Portajel.Desktop.Structures.ViewModel.Settings;
@@ -60,7 +62,6 @@ public class AddConnectionViewModel: ReactiveObject
     private string _serverPassword = "";
     public ReactiveCommand<Unit, Unit> NavigateBackCommand { get; }
     public ReactiveCommand<Unit, Unit> ConnectCommand { get; }
-    
     public AddConnectionViewModel()
     {
         
@@ -70,7 +71,6 @@ public class AddConnectionViewModel: ReactiveObject
         NavigateBackCommand = backCommand;
         ConnectCommand = ReactiveCommand.Create(TryConnect);
     }
-
     private async void TryConnect()
     {
         try
@@ -90,7 +90,18 @@ public class AddConnectionViewModel: ReactiveObject
             if (result.State == AuthState.Success)
             {
                 _server.AddServer(server);
-                NavigateBackCommand.Execute();
+                NavigateBackCommand.Execute().Subscribe();
+                
+                var settings = new ServerConnectorSettings(_server, _server.Servers.ToArray());
+                var json = settings.ToJson();
+    
+                var jsonFilePath = Path.Combine(Program.AppDataPath, "ServerConnector.json");
+                var directory = Path.GetDirectoryName(jsonFilePath);
+                if (!Directory.Exists(directory))
+                {
+                    Directory.CreateDirectory(directory);
+                }
+                await File.WriteAllTextAsync(jsonFilePath, json);
             }
         }
         catch (Exception e)

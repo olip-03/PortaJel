@@ -1,6 +1,6 @@
 ﻿using Jellyfin.Sdk.Generated.Models;
 using SQLite;
-using System.Text.Json;
+using Newtonsoft.Json; // Changed from System.Text.Json
 using Portajel.Connections.Structs;
 using Portajel.Connections.Services;
 using SkiaSharp;
@@ -20,15 +20,26 @@ namespace Portajel.Connections.Database
         public string AlbumIdsJson { get; set;} = string.Empty;
         public override MediaTypes MediaType { get; set; } = MediaTypes.Artist;
         public static ArtistData Empty { get; } = new();
-
         public Guid[] GetAlbumIds()
         {
-            Guid[]? guids = JsonSerializer.Deserialize<Guid[]>(AlbumIdsJson);
+            Guid[]? guids = null;
+            try
+            {
+                // Using Newtonsoft.Json.JsonConvert for deserialization
+                guids = JsonConvert.DeserializeObject<Guid[]>(AlbumIdsJson);
+            }
+            catch (Exception)
+            {
+                // Handle cases where AlbumIdsJson might be null or invalid
+                // guids will remain null
+            }
+            
             return guids == null ? [] : guids;
         }
 
         public Guid[] GetSimilarIds()
         {
+            // This method currently does not involve JSON handling.
             return [];
         }
 
@@ -60,6 +71,10 @@ namespace Portajel.Connections.Database
             toAdd.ImgBlurhash = artistImg.Blurhash;
             toAdd.BackgroundImgSource = artistBackdrop.Source;
             toAdd.BackgroundImgBlurhashSource = artistBackdrop.Blurhash;
+            
+            // Note: The AlbumIdsJson property is not populated in this Builder method.
+            // If it were being serialized here, JsonConvert.SerializeObject would be used.
+
             return toAdd;
         }
     }

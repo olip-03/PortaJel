@@ -102,6 +102,7 @@
                         <Setter Property="VerticalAlignment" Value="Center"/>
                     </Style>
                 </StackPanel.Styles>
+                <!-- Home Button -->
                 <Button Command="{Binding GoHome}" 
                         HorizontalAlignment="Stretch"
                         CornerRadius="0"
@@ -117,7 +118,8 @@
                 
                 <Label Content="Library" Margin="6 12 6 0"/>
                 
-                <Button Command="{Binding GoLibrary}" 
+                <!-- Album Button -->
+                <Button Command="{Binding GoAlbum}" 
                         HorizontalAlignment="Stretch" 
                         CornerRadius="0"
                         Background="Transparent" 
@@ -128,7 +130,9 @@
                         <Label Content="Album"/>
                     </StackPanel>
                 </Button>
-                <Button Command="{Binding GoLibrary}" 
+                
+                <!-- Artist Button -->
+                <Button Command="{Binding GoArtist}" 
                         HorizontalAlignment="Stretch" 
                         CornerRadius="0"
                         Background="Transparent" 
@@ -139,7 +143,9 @@
                         <Label Content="Artist"/>
                     </StackPanel>
                 </Button>
-                <Button Command="{Binding GoLibrary}" 
+                
+                <!-- Song Button -->
+                <Button Command="{Binding GoSong}" 
                         HorizontalAlignment="Stretch" 
                         CornerRadius="0"
                         Background="Transparent" 
@@ -150,7 +156,9 @@
                         <Label Content="Song"/>
                     </StackPanel>
                 </Button>
-                <Button Command="{Binding GoLibrary}" 
+                
+                <!-- Genre Button -->
+                <Button Command="{Binding GoGenre}" 
                         HorizontalAlignment="Stretch" 
                         CornerRadius="0"
                         Background="Transparent" 

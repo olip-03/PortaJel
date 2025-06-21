@@ -1,13 +1,11 @@
 using Jellyfin.Sdk.Generated.Models;
 using Portajel.Connections.Enum;
 using Portajel.Connections.Interfaces;
-using Portajel.Connections.Services;
 using Portajel.Connections.Structs;
 
 namespace Portajel.Connections.Services.Discogs;
 
 // https://github.com/David-Desmaisons/DiscogsClient
-
 public class DiscogsConnector : IMediaServerConnector
 {
     public IMediaDataConnector AlbumData { get; set; }
@@ -16,7 +14,7 @@ public class DiscogsConnector : IMediaServerConnector
     public IMediaDataConnector PlaylistData { get; set; }
     public IMediaDataConnector Genre { get; set; }
     public IFeedConnector? Feeds { get; }
-    public Dictionary<string, IMediaDataConnector> GetDataConnectors()=> new()
+    public Dictionary<string, IMediaDataConnector> DataConnectors => new()
     {
         { "Album", AlbumData },
         { "Artist", ArtistData },

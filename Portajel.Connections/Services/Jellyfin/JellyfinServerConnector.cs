@@ -33,9 +33,8 @@ namespace Portajel.Connections.Services.Jellyfin
         public IMediaDataConnector SongData { get; set; } = null!;
         public IMediaDataConnector PlaylistData { get; set; } = null!;
         public IMediaDataConnector Genre { get; set; } = null!;
-
         public IFeedConnector? Feeds { get; private set; } = null!;
-        public Dictionary<string, IMediaDataConnector> GetDataConnectors() => new()
+        public Dictionary<string, IMediaDataConnector> DataConnectors => new()
         {
             { "Album", AlbumData },
             { "Artist", ArtistData },
@@ -277,7 +276,7 @@ namespace Portajel.Connections.Services.Jellyfin
         public async Task<bool> UpdateDb(CancellationToken cancellationToken = default)
         {
             await UpdateSyncStatus(cancellationToken);
-            var tasks = GetDataConnectors().Values.Select(data => Task.Run(async () =>
+            var tasks = DataConnectors.Values.Select(data => Task.Run(async () =>
             {
                 int retrieve = 50;
                 int checkCount = 0;
@@ -354,11 +353,11 @@ namespace Portajel.Connections.Services.Jellyfin
             int maxConcurrency = TaskScheduler.Current.MaximumConcurrencyLevel;
             int maxTasks = 500;
             await UpdateSyncStatus(cancellationToken);
-            var tasks = GetDataConnectors().Values.Select(data => Task.Run(async () =>
+            var tasks = DataConnectors.Values.Select(data => Task.Run(async () =>
             {
                 try
                 {
-                    int workers = GetDataConnectors().Values.Count(d => d.SyncStatusInfo.TaskStatus == TaskStatus.Running);
+                    int workers = DataConnectors.Values.Count(d => d.SyncStatusInfo.TaskStatus == TaskStatus.Running);
                     int retrieve = maxTasks / workers;
                     if (Properties.TryGetValue("LastSync", out var maxTasksProperty))
                     {
@@ -395,7 +394,8 @@ namespace Portajel.Connections.Services.Jellyfin
 
                             if (Properties.TryGetValue("AppDataPath", out var appDataPath))
                             {
-                                Blurhasher.DownloadMusicItemBitmap(items, GetDb(data).Value, appDataPath.Value.ToString(), 128, 128);
+                                var path = Path.Combine(appDataPath.Value.ToString(), "placeholder");
+                                Blurhasher.DownloadMusicItemBitmap(items, GetDb(data).Value, path, 12, 12);
                             }
 
                             GetDb(data).Value.InsertRange(items, cancellationToken);
@@ -405,7 +405,7 @@ namespace Portajel.Connections.Services.Jellyfin
                                 continue;
                             }
 
-                            workers = GetDataConnectors().Values.Where(d => d.SyncStatusInfo.TaskStatus == TaskStatus.Running).Count();
+                            workers = DataConnectors.Values.Where(d => d.SyncStatusInfo.TaskStatus == TaskStatus.Running).Count();
                             retrieve = maxTasks / workers;
                         }
                         catch (Exception ex)
@@ -475,7 +475,7 @@ namespace Portajel.Connections.Services.Jellyfin
         }
         private async Task<bool> UpdateSyncStatus(CancellationToken cancellationToken = default)
         {
-            var tasks = GetDataConnectors().Values.Select(data => Task.Run(async () =>
+            var tasks = DataConnectors.Values.Select(data => Task.Run(async () =>
             {
                 data.SetSyncStatusInfo(
                     TaskStatus.Running,

@@ -1,4 +1,6 @@
 using System;
+using System.Threading;
+using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
@@ -6,6 +8,8 @@ using Avalonia.Markup.Xaml;
 using Avalonia.Markup.Xaml.Converters;
 using Avalonia.Media;
 using Avalonia.ReactiveUI;
+using CommunityToolkit.Mvvm.DependencyInjection;
+using Portajel.Connections;
 using Portajel.Desktop.Components;
 using Portajel.Desktop.Structures.ViewModel;
 using ReactiveUI;
@@ -15,6 +19,7 @@ namespace Portajel.Desktop;
 
 public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
 {
+    private ServerConnector _server = Ioc.Default.GetService<ServerConnector>();
     private Components.SettingsPanel? _settingsPanel;
     public MainWindow()
     {
@@ -25,8 +30,20 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
         
         this.Activated += OnWindowActivated;
         this.Deactivated += OnWindowDeactivated;
+        
+        _ = Task.Run(async () =>
+        {
+            await _server.AuthenticateAsync(Program.ClosingToken.Token);
+            await _server.StartSyncAsync(Program.ClosingToken.Token);
+        });
     }
-    
+
+    protected override void OnClosing(WindowClosingEventArgs e)
+    {
+        Program.ClosingToken.Cancel();
+        base.OnClosing(e);
+    }
+
     private void OnWindowActivated(object? sender, EventArgs e)
     {
         // Window gained focus

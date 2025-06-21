@@ -87,7 +87,7 @@ namespace Portajel.Terminal.View
                     }
                     
                     status.Add("");
-                    foreach (var data in srv.GetDataConnectors().Values)
+                    foreach (var data in srv.DataConnectors.Values)
                     {
                         if (data != null)
                         {

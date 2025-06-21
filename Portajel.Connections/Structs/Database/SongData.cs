@@ -1,6 +1,6 @@
 ﻿using Jellyfin.Sdk.Generated.Models;
 using SQLite;
-using System.Text.Json;
+using Newtonsoft.Json; // Changed from System.Text.Json
 using Portajel.Connections.Structs;
 using Portajel.Connections.Services;
 using Portajel.Connections.Enum;
@@ -23,12 +23,25 @@ namespace Portajel.Connections.Database
         public bool IsPartial { get; set; } = true;
         public override MediaTypes MediaType { get; set; } = MediaTypes.Song;
         public static SongData Empty { get; set; } = new();
+
         public Guid[] GetArtistIds()
         {
-            Guid[]? artistIds = JsonSerializer.Deserialize<Guid[]>(ArtistIdsJson);
+            Guid[]? artistIds = null;
+            try
+            {
+                // Using Newtonsoft.Json.JsonConvert for deserialization
+                artistIds = JsonConvert.DeserializeObject<Guid[]>(ArtistIdsJson);
+            }
+            catch (Exception)
+            {
+                // Handle cases where ArtistIdsJson might be null or invalid
+                // artistIds will remain null
+            }
+
             if (artistIds == null) return [];
             return artistIds;
         }
+
         public static SongData Builder(BaseItemDto baseItem, string server)
         {
             SongData song = new();
@@ -41,11 +54,12 @@ namespace Portajel.Connections.Database
             {
                 throw new ArgumentException("Cannot create SongData without ID! Please fix server call flags!");
             }
-            if (baseItem.ParentId == null)
-            {
-                baseItem.ParentId = baseItem.Id;
-                // throw new ArgumentException("Cannot create SongData without Parent ID! Please fix server call flags!");
-            }
+            // The original code commented out this check, so we'll keep it that way.
+            // if (baseItem.ParentId == null)
+            // {
+            //     baseItem.ParentId = baseItem.Id;
+            //     // throw new ArgumentException("Cannot create SongData without Parent ID! Please fix server call flags!");
+            // }
             if (baseItem.ArtistItems == null)
             {
                 throw new ArgumentException("Cannot create SongData without ArtistData Items! Please fix server call flags!");
@@ -59,8 +73,12 @@ namespace Portajel.Connections.Database
             song.Id = GuidHelper.GenerateNewGuidFromHash(baseItem.Id, server);
             song.ServerId = (Guid)baseItem.Id;
             song.PlaylistId = baseItem.PlaylistItemId;
-            song.AlbumId = (Guid)baseItem.ParentId;
-            song.ArtistIdsJson = JsonSerializer.Serialize(baseItem.ArtistItems.Select(baseItem => baseItem.Id).ToArray());
+            // Ensure ParentId is treated as Guid, providing a default if null
+            song.AlbumId = baseItem.ParentId.HasValue ? (Guid)baseItem.ParentId : Guid.Empty; 
+            
+            // Using Newtonsoft.Json.JsonConvert for serialization
+            song.ArtistIdsJson = JsonConvert.SerializeObject(baseItem.ArtistItems.Select(item => item.Id).ToArray());
+            
             song.Name = baseItem.Name == null ? string.Empty : baseItem.Name;
             song.IsFavourite = baseItem.UserData.IsFavorite == null ? false : (bool)baseItem.UserData.IsFavorite;
             // song.PlayCount = songData.PlayCount; TODO: Implement playcount idk

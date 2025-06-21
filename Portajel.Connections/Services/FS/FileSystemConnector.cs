@@ -17,8 +17,7 @@ public class FileSystemConnector : IMediaServerConnector
     public IMediaDataConnector PlaylistData { get; set; }
     public IMediaDataConnector Genre { get; set; }
     public IFeedConnector? Feeds { get; }
-
-    public Dictionary<string, IMediaDataConnector> GetDataConnectors() => new()
+    public Dictionary<string, IMediaDataConnector> DataConnectors => new()
     {
         { "Album", AlbumData },
         { "Artist", ArtistData },

@@ -13,13 +13,6 @@ namespace Portajel.Connections.Services.Jellyfin
     {
         public SyncStatusInfo SyncStatusInfo { get; set; } = new();
         public MediaTypes MediaType => MediaTypes.Album;
-
-        public void SetSyncStatusInfo(TaskStatus status, int percentage)
-        {
-            SyncStatusInfo.TaskStatus = status;
-            SyncStatusInfo.StatusPercentage = percentage;
-        }
-
         public async Task<BaseData[]> GetAllAsync(
             int? limit = null, 
             int startIndex = 0,

@@ -1,6 +1,6 @@
 ﻿using Jellyfin.Sdk.Generated.Models;
 using SQLite;
-using System.Text.Json;
+using Newtonsoft.Json; 
 using Portajel.Connections.Structs;
 using Portajel.Connections.Services;
 using Portajel.Connections.Enum;
@@ -15,12 +15,25 @@ namespace Portajel.Connections.Database
         public bool IsPartial { get; set; } = true;
         public override MediaTypes MediaType { get; set; } = MediaTypes.Playlist;
         public static PlaylistData Empty { get; set; } = new();
+
         public Guid[] GetSongIds()
         {
-            Guid[]? artistIds = JsonSerializer.Deserialize<Guid[]>(SongIdsJson);
-            if (artistIds == null) return [];
-            return artistIds;
+            Guid[]? songIds = null;
+            try
+            {   
+                // Using Newtonsoft.Json.JsonConvert for deserialization
+                songIds = JsonConvert.DeserializeObject<Guid[]>(SongIdsJson);
+            }
+            catch (Exception)
+            {
+                // Handle cases where SongIdsJson might be null or invalid
+                // songIds will remain null
+            }
+
+            if (songIds == null) return [];
+            return songIds;
         }
+
         public static PlaylistData Builder(BaseItemDto baseItem, string server, BaseItemDto[]? songData = null)
         {
             if (baseItem.Id == null)
@@ -39,8 +52,10 @@ namespace Portajel.Connections.Database
             {
                 throw new ArgumentException("Cannot create PlaylistData without UserData! Please fix server call flags!");
             }
+
             PlaylistData newPlaylist = new();
             MusicItemImage musicItemImage = MusicItemImage.Builder(baseItem, server);
+
             newPlaylist.Name = baseItem.Name;
             newPlaylist.ServerId = (Guid)baseItem.Id;
             newPlaylist.Id = GuidHelper.GenerateNewGuidFromHash(baseItem.Id, server);
@@ -49,10 +64,13 @@ namespace Portajel.Connections.Database
             newPlaylist.ServerAddress = server;
             newPlaylist.ImgSource = musicItemImage.Source;
             newPlaylist.ImgBlurhash = musicItemImage.Blurhash;
+
             if (songData != null)
             {
-                newPlaylist.SongIdsJson = JsonSerializer.Serialize(songData.Select(idPair => idPair.Id).ToArray());
+                // Using Newtonsoft.Json.JsonConvert for serialization
+                newPlaylist.SongIdsJson = JsonConvert.SerializeObject(songData.Select(idPair => idPair.Id).ToArray());
             }
+
             return newPlaylist;
         }
     }

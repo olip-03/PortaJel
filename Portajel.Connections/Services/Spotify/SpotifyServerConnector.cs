@@ -14,7 +14,7 @@ namespace Portajel.Connections.Services.Spotify
         public IMediaDataConnector Genre { get; set; } = null;
         public IFeedConnector? Feeds { get; }
 
-        public Dictionary<string, IMediaDataConnector> GetDataConnectors() => new()
+        public Dictionary<string, IMediaDataConnector> DataConnectors => new()
         {
             { "Album", AlbumData },
             { "Artist", ArtistData },

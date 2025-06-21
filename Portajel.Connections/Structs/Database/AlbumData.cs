@@ -1,5 +1,5 @@
 ﻿using SQLite;
-using System.Text.Json;
+using Newtonsoft.Json;
 using Portajel.Connections.Structs;
 using Portajel.Connections.Services;
 using Portajel.Connections.Enum;
@@ -21,40 +21,46 @@ namespace Portajel.Connections.Database
             Guid[] artistIds;
             try
             {
-                artistIds = JsonSerializer.Deserialize<Guid[]>(ArtistIdsJson);
+                artistIds = JsonConvert.DeserializeObject<Guid[]>(ArtistIdsJson);
             }
             catch (Exception)
             {
-                artistIds = null;
+                // Handle cases where ArtistIdsJson might be null or invalid
+                artistIds = null; 
             }
             return artistIds;
         }
+
         public Guid[] GetSongIds()
         {
             Guid[] songIds;
             try
             {
-                songIds = JsonSerializer.Deserialize<Guid[]>(SongIdsJson);
+                songIds = JsonConvert.DeserializeObject<Guid[]>(SongIdsJson);
             }
             catch (Exception)
             {
+                // Handle cases where SongIdsJson might be null or invalid
                 songIds = [];
             }
             return songIds;
         }
+
         public Guid[] GetSimilarIds()
         {
             Guid[] similarIds;
             try
             {
-                similarIds = JsonSerializer.Deserialize<Guid[]>(GetSimilarJson);
+                similarIds = JsonConvert.DeserializeObject<Guid[]>(GetSimilarJson);
             }
             catch (Exception)
             {
+                // Handle cases where GetSimilarJson might be null or invalid
                 similarIds = [];
             }
             return similarIds;
         }
+
         public static AlbumData Builder(BaseItemDto baseItem, string server, Guid[]? songIds = null, SongData[]? songDataItems = null)
         {
             if (baseItem.UserData == null)
@@ -83,15 +89,19 @@ namespace Portajel.Connections.Database
                 ServerAddress = server,
                 ImgSource = musicItemImage.Source,
                 ImgBlurhash = musicItemImage.Blurhash,
-                ArtistIdsJson = JsonSerializer.Serialize(baseItem.ArtistItems.Select(idPair => idPair.Id).ToArray())
+                // Using Newtonsoft.Json.JsonConvert for serialization
+                ArtistIdsJson = JsonConvert.SerializeObject(baseItem.ArtistItems.Select(idPair => idPair.Id).ToArray())
             };
+
             if (songIds != null)
             {
-                album.SongIdsJson = JsonSerializer.Serialize(songIds);
+                // Using Newtonsoft.Json.JsonConvert for serialization
+                album.SongIdsJson = JsonConvert.SerializeObject(songIds);
             }
             if (songDataItems != null && songDataItems.Length > 0)
             {
-                album.SongIdsJson = JsonSerializer.Serialize(songDataItems.Select(s => s.Id).ToArray());
+                // Using Newtonsoft.Json.JsonConvert for serialization
+                album.SongIdsJson = JsonConvert.SerializeObject(songDataItems.Select(s => s.Id).ToArray());
                 album.DatePlayed = songDataItems.OrderBy(s => s.DatePlayed).First().DatePlayed;
             }
             
