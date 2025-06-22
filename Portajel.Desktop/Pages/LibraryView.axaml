@@ -4,28 +4,52 @@
              x:Class="Portajel.Desktop.Pages.LibraryView"
              x:DataType="vm:LibraryViewModel">
     <Grid>
+        
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="Auto"/>
+        </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
         
-        <!-- Header showing media type -->
-        <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="10">
-            <Label Content="Media Type:" FontWeight="Bold"/>
-            <Label Content="{Binding DbItemConnection.MediaType}" Margin="5,0,0,0"/>
+        <Label 
+            FontSize="18"
+            Content="{Binding DbItemConnection.MediaType}" 
+            Margin="5,0,0,0"
+            VerticalAlignment="Center"/>
+        
+        <StackPanel Margin="6" Grid.Row="0" Grid.Column="2" Orientation="Horizontal">
+            <ComboBox SelectedIndex="0" MaxDropDownHeight="100">
+                <ComboBoxItem>Sort: Name</ComboBoxItem>
+                <ComboBoxItem>Sort: Artists</ComboBoxItem>
+                <ComboBoxItem>Sort: Added On</ComboBoxItem>
+            </ComboBox>
+            <ComboBox SelectedIndex="0" MaxDropDownHeight="100">
+                <ComboBoxItem>View: List</ComboBoxItem>
+                <ComboBoxItem>View: Grid</ComboBoxItem>
+            </ComboBox>
         </StackPanel>
         
         <!-- DataGrid with dynamic columns -->
-        <DataGrid Grid.Row="1"
+        <DataGrid Grid.Column="0" Grid.ColumnSpan="3" Grid.Row="1"
+                  x:Name="DataGrid"
                   ItemsSource="{Binding Items}"
                   AutoGenerateColumns="False"
                   IsReadOnly="True"
+                  VerticalScrollBarVisibility="Disabled"
                   CanUserReorderColumns="True"
                   CanUserResizeColumns="True"
                   CanUserSortColumns="True"
                   BorderThickness="0"
-                  GridLinesVisibility="Horizontal"
-                  Margin="10">
+                  GridLinesVisibility="Horizontal">
         </DataGrid>
+        
+        <StackPanel Grid.Column="2" Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right">
+            <NumericUpDown Value="1" Minimum="1" FormatString="0" />
+        </StackPanel>
     </Grid>
 </UserControl>

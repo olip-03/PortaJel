@@ -24,24 +24,20 @@ public class LibraryViewModel : ReactiveObject, IRoutableViewModel
     public ReactiveCommand<Unit, Unit> GoPrevious { get; }
 
     public ObservableCollection<BaseData> Items { get; } = new();
-
     public ObservableCollection<DataGridColumn> DataGridColumns { get; } = new();
 
     public LibraryViewModel(IScreen screen) => HostScreen = screen;
-
     public LibraryViewModel(IScreen screen, IDbItemConnector dbItemConnection)
     {
         HostScreen = screen;
         _dbItemConnection = dbItemConnection ?? throw new ArgumentNullException(nameof(dbItemConnection));
         
         GenerateColumns(_dbItemConnection.MediaType);
-        _ = Task.Run(Load);
     }
 
     private void GenerateColumns(MediaTypes mediaType)
     {
         DataGridColumns.Clear();
-
         switch (mediaType)
         {
             case MediaTypes.Album:
@@ -74,24 +70,5 @@ public class LibraryViewModel : ReactiveObject, IRoutableViewModel
             Binding = new Binding(bindingPath),
             Width = new DataGridLength(1, DataGridLengthUnitType.Star) 
         };
-    }
-
-    private Task<bool> Load()
-    {
-        try
-        {
-            var items = _dbItemConnection.GetAll(limit: 50);
-            Dispatcher.UIThread.Post(() =>
-            {
-                Items.Clear();
-                Items.AddRange(items);
-            });
-            return Task.FromResult(true);
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error loading data: {ex.Message}");
-            return Task.FromResult(false);
-        }
     }
 }

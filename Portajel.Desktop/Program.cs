@@ -11,7 +11,10 @@ using Portajel.Connections.Interfaces;
 using Portajel.Connections.Services.Database;
 using Portajel.Connections.Structs;
 using Portajel.Desktop.Components.SettingsPanelViews;
+using Portajel.Desktop.Pages;
 using Portajel.Desktop.Structures.ViewModel;
+using ReactiveUI;
+using Splat;
 
 namespace Portajel.Desktop;
 
@@ -73,6 +76,7 @@ class Program
             .AddSingleton<MainWindow>()
             .BuildServiceProvider();
         Ioc.Default.ConfigureServices(provider);
+        Locator.CurrentMutable.Register(() => new LibraryView(), typeof(IViewFor<LibraryViewModel>));
         BuildAvaloniaApp()
             .StartWithClassicDesktopLifetime(args);
     }

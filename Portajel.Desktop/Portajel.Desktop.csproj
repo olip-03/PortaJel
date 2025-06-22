@@ -7,6 +7,7 @@
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
     <!-- Native AOT Settings -->
+    <PublishReadyToRun>true</PublishReadyToRun>
     <PublishAot>true</PublishAot>
     <BuiltInComInteropSupport>false</BuiltInComInteropSupport>
     <TrimMode>link</TrimMode>
@@ -66,6 +67,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Components\DataGrids\" />
     <Folder Include="Resources\" />
     <AvaloniaResource Include="Resources\Images\*.svg" />
   </ItemGroup>

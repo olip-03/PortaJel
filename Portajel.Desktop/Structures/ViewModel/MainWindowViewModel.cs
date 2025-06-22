@@ -46,28 +46,20 @@ public class MainWindowViewModel: ReactiveObject, IScreen
     
     public MainWindowViewModel()
     {
-        // Manage the routing state. Use the Router.Navigate.Execute
-        // command to navigate to different view models. 
-        //
-        // Note, that the Navigate.Execute method accepts an instance 
-        // of a view model, this allows you to pass parameters to 
-        // your view models, or to reuse existing view models.
-        //
-        SettingsPanel = new SettingsPanelViewModel();
         GoHome = ReactiveCommand.CreateFromObservable(
-            () => Router.NavigateAndReset.Execute(new HomeViewModel(this))
+            () => Router.Navigate.Execute(new HomeViewModel(this))
         );
         GoAlbum = ReactiveCommand.CreateFromObservable(
-            () => Router.NavigateAndReset.Execute(new LibraryViewModel(this, _database.Connectors.Album))
+            () => Router.Navigate.Execute(new LibraryViewModel(this, _database.Connectors.Album))
         );
         GoArtist = ReactiveCommand.CreateFromObservable(
-            () => Router.NavigateAndReset.Execute(new LibraryViewModel(this, _database.Connectors.Artist))
+            () => Router.Navigate.Execute(new LibraryViewModel(this, _database.Connectors.Artist))
         );
         GoSong = ReactiveCommand.CreateFromObservable(
-            () => Router.NavigateAndReset.Execute(new LibraryViewModel(this, _database.Connectors.Song))
+            () => Router.Navigate.Execute(new LibraryViewModel(this, _database.Connectors.Song))
         );
         GoGenre = ReactiveCommand.CreateFromObservable(
-            () => Router.NavigateAndReset.Execute(new LibraryViewModel(this, _database.Connectors.Genre))
+            () => Router.Navigate.Execute(new LibraryViewModel(this, _database.Connectors.Genre))
         );
     }
 }
