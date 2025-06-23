@@ -1,18 +1,11 @@
 using System;
-using System.Diagnostics;
-using System.Reactive.Disposables;
-using System.Threading.Tasks;
-using Avalonia;
+using System.Linq;
 using Avalonia.Controls;
-using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using Avalonia.ReactiveUI;
-using Avalonia.Threading;
 using CommunityToolkit.Mvvm.DependencyInjection;
 using DynamicData;
-using Portajel.Connections;
-using Portajel.Connections.Interfaces;
-using Portajel.Connections.Services.Database;
+using Portajel.Desktop.Structures.Services;
 using Portajel.Desktop.Structures.ViewModel;
 using ReactiveUI;
 
@@ -20,53 +13,80 @@ namespace Portajel.Desktop.Pages;
 
 public partial class LibraryView : ReactiveUserControl<LibraryViewModel>
 {
-    private IDbConnector _db = Ioc.Default.GetService<IDbConnector>();
+    private readonly LibraryViewCache? _vc = Ioc.Default.GetService<LibraryViewCache>();
 
-    private DataGrid _dataGrid;
+    private DataGrid? _dataGrid;
     
-    bool _initialized = false;
     private int _prevItemCount = -1;
     public LibraryView()
     {
         this.WhenActivated(disposables =>
         {
             _dataGrid = this.FindControl<DataGrid>("DataGrid");
+            if (_dataGrid == null) return; 
+            if (ViewModel == null) return; 
             _dataGrid.SizeChanged += OnSizeChanged;
-            _dataGrid.LayoutUpdated += DataGridOnLayoutUpdated; 
             _dataGrid.Columns.Clear();
             _dataGrid.Columns.AddRange(ViewModel.DataGridColumns);
             Load();
         });
         AvaloniaXamlLoader.Load(this);
     }
-    
-    private async void Load()
+    private void Load()
     {
-        int count = GetItemEstimate(_dataGrid.Bounds.Bottom) - 1;
-        var items = ViewModel.DbItemConnection.GetAll(limit: count);
-        ViewModel.Items.AddRange(items);
-    }
-
-    private void DataGridOnLayoutUpdated(object? sender, EventArgs e)
-    {
+        if (_dataGrid == null) return; 
+        if (ViewModel == null) return; 
+        if (_vc == null) return; 
+        _prevItemCount = GetItemEstimate(_dataGrid.Bounds.Bottom);
+        if (_vc.Initialized(ViewModel.DbItemConnection.MediaType))
+        {
+            var cachedItems = _vc.GetMediaType(ViewModel.DbItemConnection.MediaType).ToList();
+            if (_prevItemCount > cachedItems.Count)
+            {   // Expanding - need more items than cached
+                int diff = _prevItemCount - cachedItems.Count;
+                var additionalItems = ViewModel.DbItemConnection.GetAll(limit: diff, startIndex: cachedItems.Count);
+                cachedItems.AddRange(additionalItems);
+            
+                // Update cache with expanded data
+                _vc.StoreMediaType(ViewModel.DbItemConnection.MediaType, cachedItems);
+                ViewModel.Items.AddRange(cachedItems);
+            }
+            else
+            {   // Shrinking or exact match - take only what we need
+                var itemsToDisplay = cachedItems.Take(_prevItemCount).ToList();
+                ViewModel.Items.AddRange(itemsToDisplay);
+            }
+        }
+        else
+        {
+            var items = ViewModel.DbItemConnection.GetAll(limit: _prevItemCount);
+            ViewModel.Items.AddRange(items);
+            _vc.StoreMediaType(ViewModel.DbItemConnection.MediaType, items);
+        }
         
+        int totalItems = ViewModel.DbItemConnection.GetTotalCount();
+        if (totalItems > _prevItemCount)
+        {
+            ViewModel.MaxPageNumber = totalItems / _prevItemCount;
+        }
     }
-
-    private int GetItemEstimate(double gridHeight)
+    /// <summary>
+    /// Tells us how many items can fit inside a grid of a provided size
+    /// </summary>
+    /// <param name="gridHeight">The height of the DataGridView</param>
+    /// <returns>Total amount of items that can fit</returns>
+    private int GetItemEstimate(double gridHeight, int rowHeight = 58, int headerHeight = 32, int safeRoom = 1)
     {
-        int rowHeight = 33;
-        int headerHeight = 32;
-        return (int)Math.Floor((gridHeight - headerHeight) / rowHeight);
+        return (int)Math.Floor((gridHeight - headerHeight) / rowHeight) - safeRoom;
     }
-    
     private void OnSizeChanged(object? sender, SizeChangedEventArgs e)
     {
+        if (ViewModel == null) return; 
         int itemCount = GetItemEstimate(e.NewSize.Height);
         if (_prevItemCount == -1)
         { // Init if not set
             _prevItemCount = itemCount;
         }
-        
         if (_prevItemCount < itemCount)
         {   // Expanding
             int diff = itemCount - _prevItemCount;
@@ -79,6 +99,27 @@ public partial class LibraryView : ReactiveUserControl<LibraryViewModel>
                 ViewModel.Items.RemoveAt(i);
             }
         }
+        
+        // Update max item count 
+        int totalItems = ViewModel.DbItemConnection.GetTotalCount();
+        if (totalItems > itemCount && itemCount > 0)
+        {
+            ViewModel.MaxPageNumber = totalItems / itemCount;
+        }
         _prevItemCount = itemCount;
+    }
+    private void NumericUpDown_OnValueChanged(object? sender, NumericUpDownValueChangedEventArgs e)
+    {
+        if (ViewModel == null) return; 
+        if (_dataGrid == null) return; 
+
+        if (_prevItemCount == -1)
+        { // Init if not set
+            _prevItemCount = GetItemEstimate(_dataGrid.Bounds.Bottom) - 1;;
+        }
+        
+        int startFrom = _prevItemCount * ((int)e.NewValue.Value - 1);
+        ViewModel.Items.Clear();
+        ViewModel.Items.AddRange(ViewModel.DbItemConnection.GetAll(limit: _prevItemCount, startIndex: startFrom));
     }
 }

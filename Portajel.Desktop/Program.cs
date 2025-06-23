@@ -12,6 +12,7 @@ using Portajel.Connections.Services.Database;
 using Portajel.Connections.Structs;
 using Portajel.Desktop.Components.SettingsPanelViews;
 using Portajel.Desktop.Pages;
+using Portajel.Desktop.Structures.Services;
 using Portajel.Desktop.Structures.ViewModel;
 using ReactiveUI;
 using Splat;
@@ -71,6 +72,7 @@ class Program
                     }
                     return new ServerConnector();
                 })
+                .AddSingleton<LibraryViewCache>()
             .AddSingleton<MainWindowViewModel>()
             .AddSingleton<AddConnection>()
             .AddSingleton<MainWindow>()

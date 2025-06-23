@@ -14,6 +14,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="AsyncImageLoader.Avalonia" Version="3.3.0" />
     <PackageReference Include="Avalonia" Version="11.3.1" />
     <PackageReference Include="Avalonia.Controls.DataGrid" Version="11.3.1" />
     <PackageReference Include="Avalonia.Desktop" Version="11.3.1" />
@@ -52,6 +53,12 @@
     <Compile Update="Components\SettingsPanelViews\SettingsConnections.cs">
       <DependentUpon>SettingsConnections.axaml</DependentUpon>
     </Compile>
+    <Compile Update="Pages\AlbumView.cs">
+      <DependentUpon>SearchView.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="Pages\Music\AlbumView.cs">
+      <DependentUpon>AlbumView.axaml</DependentUpon>
+    </Compile>
   </ItemGroup>
 
   <ItemGroup>
@@ -67,7 +74,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Components\DataGrids\" />
     <Folder Include="Resources\" />
     <AvaloniaResource Include="Resources\Images\*.svg" />
   </ItemGroup>
