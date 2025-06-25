@@ -1,8 +1,26 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="using:Portajel.Desktop.Structures.ViewModel"
+             xmlns:sys="using:System"
              x:Class="Portajel.Desktop.Pages.LibraryView"
              x:DataType="vm:LibraryViewModel">
+    <UserControl.Styles>
+        <!-- base cell -->
+        <Style Selector="DataGridCell.selectable TextBlock">
+            <!-- <Setter Property="TextDecorations" Value="Baseline"/> -->
+        </Style>
+
+        <!-- hovered cell: make its TextBlock red -->
+        <Style
+            Selector="DataGridCell.selectable:pointerover TextBlock">
+            <Setter Property="TextDecorations" Value="Underline"/>
+        </Style>
+        
+        <Style
+            Selector="DataGridCell.selectable:pointerover">
+            <Setter Property="Cursor" Value="Hand"/>
+        </Style>
+    </UserControl.Styles>
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto"/>
@@ -44,6 +62,7 @@
                   CanUserResizeColumns="True"
                   CanUserSortColumns="True"
                   BorderThickness="0"
+                  CellPointerPressed="DataGrid_OnCellPointerPressed"
                   GridLinesVisibility="Horizontal">
         </DataGrid>
         

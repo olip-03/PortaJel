@@ -88,7 +88,7 @@
                     <StackPanel Orientation="Horizontal">
                         <Svg Path="/Resources/Images/home.svg" 
                              Css=".Background { fill: white; }"
-                             Width="24" Height="24" />
+                             Width="18" Height="18" />
                         <Label Content="Home"/>
                     </StackPanel>
                 </Button>
@@ -100,7 +100,7 @@
                     <StackPanel Orientation="Horizontal">
                         <Svg Path="/Resources/Images/search.svg" 
                              Css=".Background { fill: white; }"
-                             Width="24" Height="24" />
+                             Width="18" Height="18" />
                         <Label Content="Search"/>
                     </StackPanel>
                 </Button>
@@ -112,7 +112,7 @@
                     <StackPanel Orientation="Horizontal">
                         <Svg Path="/Resources/Images/settings.svg" 
                              Css=".Background { fill: white; }"
-                             Width="24" Height="24" />
+                             Width="18" Height="18" />
                         <Label Content="Settings"/>
                     </StackPanel>
                 </Button>
@@ -127,7 +127,7 @@
                         BorderThickness="0">
                     <StackPanel Orientation="Horizontal">
                         <Svg Path="/Resources/Images/album.svg"
-                             Width="24" Height="24" />
+                             Width="18" Height="18" />
                         <Label Content="Album"/>
                     </StackPanel>
                 </Button>
@@ -140,7 +140,7 @@
                         BorderThickness="0">
                     <StackPanel Orientation="Horizontal">
                         <Svg Path="/Resources/Images/artist.svg"
-                             Width="24" Height="24" />
+                             Width="18" Height="18" Margin="6 0"/>
                         <Label Content="Artist"/>
                     </StackPanel>
                 </Button>
@@ -153,7 +153,7 @@
                         BorderThickness="0">
                     <StackPanel Orientation="Horizontal">
                         <Svg Path="/Resources/Images/song.svg"
-                             Width="24" Height="24" />
+                             Width="18" Height="18" Margin="6 0" />
                         <Label Content="Song"/>
                     </StackPanel>
                 </Button>
@@ -166,7 +166,7 @@
                         BorderThickness="0">
                     <StackPanel Orientation="Horizontal">
                         <Svg Path="/Resources/Images/genre.svg"
-                             Width="24" Height="24" />
+                             Width="24" Height="24" Margin="6 0" />
                         <Label Content="Genre"/>
                     </StackPanel>
                 </Button>

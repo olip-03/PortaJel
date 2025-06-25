@@ -53,11 +53,14 @@
     <Compile Update="Components\SettingsPanelViews\SettingsConnections.cs">
       <DependentUpon>SettingsConnections.axaml</DependentUpon>
     </Compile>
-    <Compile Update="Pages\AlbumView.cs">
+    <Compile Update="Pages\SearchView.cs">
       <DependentUpon>SearchView.axaml</DependentUpon>
     </Compile>
     <Compile Update="Pages\Music\AlbumView.cs">
       <DependentUpon>AlbumView.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="Components\HorizontalMusicView.cs">
+      <DependentUpon>HorizontalMusicView.axaml</DependentUpon>
     </Compile>
   </ItemGroup>
 

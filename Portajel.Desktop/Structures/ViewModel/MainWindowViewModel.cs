@@ -14,7 +14,7 @@ public class MainWindowViewModel: ReactiveObject, IScreen
 
     // The Router associated with this Screen.
     // Required by the IScreen interface.
-    public RoutingState Router { get; } = new RoutingState();
+    public RoutingState Router { get; } = Program.Router;
 
     // The command that navigates a user to first view model.
     public ReactiveCommand<Unit, IRoutableViewModel> GoHome { get; }

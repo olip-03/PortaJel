@@ -9,6 +9,8 @@ public class MediaServerList: List<IMediaServerConnector>
         
     }
     
+    public IMediaServerConnector this[string name] => Find(s => s.GetAddress() == name);
+    
     public void RemoveServer(IMediaServerConnector server)
     {
         this.Remove(server);

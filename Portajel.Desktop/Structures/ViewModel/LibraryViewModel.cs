@@ -10,7 +10,9 @@ using Avalonia.Controls;
 using Avalonia.Controls.Templates;
 using Avalonia.Data;
 using Avalonia.Data.Converters;
+using Avalonia.Input;
 using Avalonia.Markup.Xaml.Templates;
+using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform;
 using Avalonia.Threading;
@@ -27,12 +29,11 @@ public class LibraryViewModel : ReactiveObject, IRoutableViewModel
 {
     private IDbItemConnector _dbItemConnection;
     public IDbItemConnector DbItemConnection { get => _dbItemConnection; }
+    public RoutingState Router { get; } = new RoutingState();
     public IScreen HostScreen { get; }
     public string UrlPathSegment { get; } = Guid.NewGuid().ToString().Substring(0, 5);
     
-    public ReactiveCommand<Unit, Unit> GoNext { get; }
-    public ReactiveCommand<Unit, Unit> GoPrevious { get; }
-
+    public ReactiveCommand<Unit, IRoutableViewModel> GoToAlbum { get; }
     public ObservableCollection<BaseData> Items { get; } = new();
     public ObservableCollection<DataGridColumn> DataGridColumns { get; } = new();
     public int PageNumber
@@ -62,37 +63,46 @@ public class LibraryViewModel : ReactiveObject, IRoutableViewModel
         {
             case MediaTypes.Album:
                 DataGridColumns.Add(CreateImageColumn("Image", "ImgBlurhashSource", "ImgSource"));
-                DataGridColumns.Add(CreateTextColumn("Name", "Name"));
-                DataGridColumns.Add(CreateTextColumn("Artists", "ArtistNames"));
+                DataGridColumns.Add(CreateTextColumn("Name", "Name", "selectable"));
+                DataGridColumns.Add(CreateTextColumn("Artists", "ArtistNames", "selectable"));
                 DataGridColumns.Add(CreateTextColumn("Added On", "DateAdded"));
                 break;
             case MediaTypes.Artist:
                 DataGridColumns.Add(CreateImageColumn("Image", "ImgBlurhashSource", "ImgSource"));
-                DataGridColumns.Add(CreateTextColumn("Name", "Name"));
+                DataGridColumns.Add(CreateTextColumn("Name", "Name", "selectable"));
                 DataGridColumns.Add(CreateTextColumn("Added On", "DateAdded"));
                 break;
             case MediaTypes.Song:
                 DataGridColumns.Add(CreateImageColumn("Image", "ImgBlurhashSource", "ImgSource"));
-                DataGridColumns.Add(CreateTextColumn("Name", "Name"));
-                DataGridColumns.Add(CreateTextColumn("Artist", "ArtistNames"));
+                DataGridColumns.Add(CreateTextColumn("Name", "Name", "selectable"));
+                DataGridColumns.Add(CreateTextColumn("Artist", "ArtistNames", "selectable"));
                 DataGridColumns.Add(CreateTextColumn("Added On", "DateAdded"));
                 break;
             case MediaTypes.Genre:
                 DataGridColumns.Add(CreateImageColumn("Image", "ImgBlurhashSource", "ImgSource"));
-                DataGridColumns.Add(CreateTextColumn("Name", "Name"));
+                DataGridColumns.Add(CreateTextColumn("Name", "Name", "selectable"));
                 DataGridColumns.Add(CreateTextColumn("Added On", "DateAdded"));
                 break;
         }
     }
-    private DataGridTextColumn CreateTextColumn(string header, string bindingPath)
+    private DataGridTextColumn CreateTextColumn(string header, string bindingPath, string useClass = "")
     {
-        return new DataGridTextColumn
+        var colu = new DataGridTextColumn
         {
             Header = header,
             Binding = new Binding(bindingPath),
-            Width = new DataGridLength(1, DataGridLengthUnitType.Star) 
+            Width = new DataGridLength(1, DataGridLengthUnitType.Star),
+            CellStyleClasses = { useClass },
+            FontSize = 16,
         };
+        return colu;
     }
+
+    private void ColuOnHeaderPointerPressed(object? sender, PointerPressedEventArgs e)
+    {
+        
+    }
+
     private DataGridTemplateColumn CreateImageColumn(string header, string placeholderBinding, string sourceBinding)
     {
         var imgTemplate = new FuncDataTemplate<object>((data, namescope) =>

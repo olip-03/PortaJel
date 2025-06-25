@@ -1,5 +1,7 @@
-﻿using Jellyfin.Sdk;
+﻿using System.Net;
+using Jellyfin.Sdk;
 using Jellyfin.Sdk.Generated.Models;
+using Newtonsoft.Json;
 using Portajel.Connections.Data;
 using Portajel.Connections.Database;
 using Portajel.Connections.Enum;
@@ -35,13 +37,56 @@ namespace Portajel.Connections.Services.Jellyfin
                 c.QueryParameters.Limit = limit;
                 c.QueryParameters.StartIndex = startIndex;
                 c.QueryParameters.Recursive = true;
-                c.QueryParameters.Fields = [ItemFields.DateCreated, ItemFields.DateLastSaved, ItemFields.DateLastMediaAdded, ItemFields.ProviderIds];
+                c.QueryParameters.Fields = [
+                    ItemFields.DateCreated, 
+                    ItemFields.DateLastSaved, 
+                    ItemFields.DateLastMediaAdded, 
+                    ItemFields.ProviderIds, 
+                    ItemFields.ExternalUrls, 
+                ];
                 c.QueryParameters.EnableImages = true;
                 c.QueryParameters.EnableTotalRecordCount = true;
             }, cancellationToken).ConfigureAwait(false);
-            if (serverResults == null) return [];
-            if (serverResults.Items == null) return [];
-            return serverResults.Items.Select(dto => AlbumData.Builder(dto, clientSettings.ServerUrl)).ToArray();
+            // 2) build the AlbumData objects
+            var albums = serverResults.Items
+                .Select(dto => AlbumData.Builder(dto, clientSettings.ServerUrl))
+                .ToList();
+            // 3) for each album, fetch its child tracks and serialize their IDs
+            var fetchTracksTasks = albums.Select(async album =>
+            {
+                try
+                {
+                    var tracksResult = await api.Items.GetAsync(cfg =>
+                        {
+                            cfg.QueryParameters.UserId = user.Id;
+                            cfg.QueryParameters.ParentId = album.ServerId;
+                            cfg.QueryParameters.IncludeItemTypes = new[] { BaseItemKind.Audio };
+                            cfg.QueryParameters.Recursive = false;
+                            cfg.QueryParameters.SortBy = new[] { ItemSortBy.IndexNumber };
+                            cfg.QueryParameters.SortOrder = [SortOrder.Ascending];
+                        }, cancellationToken)
+                        .ConfigureAwait(false);
+                    var songData = tracksResult.Items.Select(dto => SongData.Builder(dto, clientSettings.ServerUrl))
+                        .ToArray();
+                    var similarData = await GetSimilarAsync(album.ServerId, 50, album.ServerAddress, cancellationToken);
+                    var trackIds = songData
+                                       ?.Select(t => t.Id)         // if Id is Guid? use .Value
+                                       .Where(id => id != null)
+                                       .Select(id => id!.ToString())
+                                       .ToList()
+                                   ?? new List<string>();
+                    album.GetSimilarJson = JsonConvert.SerializeObject(similarData);
+                    album.SongIdsJson = JsonConvert.SerializeObject(trackIds);
+                }
+                catch (Microsoft.Kiota.Abstractions.ApiException ex)
+                    when (ex.ResponseStatusCode == 400)
+                {
+                    album.SongIdsJson = "[]";
+                }
+            });
+
+            await Task.WhenAll(fetchTracksTasks).ConfigureAwait(false);
+            return albums.ToArray();
         }
         public async Task<BaseData> GetAsync(Guid id, string serverUrl = "",
             CancellationToken cancellationToken = default)

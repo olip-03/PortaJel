@@ -23,6 +23,8 @@ class Program
 {
     public static CancellationTokenSource ClosingToken = new();
     
+    public static RoutingState Router { get; } = new RoutingState();
+    
     public static string AppDataPath = null!;
     public static string DbDataPath = null!;
     

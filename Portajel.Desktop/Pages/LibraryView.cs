@@ -1,12 +1,15 @@
 using System;
+using System.Diagnostics;
 using System.Linq;
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
 using Avalonia.ReactiveUI;
 using CommunityToolkit.Mvvm.DependencyInjection;
 using DynamicData;
+using Portajel.Connections.Database;
 using Portajel.Desktop.Structures.Services;
 using Portajel.Desktop.Structures.ViewModel;
+using Portajel.Desktop.Structures.ViewModel.Music;
 using ReactiveUI;
 
 namespace Portajel.Desktop.Pages;
@@ -121,5 +124,30 @@ public partial class LibraryView : ReactiveUserControl<LibraryViewModel>
         int startFrom = _prevItemCount * ((int)e.NewValue.Value - 1);
         ViewModel.Items.Clear();
         ViewModel.Items.AddRange(ViewModel.DbItemConnection.GetAll(limit: _prevItemCount, startIndex: startFrom));
+    }
+
+    private void DataGrid_OnCellPointerPressed(object? sender, DataGridCellPointerPressedEventArgs e)
+    {
+        switch (e.Cell.DataContext)
+        {
+            case AlbumData album:
+                switch (e.Column.Header)
+                {
+                    case "Name":
+                        Program.Router.Navigate.Execute(new AlbumViewModel(ViewModel.HostScreen, album));
+                        break;
+                    case "Artists":
+                        Trace.WriteLine("Navigate to Artist " + e.Cell.DataContext);
+                        break;
+                }
+                break;
+            case ArtistData:
+                break;
+            case SongData:
+                break;
+            case GenreData:
+                break;
+        }
+
     }
 }
