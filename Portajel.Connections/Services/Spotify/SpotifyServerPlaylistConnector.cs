@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Jellyfin.Sdk.Generated.Models;
 using Portajel.Connections.Structs;
+using MediaType = Portajel.Connections.Enum.MediaType;
 
 namespace Portajel.Connections.Services.Spotify
 {
@@ -15,7 +16,7 @@ namespace Portajel.Connections.Services.Spotify
         private IMediaDataConnector _mediaDataConnectorImplementation;
 
         public SyncStatusInfo SyncStatusInfo { get; set; }
-        public MediaTypes MediaType { get; set; } = MediaTypes.Playlist;
+        public MediaType MediaType { get; set; } = MediaType.Playlist;
 
         public void SetSyncStatusInfo(TaskStatus status, int percentage)
         {

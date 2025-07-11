@@ -5,6 +5,7 @@ using Portajel.Connections.Database;
 using Portajel.Connections.Interfaces;
 using Portajel.Connections.Enum;
 using Portajel.Connections.Structs;
+using MediaType = Portajel.Connections.Enum.MediaType;
 
 namespace Portajel.Connections.Services.Jellyfin;
 
@@ -13,7 +14,7 @@ public class JellyfinServerPlaylistConnector(JellyfinApiClient api, JellyfinSdkS
 {
     public SyncStatusInfo SyncStatusInfo { get; set; } = new();
 
-    public MediaTypes MediaType => MediaTypes.Playlist;
+    public MediaType MediaType => MediaType.Playlist;
 
     public void SetSyncStatusInfo(TaskStatus status, int percentage)
     {

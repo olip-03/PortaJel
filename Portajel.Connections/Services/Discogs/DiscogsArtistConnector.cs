@@ -2,13 +2,14 @@ using Jellyfin.Sdk.Generated.Models;
 using Portajel.Connections.Enum;
 using Portajel.Connections.Interfaces;
 using Portajel.Connections.Structs;
+using MediaType = Portajel.Connections.Enum.MediaType;
 
 namespace Portajel.Connections.Services.Discogs;
 
 public class DiscogsArtistConnector : IMediaDataConnector
 {
     private IMediaDataConnector _mediaDataConnectorImplementation;
-    public MediaTypes MediaType => MediaTypes.Artist;
+    public MediaType MediaType => MediaType.Artist;
     public SyncStatusInfo SyncStatusInfo { get; set; }
 
     public void SetSyncStatusInfo(TaskStatus status, int percentage)

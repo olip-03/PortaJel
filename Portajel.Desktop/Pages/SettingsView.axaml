@@ -2,8 +2,9 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="using:Portajel.Desktop.Structures.ViewModel"
              xmlns:views="clr-namespace:Portajel.Desktop.Components.SettingsPanelViews"
-             x:Class="Portajel.Desktop.Components.SettingsIndex"
-             x:DataType="vm:SettingsPanelViewModel">
+
+             x:Class="Portajel.Desktop.Pages.SettingsView"
+             x:DataType="vm:SettingsViewModel">
     <StackPanel>
         <Label Content="Settings" FontSize="18" Margin="0,0,0,10"/>
         

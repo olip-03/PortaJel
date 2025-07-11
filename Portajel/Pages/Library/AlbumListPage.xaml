@@ -22,14 +22,14 @@
 
     <Grid HorizontalOptions="Fill" VerticalOptions="Fill"> 
         <vlv:VirtualListView
-        x:Name="vlv"
-        HorizontalOptions="Fill"
-        VerticalOptions="Fill"
-        IsRefreshEnabled="True"
-        RefreshCommand="{Binding RefreshCommand}"
-        Adapter="{Binding Adapter}"
-        SelectionMode="None"
-        ItemTemplateSelector="{StaticResource itemTemplateSelector}">
+            x:Name="vlv"
+            HorizontalOptions="Fill"
+            VerticalOptions="Fill"
+            IsRefreshEnabled="True"
+            RefreshCommand="{Binding RefreshCommand}"
+            Adapter="{Binding Adapter}"
+            SelectionMode="None"
+            ItemTemplateSelector="{StaticResource itemTemplateSelector}">
         </vlv:VirtualListView>
     </Grid>
 

@@ -1,11 +1,14 @@
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Reactive.Linq;
 using CommunityToolkit.Mvvm.DependencyInjection;
 using DynamicData;
 using Jellyfin.Sdk.Generated.Models;
 using Portajel.Connections.Database;
 using Portajel.Connections.Interfaces;
+using Portajel.Connections.Structs;
 using Portajel.Desktop.Structures.ViewModel.Components;
 using ReactiveUI;
 using SQLitePCL;
@@ -36,11 +39,16 @@ public class AlbumViewModel : ReactiveObject, IRoutableViewModel
         HostScreen = screen;
     }
 
-    public AlbumViewModel(IScreen screen, AlbumData album)
+    public AlbumViewModel(IScreen screen, AlbumData album, BaseData[]? songs = null, BaseData[]? suggested = null)
     {
         HostScreen = screen;
         Album = album;
         ImgSource = Album.ImgSource;
         HorizontalMusicViewModel.Title = "More like this";
+
+        var songCast = songs?.Select(bd => bd.ToSong()).ToList();
+        var suggestCase = suggested?.Select(bd => bd.ToAlbum()).ToList();
+        Songs = new ObservableCollection<SongData>(songCast ?? []);
+        HorizontalMusicViewModel.MusicData =  new ObservableCollection<BaseData>(suggestCase ?? []);
     }
 }

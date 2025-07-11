@@ -21,6 +21,7 @@ using Portajel.Connections.Enum;
 using Portajel.Connections.Interfaces;
 using Portajel.Connections.Services.Database;
 using Portajel.Connections.Structs;
+using Portajel.Desktop.Components;
 using ReactiveUI;
 
 namespace Portajel.Desktop.Structures.ViewModel;
@@ -56,29 +57,29 @@ public class LibraryViewModel : ReactiveObject, IRoutableViewModel
         
         GenerateColumns(_dbItemConnection.MediaType);
     }
-    private void GenerateColumns(MediaTypes mediaType)
+    private void GenerateColumns(MediaType mediaType)
     {
         DataGridColumns.Clear();
         switch (mediaType)
         {
-            case MediaTypes.Album:
+            case MediaType.Album:
                 DataGridColumns.Add(CreateImageColumn("Image", "ImgBlurhashSource", "ImgSource"));
                 DataGridColumns.Add(CreateTextColumn("Name", "Name", "selectable"));
                 DataGridColumns.Add(CreateTextColumn("Artists", "ArtistNames", "selectable"));
                 DataGridColumns.Add(CreateTextColumn("Added On", "DateAdded"));
                 break;
-            case MediaTypes.Artist:
+            case MediaType.Artist:
                 DataGridColumns.Add(CreateImageColumn("Image", "ImgBlurhashSource", "ImgSource"));
                 DataGridColumns.Add(CreateTextColumn("Name", "Name", "selectable"));
                 DataGridColumns.Add(CreateTextColumn("Added On", "DateAdded"));
                 break;
-            case MediaTypes.Song:
+            case MediaType.Song:
                 DataGridColumns.Add(CreateImageColumn("Image", "ImgBlurhashSource", "ImgSource"));
                 DataGridColumns.Add(CreateTextColumn("Name", "Name", "selectable"));
                 DataGridColumns.Add(CreateTextColumn("Artist", "ArtistNames", "selectable"));
                 DataGridColumns.Add(CreateTextColumn("Added On", "DateAdded"));
                 break;
-            case MediaTypes.Genre:
+            case MediaType.Genre:
                 DataGridColumns.Add(CreateImageColumn("Image", "ImgBlurhashSource", "ImgSource"));
                 DataGridColumns.Add(CreateTextColumn("Name", "Name", "selectable"));
                 DataGridColumns.Add(CreateTextColumn("Added On", "DateAdded"));
@@ -143,41 +144,5 @@ public class LibraryViewModel : ReactiveObject, IRoutableViewModel
         {
             CellTemplate = imgTemplate
         };
-    }
-    public class FileUriToBitmapConverter : IValueConverter
-    {
-        public object Convert(
-            object value,
-            Type targetType,
-            object parameter,
-            CultureInfo culture)
-        {
-            // value may be a string or a Uri
-            try
-            {
-                if (value is string s && Uri.TryCreate(s, UriKind.Absolute, out var u1) && u1.IsFile)
-                {
-                    return new Bitmap(u1.LocalPath);
-                }
-
-                if (value is Uri u2 && u2.IsFile)
-                {
-                    return new Bitmap(u2.LocalPath);
-                }
-            }
-            catch (Exception ex)
-            {
-                Trace.WriteLine(ex);
-            }
-            return AvaloniaProperty.UnsetValue;
-        }
-        public object ConvertBack(
-            object value,
-            Type targetType,
-            object parameter,
-            CultureInfo culture)
-        {
-            throw new NotSupportedException();
-        }
     }
 }

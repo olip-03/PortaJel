@@ -7,11 +7,11 @@ namespace Portajel.Pages.Settings;
 
 public partial class SettingsPage : ContentPage
 {
-    private ServerConnector _serverConnector;
+    private IServerConnector _serverConnector;
     private IDbConnector _dbConnector;
     
     private SettingsPageViewModel _viewModel = new();
-    public SettingsPage(ServerConnector serverConnector, IDbConnector dbConnector)
+    public SettingsPage(IServerConnector serverConnector, IDbConnector dbConnector)
 	{
         _serverConnector = serverConnector;
         _dbConnector = dbConnector;
@@ -20,17 +20,10 @@ public partial class SettingsPage : ContentPage
         {
             new()
             {
-                Title = "Connections",
-                Description = "Manage connections to music service providers.",
-                Icon = "hub.png",
-                NavigationLocation = "settings/connections"
-            },
-            new()
-            {
-                Title = "Debug",
-                Description = "Debugging options and interfaces for the backend.",
-                Icon = "bug.png",
-                NavigationLocation = "settings/debug"
+                Title = "Home Page",
+                Description = "Customise what's shown on the home page",
+                Icon = "home.png",
+                NavigationLocation = "settings/home"
             }
         };
         BindingContext = _viewModel;

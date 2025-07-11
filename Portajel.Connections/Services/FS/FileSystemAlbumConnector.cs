@@ -3,13 +3,14 @@ using Portajel.Connections.Enum;
 using Portajel.Connections.Interfaces;
 using Portajel.Connections.Structs;
 using SQLite;
+using MediaType = Portajel.Connections.Enum.MediaType;
 
 namespace Portajel.Connections.Services.FS;
 
 public class FileSystemAlbumConnector : IMediaDataConnector
 {
     private SQLiteAsyncConnection _database = null;
-    public MediaTypes MediaType => MediaTypes.Album;
+    public MediaType MediaType => MediaType.Album;
 
     public FileSystemAlbumConnector(SQLiteAsyncConnection database)
     {

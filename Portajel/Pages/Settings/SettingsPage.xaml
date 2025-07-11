@@ -2,6 +2,7 @@
 
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
              xmlns:vm="clr-namespace:Portajel.Structures.ViewModels.Settings"
              xmlns:comp="clr-namespace:Portajel.Components"
              xmlns:models="clr-namespace:Portajel.Structures"
@@ -10,10 +11,10 @@
              Title="Settings">
     <ScrollView Orientation="Vertical">
         <VerticalStackLayout>
-            <Label Text="Connections"/>
-            
+            <Label Margin="16, 16, 0, 0" Text="Connections" FontSize="20"/>
             <comp:ServerConnectionView x:Name="ServerConnectionView"/>
             
+            <Label Margin="16, 16, 0,10" Text="Customise" FontSize="20"/>
             <CollectionView
                 ItemsSource="{Binding ListItems}"
                 SelectionMode="Single"
@@ -35,7 +36,11 @@
                                 Margin="5, 0, 10, 0"
                                 Aspect="AspectFill"
                                 HeightRequest="32"
-                                WidthRequest="32" />
+                                WidthRequest="32">
+                                <Image.Behaviors>
+                                    <toolkit:IconTintColorBehavior TintColor="{StaticResource Primary}" />
+                                </Image.Behaviors>
+                            </Image>
                             <Label
                                 Grid.Column="1"
                                 Text="{Binding Title}"

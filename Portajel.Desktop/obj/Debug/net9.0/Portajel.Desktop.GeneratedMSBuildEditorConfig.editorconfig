@@ -6,6 +6,10 @@ build_property.AvaloniaNameGeneratorFilterByPath = *
 build_property.AvaloniaNameGeneratorFilterByNamespace = *
 build_property.AvaloniaNameGeneratorViewFileNamingStrategy = NamespaceAndClassName
 build_property.AvaloniaNameGeneratorAttachDevTools = true
+build_property.EnableAotAnalyzer = true
+build_property.EnableSingleFileAnalyzer = true
+build_property.EnableTrimAnalyzer = true
+build_property.IncludeAllContentForSelfExtract = 
 build_property.TargetFramework = net9.0
 build_property.TargetPlatformMinVersion = 
 build_property.UsingMicrosoftNETSdkWeb = 
@@ -17,15 +21,39 @@ build_property._SupportedPlatformList = Linux,macOS,Windows
 build_property.RootNamespace = Portajel.Desktop
 build_property.ProjectDir = /home/oli/Projects/Dotnet/PortaJel/Portajel.Desktop/
 build_property.EnableComHosting = 
-build_property.EnableGeneratedComInterfaceComImportInterop = 
+build_property.EnableGeneratedComInterfaceComImportInterop = false
 build_property.EffectiveAnalysisLevelStyle = 9.0
 build_property.EnableCodeStyleSeverity = 
 
 [/home/oli/Projects/Dotnet/PortaJel/Portajel.Desktop/App.axaml]
 build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
 
+[/home/oli/Projects/Dotnet/PortaJel/Portajel.Desktop/Components/HorizontalMusicView.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[/home/oli/Projects/Dotnet/PortaJel/Portajel.Desktop/Components/SettingsPanelViews/AddConnection.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[/home/oli/Projects/Dotnet/PortaJel/Portajel.Desktop/Components/SettingsPanelViews/SettingsConnections.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
 [/home/oli/Projects/Dotnet/PortaJel/Portajel.Desktop/MainWindow.axaml]
 build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
 
 [/home/oli/Projects/Dotnet/PortaJel/Portajel.Desktop/Pages/HomeView.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[/home/oli/Projects/Dotnet/PortaJel/Portajel.Desktop/Pages/LibraryView.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[/home/oli/Projects/Dotnet/PortaJel/Portajel.Desktop/Pages/Music/AlbumView.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[/home/oli/Projects/Dotnet/PortaJel/Portajel.Desktop/Pages/Music/ArtistView.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[/home/oli/Projects/Dotnet/PortaJel/Portajel.Desktop/Pages/SearchView.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[/home/oli/Projects/Dotnet/PortaJel/Portajel.Desktop/Pages/SettingsView.axaml]
 build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml

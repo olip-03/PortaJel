@@ -18,16 +18,18 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Xml.Linq;
 using Portajel.Connections.Structs;
+using MediaType = Portajel.Connections.Enum.MediaType;
 
 namespace Portajel.Connections.Services.Jellyfin
 {
     public class JellyfinServerConnector : IMediaServerConnector
     {
+        private HttpClient _httpClient = new();
         private IDbConnector _database;
-        private UserDto? _userDto;
+        public UserDto? _userDto;
         private SessionInfoDto? _sessionInfo;
-        private JellyfinSdkSettings? _sdkClientSettings;
-        private JellyfinApiClient? _jellyfinApiClient;
+        public JellyfinSdkSettings? _sdkClientSettings;
+        public JellyfinApiClient? _jellyfinApiClient; // TODO: Set to private, for testing
         public IMediaDataConnector AlbumData { get; set; } = null!;
         public IMediaDataConnector ArtistData { get; set; } = null!;
         public IMediaDataConnector SongData { get; set; } = null!;
@@ -232,11 +234,22 @@ namespace Portajel.Connections.Services.Jellyfin
                     }
                 }
                 
-                AlbumData = new JellyfinServerAlbumConnector(_jellyfinApiClient, _sdkClientSettings, _userDto);
-                ArtistData = new JellyfinServerArtistConnector(_jellyfinApiClient, _sdkClientSettings, _userDto);
-                SongData = new JellyfinServerSongConnector(_jellyfinApiClient, _sdkClientSettings, _userDto);
-                PlaylistData = new JellyfinServerPlaylistConnector(_jellyfinApiClient, _sdkClientSettings, _userDto);
-                Genre = new JellyfinServerGenreConnector(_jellyfinApiClient, _sdkClientSettings, _userDto);
+                string appName = (string)Properties["AppName"].Value;
+                string appVersion = (string)Properties["AppVersion"].Value;
+                string accessToken = authenticationResult?.AccessToken;
+
+                Dictionary<string, string> _defaultHeaders = new Dictionary<string, string>
+                {
+                    { "User-Agent", $"{appName}/{appVersion}" },
+                    { "Accept", "application/json" },
+                    { "Authorization", $"MediaBrowser Token=\"{accessToken}\", Client=\"Portajel\", Device=\"{Properties["DeviceName"].Value}\", DeviceId=\"{Properties["DeviceID"].Value}\", Version=\"{Properties["AppVersion"].Value}\"" }
+                };  
+  
+                AlbumData = new JellyfinConnectorTemplate(MediaType.Album, _httpClient, _defaultHeaders, _sdkClientSettings.ServerUrl, _userDto.Id.Value);
+                ArtistData = new JellyfinConnectorTemplate(MediaType.Artist, _httpClient, _defaultHeaders, _sdkClientSettings.ServerUrl, _userDto.Id.Value);
+                SongData = new JellyfinConnectorTemplate(MediaType.Song, _httpClient, _defaultHeaders, _sdkClientSettings.ServerUrl, _userDto.Id.Value);
+                PlaylistData = new JellyfinConnectorTemplate(MediaType.Playlist, _httpClient, _defaultHeaders, _sdkClientSettings.ServerUrl, _userDto.Id.Value);
+                Genre = new JellyfinConnectorTemplate(MediaType.Genre, _httpClient, _defaultHeaders, _sdkClientSettings.ServerUrl, _userDto.Id.Value);
                 Feeds = new JellyfinFeedConnector(_database, Properties["URL"].Value.ToString());
             }
             catch (ApiException apiEx)
@@ -375,11 +388,15 @@ namespace Portajel.Connections.Services.Jellyfin
                     }
 
                     data.SyncStatusInfo.TaskStatus = TaskStatus.Running;
+                    
+                    BaseData[] baseData;
+                    int newTotal = 0;
+                    double newPercent = 0;
                     while (data.SyncStatusInfo.TaskStatus is TaskStatus.Running)
                     {
                         try
                         {
-                            var items = await data.GetAllAsync(
+                            baseData = await data.GetAllAsync(
                                 limit: retrieve,
                                 startIndex: data.SyncStatusInfo.ServerItemCount,
                                 setSortOrder: SortOrder.Descending,
@@ -387,19 +404,21 @@ namespace Portajel.Connections.Services.Jellyfin
                                 cancellationToken: cancellationToken
                             );
 
-                            int newTotal = data.SyncStatusInfo.ServerItemCount + items.Length;
-                            double newPercent = ((double)newTotal / data.SyncStatusInfo.ServerItemTotal) * 100;
+                            newTotal = data.SyncStatusInfo.ServerItemCount + baseData.Length;
+                            newPercent = ((double)newTotal / data.SyncStatusInfo.ServerItemTotal) * 100;
 
                             data.SetSyncStatusInfo(serverItemCount: newTotal, percentage: (int)newPercent);
 
-                            if (Properties.TryGetValue("AppDataPath", out var appDataPath))
-                            {
-                                var path = Path.Combine(appDataPath.Value.ToString(), "placeholder");
-                                Blurhasher.DownloadMusicItemBitmap(items, GetDb(data).Value, path, 12, 12);
-                            }
+                            // Download and set image code
+                            
+                            // if (Properties.TryGetValue("AppDataPath", out var appDataPath))
+                            // {
+                            //     var path = Path.Combine(appDataPath.Value.ToString(), "placeholder");
+                            //     Blurhasher.DownloadMusicItemBitmap(baseData, GetDb(data).Value, path, 12, 12);
+                            // }
 
-                            GetDb(data).Value.InsertRange(items, cancellationToken);
-                            if (items.Length < retrieve)
+                            GetDb(data).Value.InsertRange(baseData, cancellationToken);
+                            if (baseData.Length < retrieve)
                             {
                                 data.SetSyncStatusInfo(status: TaskStatus.RanToCompletion);
                                 continue;

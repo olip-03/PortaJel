@@ -4,6 +4,7 @@ using System.Linq;
 using Jellyfin.Sdk.Generated.Playlists;
 using Portajel.Connections.Enum;
 using Portajel.Connections.Structs;
+using MediaType = Portajel.Connections.Enum.MediaType;
 
 namespace Portajel.Desktop.Structures.Services;
 
@@ -15,60 +16,60 @@ public class LibraryViewCache
     private List<BaseData> _genres = [];
     private List<BaseData> _playlists = [];
 
-    public bool Initialized(MediaTypes mediaType)
+    public bool Initialized(MediaType mediaType)
     {
         switch (mediaType)
         {
-            case MediaTypes.Album:
+            case MediaType.Album:
                 return _albums.Any();
-            case MediaTypes.Artist:
+            case MediaType.Artist:
                 return _artists.Any();
-            case MediaTypes.Song:
+            case MediaType.Song:
                 return _songs.Any();
-            case MediaTypes.Playlist:
+            case MediaType.Playlist:
                 return _playlists.Any();
-            case MediaTypes.Genre:
+            case MediaType.Genre:
                 return _genres.Any();
         }
         return false;
     }
     
-    public void StoreMediaType(MediaTypes mediaType, IEnumerable<BaseData> baseData)
+    public void StoreMediaType(MediaType mediaType, IEnumerable<BaseData> baseData)
     {
         switch (mediaType)
         {
-            case MediaTypes.Album:
+            case MediaType.Album:
                 _albums = baseData.ToList();
                 break;
-            case MediaTypes.Artist:
+            case MediaType.Artist:
                 _artists = baseData.ToList();
                 break;
-            case MediaTypes.Song:
+            case MediaType.Song:
                 _songs = baseData.ToList();
                 break;
-            case MediaTypes.Playlist:
+            case MediaType.Playlist:
                 _playlists = baseData.ToList();
                 break;
-            case MediaTypes.Genre:
+            case MediaType.Genre:
                 _genres = baseData.ToList();
                 break;
 
         }
     }
     
-    public IEnumerable<BaseData> GetMediaType(MediaTypes mediaType)
+    public IEnumerable<BaseData> GetMediaType(MediaType mediaType)
     {
         switch (mediaType)
         {
-            case MediaTypes.Album:
+            case MediaType.Album:
                 return _albums;
-            case MediaTypes.Artist:
+            case MediaType.Artist:
                 return _artists;
-            case MediaTypes.Song:
+            case MediaType.Song:
                 return _songs;
-            case MediaTypes.Playlist:
+            case MediaType.Playlist:
                 return _playlists;
-            case MediaTypes.Genre:
+            case MediaType.Genre:
                 return _genres;
         }
         return null;

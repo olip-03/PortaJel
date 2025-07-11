@@ -92,7 +92,7 @@
                         <Label Content="Home"/>
                     </StackPanel>
                 </Button>
-                <Button Command="{Binding GoHome}" 
+                <Button Command="{Binding GoSearch}" 
                         HorizontalAlignment="Stretch"
                         CornerRadius="0"
                         Background="Transparent" 
@@ -104,7 +104,7 @@
                         <Label Content="Search"/>
                     </StackPanel>
                 </Button>
-                <Button Command="{Binding GoHome}" 
+                <Button Command="{Binding GoSettings}" 
                         HorizontalAlignment="Stretch"
                         CornerRadius="0"
                         Background="Transparent" 
@@ -176,15 +176,6 @@
         </Border>
         
         <GridSplitter Grid.Row="1" Grid.Column="1" Width="1" Background="Transparent" ResizeDirection="Columns"/>
-        
-        <settingsPanelViews:SettingsPanel x:Name="SettingsPanel" Grid.Column="0" Grid.ColumnSpan="3" Grid.Row="1" Grid.RowSpan="2" 
-                            DataContext="{Binding SettingsPanel}"
-                            Margin="6"
-                            ZIndex="2"
-                            Opacity="0"
-                            IsHitTestVisible="False"
-                            HorizontalAlignment="Right" 
-                            VerticalAlignment="Top"/>
         
         <rxui:RoutedViewHost Grid.Column="2" Grid.Row="1" ZIndex="1" Router="{Binding Router}">
             <rxui:RoutedViewHost.DefaultContent>

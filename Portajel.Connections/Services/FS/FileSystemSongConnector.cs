@@ -5,6 +5,7 @@ using Portajel.Connections.Enum;
 using SQLite;
 using Portajel.Connections.Structs;
 using Portajel.Connections.Database;
+using MediaType = Portajel.Connections.Enum.MediaType;
 
 namespace Portajel.Connections.Services.FS;
 
@@ -12,7 +13,7 @@ public class FileSystemSongConnector : IMediaDataConnector
 {
     private SQLiteAsyncConnection _database = null;
     private IMediaDataConnector _mediaDataConnectorImplementation;
-    public MediaTypes MediaType => MediaTypes.Song;
+    public MediaType MediaType => MediaType.Song;
 
     public FileSystemSongConnector(SQLiteAsyncConnection database)
     {

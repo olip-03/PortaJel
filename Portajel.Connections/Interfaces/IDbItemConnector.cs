@@ -1,12 +1,13 @@
 ﻿using Jellyfin.Sdk.Generated.Models;
 using Portajel.Connections.Enum;
 using Portajel.Connections.Structs;
+using MediaType = Portajel.Connections.Enum.MediaType;
 
 namespace Portajel.Connections.Interfaces
 {
     public interface IDbItemConnector
     {
-        public MediaTypes MediaType { get; set; }
+        public MediaType MediaType { get; set; }
         BaseData[] GetAll(
             int? limit = null,
             int startIndex = 0,

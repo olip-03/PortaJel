@@ -7,6 +7,7 @@ using Portajel.Connections.Database;
 using Portajel.Connections.Enum;
 using Portajel.Connections.Interfaces;
 using Portajel.Connections.Structs;
+using MediaType = Portajel.Connections.Enum.MediaType;
 
 namespace Portajel.Connections.Services.Jellyfin
 {
@@ -14,7 +15,7 @@ namespace Portajel.Connections.Services.Jellyfin
         : IMediaDataConnector
     {
         public SyncStatusInfo SyncStatusInfo { get; set; } = new();
-        public MediaTypes MediaType => MediaTypes.Album;
+        public MediaType MediaType => MediaType.Album;
         public async Task<BaseData[]> GetAllAsync(
             int? limit = null, 
             int startIndex = 0,
@@ -31,6 +32,7 @@ namespace Portajel.Connections.Services.Jellyfin
                 c.QueryParameters.UserId = user.Id;
                 c.QueryParameters.IsFavorite = getFavourite;
                 c.QueryParameters.SortBy = [setSortTypes];
+                c.QueryParameters.Ids = includeIds ?? includeIds;
                 c.QueryParameters.SortOrder = [setSortOrder];
                 c.QueryParameters.IncludeItemTypes = [BaseItemKind.MusicAlbum];
                 c.QueryParameters.ExcludeItemIds = excludeIds;
@@ -51,41 +53,6 @@ namespace Portajel.Connections.Services.Jellyfin
             var albums = serverResults.Items
                 .Select(dto => AlbumData.Builder(dto, clientSettings.ServerUrl))
                 .ToList();
-            // 3) for each album, fetch its child tracks and serialize their IDs
-            var fetchTracksTasks = albums.Select(async album =>
-            {
-                try
-                {
-                    var tracksResult = await api.Items.GetAsync(cfg =>
-                        {
-                            cfg.QueryParameters.UserId = user.Id;
-                            cfg.QueryParameters.ParentId = album.ServerId;
-                            cfg.QueryParameters.IncludeItemTypes = new[] { BaseItemKind.Audio };
-                            cfg.QueryParameters.Recursive = false;
-                            cfg.QueryParameters.SortBy = new[] { ItemSortBy.IndexNumber };
-                            cfg.QueryParameters.SortOrder = [SortOrder.Ascending];
-                        }, cancellationToken)
-                        .ConfigureAwait(false);
-                    var songData = tracksResult.Items.Select(dto => SongData.Builder(dto, clientSettings.ServerUrl))
-                        .ToArray();
-                    var similarData = await GetSimilarAsync(album.ServerId, 50, album.ServerAddress, cancellationToken);
-                    var trackIds = songData
-                                       ?.Select(t => t.Id)         // if Id is Guid? use .Value
-                                       .Where(id => id != null)
-                                       .Select(id => id!.ToString())
-                                       .ToList()
-                                   ?? new List<string>();
-                    album.GetSimilarJson = JsonConvert.SerializeObject(similarData);
-                    album.SongIdsJson = JsonConvert.SerializeObject(trackIds);
-                }
-                catch (Microsoft.Kiota.Abstractions.ApiException ex)
-                    when (ex.ResponseStatusCode == 400)
-                {
-                    album.SongIdsJson = "[]";
-                }
-            });
-
-            await Task.WhenAll(fetchTracksTasks).ConfigureAwait(false);
             return albums.ToArray();
         }
         public async Task<BaseData> GetAsync(Guid id, string serverUrl = "",
@@ -156,7 +123,8 @@ namespace Portajel.Connections.Services.Jellyfin
                 c.QueryParameters.Limit = setLimit;
             }, cancellationToken).ConfigureAwait(false);
             if (result?.Items == null) return [];
-            return result.Items.Select(dto => AlbumData.Builder(dto, clientSettings.ServerUrl)).ToArray();
+            var albums = result.Items.Select(dto => AlbumData.Builder(dto, clientSettings.ServerUrl)).ToArray();
+            return albums;
         }
         public async Task<int> GetTotalCountAsync(
             bool? getFavourite = null, 

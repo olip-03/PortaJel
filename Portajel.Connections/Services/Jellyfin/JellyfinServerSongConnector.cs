@@ -1,10 +1,12 @@
 using Jellyfin.Sdk;
 using Jellyfin.Sdk.Generated.Models;
+using Microsoft.Kiota.Abstractions.Extensions;
 using Portajel.Connections.Data;
 using Portajel.Connections.Database;
 using Portajel.Connections.Interfaces;
 using Portajel.Connections.Enum;
 using Portajel.Connections.Structs;
+using MediaType = Portajel.Connections.Enum.MediaType;
 
 namespace Portajel.Connections.Services.Jellyfin
 {
@@ -12,7 +14,7 @@ namespace Portajel.Connections.Services.Jellyfin
         : IMediaDataConnector
     {
         public SyncStatusInfo SyncStatusInfo { get; set; } = new();
-        public MediaTypes MediaType => MediaTypes.Song;
+        public MediaType MediaType => MediaType.Song;
         public void SetSyncStatusInfo(TaskStatus status, int percentage)
         {
             SyncStatusInfo.TaskStatus = status;
@@ -36,9 +38,7 @@ namespace Portajel.Connections.Services.Jellyfin
                 c.QueryParameters.EnableImages = true;
                 c.QueryParameters.EnableTotalRecordCount = true;
             }, cancellationToken).ConfigureAwait(false);
-
             if (serverResults?.Items == null) return Array.Empty<SongData>();
-
             return serverResults.Items.Select(dto => SongData.Builder(dto, clientSettings.ServerUrl)).ToArray();
         }
 

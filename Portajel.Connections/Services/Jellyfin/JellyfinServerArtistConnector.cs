@@ -5,6 +5,7 @@ using Portajel.Connections.Database;
 using Portajel.Connections.Enum;
 using Portajel.Connections.Interfaces;
 using Portajel.Connections.Structs;
+using MediaType = Portajel.Connections.Enum.MediaType;
 
 namespace Portajel.Connections.Services.Jellyfin
 {
@@ -12,7 +13,7 @@ namespace Portajel.Connections.Services.Jellyfin
         : IMediaDataConnector
     {
         public SyncStatusInfo SyncStatusInfo { get; set; } = new();
-        public MediaTypes MediaType => MediaTypes.Artist;
+        public MediaType MediaType => MediaType.Artist;
         public void SetSyncStatusInfo(TaskStatus status, int percentage)
         {
             SyncStatusInfo.TaskStatus = status;

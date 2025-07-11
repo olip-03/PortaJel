@@ -1,8 +1,12 @@
+using System.Text.Json;
+using BenchmarkDotNet.Running;
 using Jellyfin.Sdk.Generated.LiveTv.Recordings.Folders;
+using Newtonsoft.Json.Linq;
 using Portajel.Terminal.View;
 using Portajel.Terminal.Struct.Interface;
 using Portajel.Connections;
 using Portajel.Connections.Services.Database;
+using Portajel.Terminal.Benchmark;
 using Portajel.Terminal.Struct;
 
 namespace Portajel.Terminal
@@ -19,8 +23,27 @@ namespace Portajel.Terminal
         private static Stack<IView> _view = new();
 
         private static bool pauseRefresh = false;
+        static async Task Main(string[] args)
+        {
+            DbBenchmark benchmark = new();
+            benchmark.Setup();
+            var baseData = await benchmark.GetAlbumData(1);
+            var json = JsonSerializer.Serialize(baseData);
+            
+            JToken jt = JToken.Parse(json);
+            string formatted = jt.ToString(Newtonsoft.Json.Formatting.Indented);
+            
+            Console.WriteLine(formatted);
+            //var summary = BenchmarkRunner.Run<DbBenchmark>();
+        }
 
-        static void Main(string[] args)
+        public static void InitializeDatabase()
+        {
+            FolderCheck();
+            Database = new(DbDataPath);
+        }
+
+        public static void LaunchInteractive()
         {
             FolderCheck();
             

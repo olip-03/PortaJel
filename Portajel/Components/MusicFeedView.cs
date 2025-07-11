@@ -3,15 +3,15 @@ using Portajel.Connections.Services;
 
 namespace Portajel.Components;
 
-public class MusicFeedView : ContentView
+public class MusicFeedView : Grid
 {
     private IServerConnector _server;
     public MusicFeedView(IServerConnector server)
     {
         _server = server;
-        Content = Layout();
+        BuildUI();
     }
-    private Grid Layout()
+    private void BuildUI()
     {
         Grid grid = new Grid();
 
@@ -24,6 +24,5 @@ public class MusicFeedView : ContentView
             ScrollView scrollView = new ScrollView();
             Grid layout = new Grid();
         }
-        return grid;
     }
 }

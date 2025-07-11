@@ -44,12 +44,6 @@
     <Compile Update="Pages\LibraryView.cs">
       <DependentUpon>LibraryView.axaml</DependentUpon>
     </Compile>
-    <Compile Update="Components\SettingsPanel.cs">
-      <DependentUpon>SettingsPanel.axaml</DependentUpon>
-    </Compile>
-    <Compile Update="Components\SettingsPanelViews\SettingsIndex.cs">
-      <DependentUpon>SettingsIndex.axaml</DependentUpon>
-    </Compile>
     <Compile Update="Components\SettingsPanelViews\SettingsConnections.cs">
       <DependentUpon>SettingsConnections.axaml</DependentUpon>
     </Compile>
@@ -61,6 +55,12 @@
     </Compile>
     <Compile Update="Components\HorizontalMusicView.cs">
       <DependentUpon>HorizontalMusicView.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="Pages\SettingsView.cs">
+      <DependentUpon>SettingsView.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="Pages\Music\ArtistView.cs">
+      <DependentUpon>ArtistView.axaml</DependentUpon>
     </Compile>
   </ItemGroup>
 

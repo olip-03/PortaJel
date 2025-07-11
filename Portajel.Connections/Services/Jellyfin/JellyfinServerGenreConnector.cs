@@ -5,13 +5,14 @@ using Portajel.Connections.Interfaces;
 using Portajel.Connections.Enum;
 using Portajel.Connections.Structs;
 using Portajel.Connections.Database;
+using MediaType = Portajel.Connections.Enum.MediaType;
 
 namespace Portajel.Connections.Services.Jellyfin;
 
 public class JellyfinServerGenreConnector(JellyfinApiClient api, JellyfinSdkSettings clientSettings, UserDto user) : IMediaDataConnector
 {
     public SyncStatusInfo SyncStatusInfo { get; set; } = new();
-    public MediaTypes MediaType => MediaTypes.Genre;
+    public MediaType MediaType => MediaType.Genre;
 
     public void SetSyncStatusInfo(TaskStatus status, int percentage)
     {

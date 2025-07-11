@@ -4,6 +4,7 @@ using Newtonsoft.Json; // Changed from System.Text.Json
 using Portajel.Connections.Structs;
 using Portajel.Connections.Services;
 using Portajel.Connections.Enum;
+using MediaType = Portajel.Connections.Enum.MediaType;
 
 namespace Portajel.Connections.Database
 {
@@ -21,7 +22,7 @@ namespace Portajel.Connections.Database
         public string FileLocation { get; set; } = string.Empty;
         public string StreamUrl { get; set; } = string.Empty;
         public bool IsPartial { get; set; } = true;
-        public override MediaTypes MediaType { get; set; } = MediaTypes.Song;
+        public override MediaType MediaType { get; set; } = MediaType.Song;
         public static SongData Empty { get; set; } = new();
 
         public Guid[] GetArtistIds()

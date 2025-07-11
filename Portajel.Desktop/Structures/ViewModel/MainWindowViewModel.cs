@@ -4,6 +4,7 @@ using Avalonia.Media;
 using CommunityToolkit.Mvvm.DependencyInjection;
 using Portajel.Connections.Interfaces;
 using Portajel.Connections.Services.Database;
+using Portajel.Desktop.Pages;
 using ReactiveUI;
 
 namespace Portajel.Desktop.Structures.ViewModel;
@@ -18,6 +19,8 @@ public class MainWindowViewModel: ReactiveObject, IScreen
 
     // The command that navigates a user to first view model.
     public ReactiveCommand<Unit, IRoutableViewModel> GoHome { get; }
+    public ReactiveCommand<Unit, IRoutableViewModel> GoSearch { get; }
+    public ReactiveCommand<Unit, IRoutableViewModel> GoSettings { get; }
     public ReactiveCommand<Unit, IRoutableViewModel> GoAlbum { get; }
     public ReactiveCommand<Unit, IRoutableViewModel> GoArtist { get; }
     public ReactiveCommand<Unit, IRoutableViewModel> GoSong { get; }
@@ -42,13 +45,17 @@ public class MainWindowViewModel: ReactiveObject, IScreen
         set => this.RaiseAndSetIfChanged(ref _testString, value);
     }
     
-    public SettingsPanelViewModel SettingsPanel { get; }
+    public SettingsViewModel SettingsPanel { get; }
     
     public MainWindowViewModel()
     {
         GoHome = ReactiveCommand.CreateFromObservable(
             () => Router.Navigate.Execute(new HomeViewModel(this))
         );
+        GoSearch = ReactiveCommand.CreateFromObservable(() =>
+            Router.Navigate.Execute(new SearchViewModel(this)));
+        GoSettings = ReactiveCommand.CreateFromObservable(() =>
+            Router.Navigate.Execute(new SettingsViewModel(this)));
         GoAlbum = ReactiveCommand.CreateFromObservable(
             () => Router.Navigate.Execute(new LibraryViewModel(this, _database.Connectors.Album))
         );

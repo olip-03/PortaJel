@@ -11,7 +11,7 @@ using Portajel.Desktop.Structures.ViewModel.Settings;
 
 namespace Portajel.Desktop.Structures.ViewModel
 {
-    public class SettingsPanelViewModel : ReactiveObject
+    public class SettingsViewModel : ReactiveObject, IRoutableViewModel
     {
         private ServerConnector _server = Ioc.Default.GetService<ServerConnector>();
         public SettingsConnectionViewModel ConnectionViewModel { get; }
@@ -24,29 +24,28 @@ namespace Portajel.Desktop.Structures.ViewModel
             set => this.RaiseAndSetIfChanged(ref _currentView, value);
         }
         public ReactiveCommand<Unit, Unit> NavigateBackCommand { get; }
-        public SettingsPanelViewModel()
+        public SettingsViewModel(IScreen screen)
         {
+            HostScreen = screen;
+            
             NavigateBackCommand = ReactiveCommand.Create(NavigateBack);
             ConnectionViewModel = new SettingsConnectionViewModel(ReactiveCommand.Create(() => NavigateToCategory("AddConnection")));
             AddConnectionViewModel = new(NavigateBackCommand);
             
             // Start with the index view
-            CurrentView = new SettingsIndex { DataContext = this };
         }
         public void NavigateToCategory(string categoryName)
         {
-            CurrentView = categoryName switch
-            {
-                "AddConnection" => new AddConnection { DataContext = AddConnectionViewModel },
-                _ => new SettingsIndex { DataContext = this }
-            };
+
         }
         public void NavigateBack()
         {
             ConnectionViewModel.Connections.Clear();
             ConnectionViewModel.Connections.AddRange(_server.Servers);
-            CurrentView = new SettingsIndex { DataContext = this };
         }
+
+        public string? UrlPathSegment { get; }
+        public IScreen HostScreen { get; }
     }
 
     public class SettingsCategory

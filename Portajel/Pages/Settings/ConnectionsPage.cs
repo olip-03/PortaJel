@@ -18,9 +18,9 @@ public class ConnectionsPage : ContentPage
 {
     private Color _primaryDark = Color.FromRgba(0, 0, 0, 255);
 
-    private ServerConnector _server = default!;
+    private IServerConnector _server = default!;
     private IDbConnector _database = default!;
-    public ConnectionsPage(ServerConnector server, IDbConnector dbConnector)
+    public ConnectionsPage(IServerConnector server, IDbConnector dbConnector)
     {
         if (Application.Current is null) return;
         _server = server;
@@ -65,7 +65,6 @@ public class ConnectionsPage : ContentPage
                 }
             })
         });
-
         Content = mainLayout;
     }
 

@@ -1,0 +1,11 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:Portajel.Desktop.Structures.ViewModel.Music"
+             xmlns:comp="clr-namespace:Portajel.Desktop.Components"
+             xmlns:asyncImageLoader="clr-namespace:AsyncImageLoader;assembly=AsyncImageLoader.Avalonia"
+             x:Class="Portajel.Desktop.Pages.Music.ArtistView"
+             x:DataType="vm:ArtistViewModel">
+    <Grid>
+        <Label Content="HUllo i am artist har ahr "></Label>
+    </Grid>
+</UserControl>

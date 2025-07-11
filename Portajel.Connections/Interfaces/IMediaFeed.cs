@@ -1,3 +1,5 @@
+using Portajel.Connections.Enum;
+using Portajel.Connections.Services;
 using Portajel.Connections.Structs;
 
 namespace Portajel.Connections.Interfaces;
@@ -9,6 +11,7 @@ public interface IMediaFeed
     public string Description { get; }
     public string ServerUrl { get; }
     public bool IsEnabled { get; set; }
+    public List<ConnectorProperty> Properties { get; set; }
     public BaseData[] GetFrom(int itemIndex, int amount);
     public int Total();
 }

@@ -104,7 +104,7 @@
                 <!-- Song Data Grid -->
                 <DataGrid
                     Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2"
-                    Margin="16,0"
+                    Margin="16 32"
                     Background="#000000d9"
                     ItemsSource="{Binding Songs}"
                     IsReadOnly="True"
@@ -162,7 +162,7 @@
                     </DataGrid.Columns>
                 </DataGrid>
                 <!-- Suggestions -->
-                <comp:HorizontalMusicView DataContext="{Binding HorizontalMusicViewModel}" Margin="16"/>
+                <comp:HorizontalMusicView DataContext="{Binding HorizontalMusicViewModel}" Margin="16 32"/>
             </StackPanel>
         </Grid>
     </ScrollViewer>

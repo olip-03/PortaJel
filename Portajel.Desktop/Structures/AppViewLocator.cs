@@ -16,6 +16,9 @@ public class AppViewLocator : ReactiveUI.IViewLocator
         HomeViewModel context => _homeView ??= new HomeView() { DataContext = context, ViewModel = context },
         LibraryViewModel context => new LibraryView() { DataContext = context, ViewModel = context },
         AlbumViewModel context => new AlbumView() { DataContext = context, ViewModel = context },
+        ArtistViewModel context => new ArtistView() { DataContext = context, ViewModel = context },
+        SearchViewModel context => new SearchView() { DataContext = context, ViewModel = context },
+        SettingsViewModel context => new SettingsView() { DataContext = context, ViewModel = context },
         _ => throw new ArgumentOutOfRangeException(nameof(viewModel))
     };
 }

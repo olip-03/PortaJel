@@ -13,9 +13,9 @@ namespace Portajel.Structures.Interfaces
     public interface IQueueController
     {
         // Get Current Song
-        KeyValuePair<MediaTypes, BaseData> CurrentSong { get; }
+        KeyValuePair<MediaType, BaseData> CurrentSong { get; }
         // Get Current Collection
-        KeyValuePair<MediaTypes, BaseData> CurrentColleciton { get; }
+        KeyValuePair<MediaType, BaseData> CurrentColleciton { get; }
         // Function to skip the song, to the next
         void Skip();
         // Function to skip back to the prior song

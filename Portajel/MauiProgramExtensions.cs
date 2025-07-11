@@ -63,6 +63,7 @@ namespace Portajel
             mauiAppBuilder.Services.AddSingleton<PlaylistListPage>();
             mauiAppBuilder.Services.AddSingleton<SongListPage>();
             mauiAppBuilder.Services.AddSingleton<ServerConnectionView>();
+            mauiAppBuilder.Services.AddSingleton<HomeSettings>();
             return mauiAppBuilder;
         }
     }

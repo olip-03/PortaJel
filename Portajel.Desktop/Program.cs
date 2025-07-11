@@ -52,7 +52,7 @@ class Program
                     DatabaseConnector db = new DatabaseConnector(DbDataPath);
                     return db;
                 })
-                .AddSingleton<ServerConnector>(serviceProvider =>
+                .AddSingleton<IServerConnector>(serviceProvider =>
                 {
                     try
                     {

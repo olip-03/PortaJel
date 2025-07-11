@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Portajel.Terminal")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+e0e2dc05038aa18738ada46797b1d4cb10d4e686")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+a7a3e700a5810d3865320a8049b82ad9fa15a01f")]
 [assembly: System.Reflection.AssemblyProductAttribute("Portajel.Terminal")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Portajel.Terminal")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

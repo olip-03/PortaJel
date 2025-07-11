@@ -2,9 +2,13 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="using:Portajel.Desktop.Structures.ViewModel.Components"
              xmlns:db="clr-namespace:Portajel.Connections.Database;assembly=Portajel.Connections"
+             xmlns:comp="clr-namespace:Portajel.Desktop.Components"
              xmlns:asyncImageLoader="clr-namespace:AsyncImageLoader;assembly=AsyncImageLoader.Avalonia"
              x:Class="Portajel.Desktop.Components.HorizontalMusicView"
              x:DataType="vm:HorizontalMusicViewModel">
+    <UserControl.Resources>
+        <comp:FileUriToBitmapConverter x:Key="FileUriToBitmapConverter"/>
+    </UserControl.Resources>
     <UserControl.Styles>
         <!-- base cell -->
         <Style Selector="DataTemplate.selectable TextBlock">
@@ -26,16 +30,15 @@
     
     <StackPanel>
         <TextBlock Text="{Binding Title}"
-                   FontSize="18"
-                   Margin="8"/>
-
-        <ListBox ItemsSource="{Binding Songs}"
+                   FontSize="24"
+                   Margin="6"/>
+        <ListBox x:Name="DataView"
+            ItemsSource="{Binding MusicData}"
                  ScrollViewer.HorizontalScrollBarVisibility="Auto"
                  ScrollViewer.VerticalScrollBarVisibility="Disabled"
                  Background="Transparent"
                  SelectionMode="Single"
                  HorizontalAlignment="Stretch">
-            
             <ListBox.Classes>
                 <x:String>selectable</x:String>
             </ListBox.Classes>
@@ -48,13 +51,16 @@
             
             <ListBox.ItemTemplate>
                 <DataTemplate x:DataType="db:AlbumData">
-                    <StackPanel Width="160">
-                        <Border Width="160"
+                    <StackPanel Width="160" PointerPressed="InputElement_OnPointerPressed">
+                        <Grid Width="160"
                                 Classes="selectable"
                                 Height="160">
+                            <Image Source="{Binding ImgBlurhashSource,
+                                      Converter={StaticResource FileUriToBitmapConverter}}"
+                                   Stretch="UniformToFill"/>
                             <Image asyncImageLoader:ImageLoader.Source="{Binding ImgSource}"
                                    Stretch="UniformToFill"/>
-                        </Border>
+                        </Grid>
                         <TextBlock Text="{Binding Name}"
                                    Margin="0,4,0,0"
                                    FontSize="12"
