@@ -5,8 +5,7 @@
 	xmlns:vlv="clr-namespace:Microsoft.Maui.Controls;assembly=VirtualListView"
     xmlns:music="clr-namespace:Portajel.Connections.Database;assembly=Portajel.Connections"
 	xmlns:comp="clr-namespace:Portajel.Components"
-    xmlns:ffimageloading="clr-namespace:FFImageLoading.Maui;assembly=FFImageLoading.Maui"
-    xmlns:sn="clr-namespace:Sharpnado.Tasks;assembly=Sharpnado.TaskMonitor"
+	xmlns:cnv="clr-namespace:Portajel.Structures.Converters"
 	x:Class="Portajel.Components.Library.AlbumViewCell"
 	x:Name="self"
     Opacity="1"
@@ -14,16 +13,47 @@
 	SemanticProperties.Description="{Binding Name}"
 	SemanticProperties.HeadingLevel="Level3"
 	x:DataType="music:AlbumData">
-    <vlv:VirtualViewCell.Content>
+	<vlv:VirtualViewCell.Resources>
+		<cnv:SubtitleTextConverter x:Key="TextConverter" />
+	</vlv:VirtualViewCell.Resources>
+	<vlv:VirtualViewCell.Content>
         <Grid ColumnDefinitions="84, *" 
               RowDefinitions="42, 42" 
               HorizontalOptions="Fill">
-	        <comp:MusicImage Grid.RowSpan="2"
-							 ImageSource="{Binding ImgBlurhashSource}"
-	                         ZIndex="1"
-	                         HeightRequest="64"
-	                         WidthRequest="64"/>
-            <Label 
+	        <Button 
+		        Clicked="Button_Clicked"
+		        Grid.Row="0"
+		        Grid.Column="0"
+		        Grid.ColumnSpan="2"
+		        Grid.RowSpan="2"
+		        BackgroundColor="Transparent"
+		        HorizontalOptions="Fill"
+		        ZIndex="0">
+	        </Button>
+	        
+	        <Border
+		        Grid.Column="0"
+		        Grid.RowSpan="2"
+		        StrokeThickness="0"
+		        StrokeShape="RoundRectangle 4"
+		        HeightRequest="64"
+		        WidthRequest="64"
+		        ZIndex="5">
+		        <Border.Shadow>
+			        <Shadow Brush="Black"
+			                Offset="4, 4"
+			                Radius="6"
+			                Opacity="0.4" />
+		        </Border.Shadow>
+		        <comp:MusicImage Grid.RowSpan="2"
+		                         BlurHash="{Binding ImgBlurhash}"
+		                         Source="{Binding ImgSource}"
+		                         ZIndex="1"
+		                         HeightRequest="64"
+		                         WidthRequest="64"/>
+	        </Border>
+            
+	        <Label 
                 VerticalOptions="End"
                 Grid.Column="1"
                 Text="{Binding Name}" 
@@ -31,12 +61,12 @@
                 FontAttributes="Bold"
                 LineBreakMode="TailTruncation"
                 MaxLines="1"/>
-            <Label 
-                Grid.Column="1"
-                Grid.Row="1"
-                Text="{Binding ArtistNames}"
-                LineBreakMode="TailTruncation"
-                MaxLines="1"/>
+	        <Label
+		        Grid.Column="1"
+		        Grid.Row="1"
+		        Text="{Binding Converter={StaticResource TextConverter}}"
+		        LineBreakMode="TailTruncation"
+		        MaxLines="1"/>
         </Grid>
     </vlv:VirtualViewCell.Content>
 </vlv:VirtualViewCell>

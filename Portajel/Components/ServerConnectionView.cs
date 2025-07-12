@@ -5,37 +5,31 @@ using Portajel.Connections;
 using Portajel.Connections.Interfaces;
 using Portajel.Connections.Services.Jellyfin;
 using Color = Microsoft.Maui.Graphics.Color;
+using System.Diagnostics;
 
 namespace Portajel.Components;
 
 public class ServerConnectionView : Grid
 {
+    internal static IServiceProvider? ServiceProvider { get; set; } = IPlatformApplication.Current?.Services;
+    
     private Color _primaryDark = Color.FromRgba(0, 0, 0, 255);
 
-    private ServerConnector _server = default!;
+    private IServerConnector _server = default!;
     private IDbConnector _database = default!;
-
+    
     public ServerConnectionView()
     {
-        
+        // Its not DI but it works 
+        _server = ServiceProvider.GetService<IServerConnector>();
+        _database = ServiceProvider.GetService<IDbConnector>();
+        BuildUI();
     }
     
-    public ServerConnectionView(ServerConnector server, IDbConnector dbConnector)
+    public ServerConnectionView(IServerConnector server, IDbConnector dbConnector)
     {
-        if (Application.Current is null) return;
-        
         _server = server;
         _database = dbConnector;
-
-        var imageColor = Application.Current.Resources.TryGetValue(
-            "PrimaryDark", 
-            out object primaryColor
-        );
-        if (imageColor)
-        {
-            _primaryDark = (Color)primaryColor;
-        }
-
         BuildUI();
     }
 
@@ -46,13 +40,20 @@ public class ServerConnectionView : Grid
 
     private void BuildUI()
     {
+        if (Application.Current is null) return;
+        var imageColor = Application.Current.Resources.TryGetValue(
+            "Primary", 
+            out object primaryColor
+        );
+        if (imageColor)
+        {
+            _primaryDark = (Color)primaryColor;
+        }
+        
         Children.Clear();
         RowDefinitions.Clear();
 
-        // Row 0 - Connections Grid
         RowDefinitions.Add(new RowDefinition { Height = GridLength.Star });
-    
-        // Row 1 - Add Connection Button
         RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
 
         var connectionsGrid = GetConnectionsGrid(_server.Servers.ToArray());
@@ -100,7 +101,7 @@ public class ServerConnectionView : Grid
             };
             button.Clicked += async (sender, e) => {
                 await Shell.Current.GoToAsync(
-                    "settings/connections/view", 
+                    "settings/viewConnection", 
                     new Dictionary<string, object>
                     {
                         { "Properties", serverConnection.Properties }

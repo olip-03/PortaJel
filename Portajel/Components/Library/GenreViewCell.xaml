@@ -4,7 +4,8 @@
 	xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
 	xmlns:vlv="clr-namespace:Microsoft.Maui.Controls;assembly=VirtualListView"
     xmlns:music="clr-namespace:Portajel.Connections.Database;assembly=Portajel.Connections"
-	xmlns:local="clr-namespace:Portajel.Components"
+	xmlns:comp="clr-namespace:Portajel.Components"
+	xmlns:cnv="clr-namespace:Portajel.Structures.Converters"
     xmlns:ffimageloading="clr-namespace:FFImageLoading.Maui;assembly=FFImageLoading.Maui"
     xmlns:sn="clr-namespace:Sharpnado.Tasks;assembly=Sharpnado.TaskMonitor"
 	x:Class="Portajel.Components.Library.GenreViewCell"
@@ -14,10 +15,13 @@
 	SemanticProperties.Description="{Binding Name}"
 	SemanticProperties.HeadingLevel="Level3"
 	x:DataType="music:GenreData">
-    <vlv:VirtualViewCell.Content>
-        <Grid ColumnDefinitions="84, *" 
-              RowDefinitions="42, 42" 
-              HorizontalOptions="Fill">
+	<vlv:VirtualViewCell.Resources>
+		<cnv:SubtitleTextConverter x:Key="TextConverter" />
+	</vlv:VirtualViewCell.Resources>	
+	<vlv:VirtualViewCell.Content>
+	    <Grid ColumnDefinitions="84, *" 
+	          RowDefinitions="42, 42" 
+	          HorizontalOptions="Fill">
             <Button 
                 Clicked="Button_Clicked"
                 Grid.Row="0"
@@ -29,53 +33,42 @@
                 ZIndex="0">
             </Button>
 
-            <Border 
-                Grid.Column="0"
-                Grid.RowSpan="2"
-                StrokeShape="RoundRectangle 4"
-                HeightRequest="64"
-                WidthRequest="64"
-                StrokeThickness="0"
-                ZIndex="10">
-                <ffimageloading:CachedImage 
-                x:Name="Image"
-                LoadingDelay="500"
-                CacheType="Memory"
-                RetryCount="0"
-                FadeAnimationForCachedImages="False"
-                LoadingPriority="Lowest"
-                Source="{Binding ImgSource}"
-                HeightRequest="64"
-                WidthRequest="64"
-                Aspect="Fill"
-                BitmapOptimizations="True"
-                DownsampleToViewSize="True">
-                </ffimageloading:CachedImage>
-            </Border>
-            <Border
-                   Grid.Column="0"
-                   Grid.RowSpan="2"
-                   StrokeThickness="0"
-                   StrokeShape="RoundRectangle 4"
-                   HeightRequest="64"
-                   WidthRequest="64"
-                   ZIndex="5">
-                <Image Source="{Binding ImgBlurhashSource}"
-                   Aspect="Fill"
-                   HeightRequest="64"
-                   WidthRequest="64"
-                   />
-            </Border>
+	        <Border
+		        Grid.Column="0"
+		        Grid.RowSpan="2"
+		        StrokeThickness="0"
+		        StrokeShape="RoundRectangle 4"
+		        HeightRequest="64"
+		        WidthRequest="64"
+		        ZIndex="5">
+		        <Border.Shadow>
+			        <Shadow Brush="Black"
+			                Offset="4, 4"
+			                Radius="6"
+			                Opacity="0.4" />
+		        </Border.Shadow>
+		        <comp:MusicImage Grid.RowSpan="2"
+		                         BlurHash="{Binding ImgBlurhash}"
+		                         Source="{Binding ImgSource}"
+		                         ZIndex="1"
+		                         HeightRequest="64"
+		                         WidthRequest="64"/>
+	        </Border>
 
             <Label 
-                VerticalOptions="Center"
+                VerticalOptions="End"
                 Grid.Column="1"
-                Grid.RowSpan="2"
                 Text="{Binding Name}" 
                 FontSize="16"
                 FontAttributes="Bold"
                 LineBreakMode="TailTruncation"
                 MaxLines="1"/>
+            <Label
+	            Grid.Column="1"
+	            Grid.Row="1"
+	            Text="{Binding Converter={StaticResource TextConverter}}"
+	            LineBreakMode="TailTruncation"
+	            MaxLines="1"/>
         </Grid>
     </vlv:VirtualViewCell.Content>
 </vlv:VirtualViewCell>

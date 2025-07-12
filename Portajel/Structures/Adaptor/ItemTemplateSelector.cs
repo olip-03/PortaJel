@@ -26,15 +26,15 @@ public class ItemTemplateSelector : VirtualListViewItemTemplateSelector
 		if (item is BaseData trackInfo)
 		{
 			var mediaType = trackInfo.MediaType;
-			if (mediaType == MediaTypes.Album)
+			if (mediaType == MediaType.Album)
 				return AlbumTemplate;
-			if(mediaType == MediaTypes.Artist)
+			if(mediaType == MediaType.Artist)
 				return ArtistTemplate;
-            if (mediaType == MediaTypes.Genre)
+            if (mediaType == MediaType.Genre)
                 return GenreTemplate;
-            if (mediaType == MediaTypes.Playlist)
+            if (mediaType == MediaType.Playlist)
                 return PlaylistTemplate;
-            if (mediaType == MediaTypes.Song)
+            if (mediaType == MediaType.Song)
                 return SongTemplate;
         }
 		return AlbumTemplate;

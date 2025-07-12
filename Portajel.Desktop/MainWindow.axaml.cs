@@ -20,13 +20,10 @@ namespace Portajel.Desktop;
 public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
 {
     private ServerConnector _server = Ioc.Default.GetService<ServerConnector>();
-    private Components.SettingsPanel? _settingsPanel;
     public MainWindow()
     {
         this.WhenActivated(disposables => { });
         AvaloniaXamlLoader.Load(this);
-        
-        _settingsPanel = this.FindControl<Components.SettingsPanel>("SettingsPanel");
         
         this.Activated += OnWindowActivated;
         this.Deactivated += OnWindowDeactivated;
@@ -78,16 +75,6 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
 
     private void Button_OnClick(object? sender, RoutedEventArgs e)
     {
-        if (_settingsPanel.Opacity == 0)
-        {
-            _settingsPanel.Opacity = 1;
-            _settingsPanel.IsHitTestVisible = true;
-            
-        }
-        else
-        {
-            _settingsPanel.Opacity = 0;
-            _settingsPanel.IsHitTestVisible = false;
-        }
+
     }
 }

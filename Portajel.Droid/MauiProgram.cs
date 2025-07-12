@@ -9,7 +9,6 @@ using Portajel.Pages.Settings.Debug;
 using Portajel.Pages.Settings;
 using Portajel.Droid.Services;
 using PortaJel.Droid.Services;
-using Portajel.Structures.Functional;
 using Portajel.Services;
 using Microsoft.Maui.Handlers;
 using Portajel.Components;

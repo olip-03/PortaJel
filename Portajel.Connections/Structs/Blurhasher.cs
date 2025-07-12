@@ -21,7 +21,7 @@ namespace Portajel.Connections.Structs
 
                 if (music is SongData song)
                 {
-                    fileName = $"{song.AlbumId}_{music.ServerId}.png";
+                    fileName = $"{song.ParentId}_{music.ServerId}.png";
                     filePath = Path.Combine(path, fileName);
 
                     music.ImgBlurhashSource = filePath;
@@ -31,8 +31,7 @@ namespace Portajel.Connections.Structs
                 {
                     return;
                 }
-
-
+                
                 if (string.IsNullOrEmpty(music.ImgBlurhash))
                 {
                     using var surface = SKSurface.Create(new SKImageInfo(width, height));

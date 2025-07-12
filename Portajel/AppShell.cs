@@ -19,8 +19,8 @@ namespace Portajel
             Title = "Portajel";
 
             Routing.RegisterRoute("settings", typeof(SettingsPage));
-            Routing.RegisterRoute("settings/connections", typeof(ConnectionsPage));
-            Routing.RegisterRoute("settings/connections/view", typeof(ViewConnectionPage));
+            Routing.RegisterRoute("settings/viewConnection", typeof(ViewConnectionPage));
+            Routing.RegisterRoute("settings/home", typeof(HomeSettings));
             Routing.RegisterRoute("settings/debug", typeof(DebugPage));
             Routing.RegisterRoute("settings/debug/radio", typeof(DebugRadio));
             Routing.RegisterRoute("settings/debug/map", typeof(DebugMap));

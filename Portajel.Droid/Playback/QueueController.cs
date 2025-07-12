@@ -14,8 +14,8 @@ namespace Portajel.Droid.Playback
     public class QueueController : IQueueController
     {
         public List<SongData> PreviousQueue { get; set; }
-        public KeyValuePair<MediaTypes, BaseData> CurrentSong => throw new NotImplementedException();
-        public KeyValuePair<MediaTypes, BaseData> CurrentColleciton => throw new NotImplementedException();
+        public KeyValuePair<MediaType, BaseData> CurrentSong => throw new NotImplementedException();
+        public KeyValuePair<MediaType, BaseData> CurrentColleciton => throw new NotImplementedException();
         public List<SongData> UpNextList { get; set; }
 
         public void AddSong(SongData toAdd, int index)

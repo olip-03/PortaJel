@@ -49,20 +49,8 @@ namespace Portajel.Droid.Services
                 _ = Task.Run(async () =>
                 {
                     await serverConnector.AuthenticateAsync();
-                    foreach (var srv in serverConnector.Servers)
-                    {
-                        try
-                        {
-                            await srv.StartSyncAsync();
-                            await SaveHelper.SaveData(serverConnector);
-                        }
-                        catch (Exception ex)
-                        {
-                            System.Diagnostics.Trace.WriteLine(ex.Message);
-                            continue;
-                        }
-
-                    }
+                    await serverConnector.StartSyncAsync();
+                    await SaveHelper.SaveData(serverConnector);
                 });
             }
             catch (Exception ex)
@@ -73,6 +61,7 @@ namespace Portajel.Droid.Services
             Binder = new DroidServiceBinder(this);
             return Binder;
         }
+        
         [return: GeneratedEnum]
         public override StartCommandResult OnStartCommand(Intent? intent, [GeneratedEnum] StartCommandFlags flags, int startId)
         {
@@ -95,6 +84,7 @@ namespace Portajel.Droid.Services
             StartForeground(NOTIFICATION_ID, notification, ForegroundService.TypeDataSync);
             return StartCommandResult.Sticky; // service restart if killed
         }
+        
         private void Initialize()
         {
             string? mainDir = AppContext.BaseDirectory;
@@ -123,6 +113,7 @@ namespace Portajel.Droid.Services
                 server.StartSyncActions.Add(StartSyncProgressAsync);
             });
         }
+        
         private Notification CreateProgressNotification(int progress, int max, bool indeterminate = false)
         {
             int hide = indeterminate ? NotificationCompat.PriorityMin : NotificationCompat.PriorityDefault;
@@ -144,11 +135,13 @@ namespace Portajel.Droid.Services
                 .SetProgress(max, progress, indeterminate)
                 .Build();
         }
+        
         public void UpdateNotification(int progress, int max)
         {
             var notification = CreateProgressNotification(progress, max);
             _notificationManager?.Notify(NOTIFICATION_ID, notification);
         }
+        
         public async void StartSyncProgressAsync(CancellationToken cancellationToken)
         {
             if (isSyncRunning) return;

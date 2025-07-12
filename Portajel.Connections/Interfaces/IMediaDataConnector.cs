@@ -2,12 +2,13 @@ using Jellyfin.Sdk.Generated.Models;
 using Portajel.Connections.Enum;
 using Portajel.Connections.Services;
 using Portajel.Connections.Structs;
+using MediaType = Portajel.Connections.Enum.MediaType;
 
 namespace Portajel.Connections.Interfaces;
 
 public interface IMediaDataConnector
 {
-    public MediaTypes MediaType { get; }
+    public MediaType MediaType { get; }
     public SyncStatusInfo SyncStatusInfo { get; set; }
     public void SetSyncStatusInfo(
         TaskStatus? status = null, 
@@ -35,6 +36,7 @@ public interface IMediaDataConnector
         bool? getFavourite = null,
         ItemSortBy setSortTypes = ItemSortBy.Album, 
         SortOrder setSortOrder = SortOrder.Ascending,
+        Guid? parentId = null,
         Guid?[]? includeIds = null,
         Guid?[]? excludeIds = null, 
         string serverUrl = "", 

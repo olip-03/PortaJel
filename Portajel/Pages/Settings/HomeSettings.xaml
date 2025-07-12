@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:Portajel.Structures.ViewModels.Settings"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             xmlns:interfaces="clr-namespace:Portajel.Connections.Interfaces;assembly=Portajel.Connections"
+             Title="Home Settings"
+             x:DataType="vm:HomeSettingsViewModel"
+             x:Class="Portajel.Pages.Settings.HomeSettings">
+    <VerticalStackLayout>
+        <Grid Margin="16, 10">    
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <VerticalStackLayout Grid.Column="0" VerticalOptions="Center">
+                <Label Text="Merge Similar" FontAttributes="Bold"/>
+                <Label Text="Feeds from similar providers become one feed"/>
+            </VerticalStackLayout>
+            <CheckBox Grid.Column="1" VerticalOptions="Center"/>
+        </Grid>
+
+        <Label Margin="16, 16, 0, 0" Text="Feed order" FontSize="20"/>
+        <CollectionView ItemsSource="{Binding Feeds}" CanReorderItems="True">
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="interfaces:IMediaFeed">
+                    <Grid Margin="16, 10">    
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <Image Source="menu.png" Margin="0, 0, 16, 0">
+                            <Image.Behaviors>
+                                <toolkit:IconTintColorBehavior TintColor="{StaticResource PrimaryDarkText}" />
+                            </Image.Behaviors>
+                        </Image>
+                        
+                        <VerticalStackLayout Grid.Column="1" VerticalOptions="Center">
+                            <Label Text="{Binding Name}" FontAttributes="Bold"/>
+                            <Label Text="{Binding Description}"/>
+                            
+                            <StackLayout HorizontalOptions="Fill" BindableLayout.ItemsSource="{Binding Properties}" 
+                                         Orientation="Horizontal">
+                                <BindableLayout.ItemTemplate>
+                                    <DataTemplate>
+                                        <Border HorizontalOptions="Fill" Width="120" Stroke="{StaticResource PrimaryDark}">
+                                            <Label Text="{Binding Name}"/>
+                                        </Border>
+                                    </DataTemplate>
+                                </BindableLayout.ItemTemplate>
+                            </StackLayout>
+                        </VerticalStackLayout>
+                        <HorizontalStackLayout Grid.Column="2">
+                            <CheckBox VerticalOptions="Center" IsChecked="{Binding IsEnabled}"/>
+                        </HorizontalStackLayout>
+                    </Grid>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+    </VerticalStackLayout>
+</ContentPage>

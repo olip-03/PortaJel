@@ -12,7 +12,7 @@
              x:DataType="vm:AlbumPageViewModel">
     <ContentPage.Resources>
         <ResourceDictionary>
-            <adaptors:ItemTemplateSelector x:Key="itemTemplateSelector" />
+            <adaptors:ItemTemplateSelector x:Key="ItemTemplateSelector" />
         </ResourceDictionary>
     </ContentPage.Resources>
 
@@ -49,7 +49,7 @@
                     </Button>
                     <Image Source="arrowback.png" WidthRequest="32" InputTransparent="True">
                         <Image.Behaviors>
-                            <toolkit:IconTintColorBehavior TintColor="{StaticResource Primary}" />
+                            <toolkit:IconTintColorBehavior TintColor="{StaticResource PrimaryDark}" />
                         </Image.Behaviors>
                     </Image>
                 </Grid>
@@ -117,7 +117,7 @@
                 IsRefreshEnabled="True"
                 Adapter="{Binding Songs}"
                 SelectionMode="None"
-                ItemTemplateSelector="{StaticResource itemTemplateSelector}">
+                ItemTemplateSelector="{StaticResource ItemTemplateSelector}">
                 </vlv:VirtualListView>
             </VerticalStackLayout>
         </Grid>

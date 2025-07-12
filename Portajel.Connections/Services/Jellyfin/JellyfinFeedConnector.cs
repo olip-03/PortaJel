@@ -1,5 +1,6 @@
 using Jellyfin.Sdk;
 using Jellyfin.Sdk.Generated.Models;
+using Portajel.Connections.Enum;
 using Portajel.Connections.Interfaces;
 using Portajel.Connections.Services.Jellyfin.Feeds;
 
@@ -16,12 +17,6 @@ namespace Portajel.Connections.Services.Jellyfin
             _serverUrl = serverUrl;
             InitializeFeeds();
         }
-
-        // public Dictionary<string, IMediaFeed> GetAvailableFeeds() => AvailableFeeds;
-
-        // public List<IMediaFeed> GetEnabledFeeds() => 
-        //     AvailableFeeds.Values.Where(f => f.IsEnabled).ToList();
-
         public void SetFeedState(string feedId, bool enabled = true)
         {
             if (AvailableFeeds.TryGetValue(feedId, out var feed))
@@ -29,8 +24,8 @@ namespace Portajel.Connections.Services.Jellyfin
                 feed.IsEnabled = enabled;
             }
         }
-        
-        public void InitializeFeeds()
+
+        private void InitializeFeeds()
         {
             if (_database == null || String.IsNullOrWhiteSpace(_serverUrl))
             {
@@ -38,34 +33,30 @@ namespace Portajel.Connections.Services.Jellyfin
                     "Feed connector must be initialized with Database and ServerURL before initializing feeds."
                 );
             }
-
-            // Initialize available feeds for Jellyfin
+            
             var recentlyListened = new JellyfinRecentlyListened(
                 _database, 
                 _serverUrl, 
-                false
+                false,
+                FeedViewStyle.ListView
             );
-
             var recentlyAdded = new JellyfinRecentlyAdded(
                 _database, 
                 _serverUrl, 
-                false
+                false,
+                FeedViewStyle.HorizontalGrid
             );
-
             var mostPlayed = new JellyfinMostPlayed(
                 _database, 
                 _serverUrl, 
                 false
             );
-
             AvailableFeeds = new Dictionary<string, IMediaFeed>
             {
                 { recentlyListened.Id, recentlyListened },
                 { recentlyAdded.Id, recentlyAdded },
                 { mostPlayed.Id, mostPlayed }
             };
-
-            // Load enabled feeds from configuration if needed
         }
     }
 }

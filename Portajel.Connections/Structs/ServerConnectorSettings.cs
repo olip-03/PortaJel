@@ -12,7 +12,7 @@ namespace Portajel.Connections.Structs;
 
 public class ServerConnectorSettings
 {
-    public ServerConnector ServerConnector { get; private init; }
+    public IServerConnector ServerConnector { get; private init; }
     public ServerConnectorSettings(string json, IDbConnector database, string appDataDirectory)
     {
         ServerConnector = new ServerConnector();
@@ -59,7 +59,7 @@ public class ServerConnectorSettings
         }
     }
     
-    public ServerConnectorSettings(ServerConnector serverConnector, IMediaServerConnector[] servers)
+    public ServerConnectorSettings(IServerConnector serverConnector, IMediaServerConnector[] servers)
     {
         ServerConnector = serverConnector;
         if (ServerConnector.Servers.Count > 0) return;

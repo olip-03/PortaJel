@@ -5,6 +5,7 @@ using Portajel.Connections.Enum;
 using SQLite;
 using Portajel.Connections.Structs;
 using Portajel.Connections.Database;
+using MediaType = Portajel.Connections.Enum.MediaType;
 
 namespace Portajel.Connections.Services.FS;
 
@@ -12,7 +13,7 @@ public class FileSystemSongConnector : IMediaDataConnector
 {
     private SQLiteAsyncConnection _database = null;
     private IMediaDataConnector _mediaDataConnectorImplementation;
-    public MediaTypes MediaType => MediaTypes.Song;
+    public MediaType MediaType => MediaType.Song;
 
     public FileSystemSongConnector(SQLiteAsyncConnection database)
     {
@@ -26,9 +27,18 @@ public class FileSystemSongConnector : IMediaDataConnector
         throw new NotImplementedException();
     }
 
-    public async Task<BaseData[]> GetAllAsync(int? limit = null, int startIndex = 0, bool? getFavourite = null,
-        ItemSortBy setSortTypes = ItemSortBy.Album, SortOrder setSortOrder = SortOrder.Ascending, Guid?[] includeIds = null,
-        Guid?[] excludeIds = null, string serverUrl = "", CancellationToken cancellationToken = default)
+    public async Task<BaseData[]> GetAllAsync(
+        int? limit = null, 
+        int startIndex = 0, 
+        bool? getFavourite = null,
+        ItemSortBy setSortTypes = ItemSortBy.Album, 
+        SortOrder setSortOrder = SortOrder.Ascending,
+        Guid? parentId = null,
+        Guid?[]? includeIds = null,
+        Guid?[]? excludeIds = null, 
+        string serverUrl = "", 
+        CancellationToken cancellationToken = default
+    )
     {
         // Implementation to fetch all songs
         return await Task.FromResult(Array.Empty<SongData>());

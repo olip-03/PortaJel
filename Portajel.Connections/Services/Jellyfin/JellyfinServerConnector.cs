@@ -15,19 +15,26 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Http;
 using Portajel.Connections.Services.Database;
 using System.Runtime.CompilerServices;
+using System.Text.Json;
 using System.Threading;
 using System.Xml.Linq;
+using Newtonsoft.Json;
+using Portajel.Connections.Services.Jellyfin.Dto;
 using Portajel.Connections.Structs;
+using MediaType = Portajel.Connections.Enum.MediaType;
 
 namespace Portajel.Connections.Services.Jellyfin
 {
+    // Allocation nightmare. I'm actually not going to bother
+    // much here.
     public class JellyfinServerConnector : IMediaServerConnector
     {
+        private HttpClient _httpClient = new();
         private IDbConnector _database;
-        private UserDto? _userDto;
+        public UserDto? _userDto;
         private SessionInfoDto? _sessionInfo;
-        private JellyfinSdkSettings? _sdkClientSettings;
-        private JellyfinApiClient? _jellyfinApiClient;
+        public JellyfinSdkSettings? _sdkClientSettings;
+        public JellyfinApiClient? _jellyfinApiClient; // TODO: Set to private, for testing
         public IMediaDataConnector AlbumData { get; set; } = null!;
         public IMediaDataConnector ArtistData { get; set; } = null!;
         public IMediaDataConnector SongData { get; set; } = null!;
@@ -232,11 +239,28 @@ namespace Portajel.Connections.Services.Jellyfin
                     }
                 }
                 
-                AlbumData = new JellyfinServerAlbumConnector(_jellyfinApiClient, _sdkClientSettings, _userDto);
-                ArtistData = new JellyfinServerArtistConnector(_jellyfinApiClient, _sdkClientSettings, _userDto);
-                SongData = new JellyfinServerSongConnector(_jellyfinApiClient, _sdkClientSettings, _userDto);
-                PlaylistData = new JellyfinServerPlaylistConnector(_jellyfinApiClient, _sdkClientSettings, _userDto);
-                Genre = new JellyfinServerGenreConnector(_jellyfinApiClient, _sdkClientSettings, _userDto);
+                string appName = (string)Properties["AppName"].Value;
+                string appVersion = (string)Properties["AppVersion"].Value;
+                string accessToken = authenticationResult?.AccessToken;
+
+                Dictionary<string, string> _defaultHeaders = new Dictionary<string, string>
+                {
+                    { "User-Agent", $"{appName}/{appVersion}" },
+                    { "Accept", "application/json" },
+                    { "Authorization", $"MediaBrowser Token=\"{accessToken}\", Client=\"Portajel\", Device=\"{Properties["DeviceName"].Value}\", DeviceId=\"{Properties["DeviceID"].Value}\", Version=\"{Properties["AppVersion"].Value}\"" }
+                };
+                _httpClient.BaseAddress = new Uri(_sdkClientSettings.ServerUrl);
+                foreach (var header in _defaultHeaders)
+                {
+                    _httpClient.DefaultRequestHeaders.Add(header.Key, header.Value);
+                }
+
+                var userView = await GetUserViewId(_sdkClientSettings.ServerUrl, _userDto.Id.Value.ToString());
+                AlbumData = new JellyfinItemConnectorTemplate(MediaType.Album, _httpClient, _sdkClientSettings.ServerUrl, userView, _userDto.Id.Value);
+                ArtistData = new JellyfinItemConnectorTemplate(MediaType.Artist, _httpClient, _sdkClientSettings.ServerUrl,userView, _userDto.Id.Value);
+                SongData = new JellyfinItemConnectorTemplate(MediaType.Song, _httpClient, _sdkClientSettings.ServerUrl, userView, _userDto.Id.Value);
+                PlaylistData = new JellyfinItemConnectorTemplate(MediaType.Playlist, _httpClient, _sdkClientSettings.ServerUrl, userView, _userDto.Id.Value);
+                Genre = new JellyfinItemConnectorTemplate(MediaType.Genre, _httpClient, _sdkClientSettings.ServerUrl, userView, _userDto.Id.Value);
                 Feeds = new JellyfinFeedConnector(_database, Properties["URL"].Value.ToString());
             }
             catch (ApiException apiEx)
@@ -375,11 +399,15 @@ namespace Portajel.Connections.Services.Jellyfin
                     }
 
                     data.SyncStatusInfo.TaskStatus = TaskStatus.Running;
+                    
+                    BaseData[] baseData;
+                    int newTotal = 0;
+                    double newPercent = 0;
                     while (data.SyncStatusInfo.TaskStatus is TaskStatus.Running)
                     {
                         try
                         {
-                            var items = await data.GetAllAsync(
+                            baseData = await data.GetAllAsync(
                                 limit: retrieve,
                                 startIndex: data.SyncStatusInfo.ServerItemCount,
                                 setSortOrder: SortOrder.Descending,
@@ -387,19 +415,21 @@ namespace Portajel.Connections.Services.Jellyfin
                                 cancellationToken: cancellationToken
                             );
 
-                            int newTotal = data.SyncStatusInfo.ServerItemCount + items.Length;
-                            double newPercent = ((double)newTotal / data.SyncStatusInfo.ServerItemTotal) * 100;
+                            newTotal = data.SyncStatusInfo.ServerItemCount + baseData.Length;
+                            newPercent = ((double)newTotal / data.SyncStatusInfo.ServerItemTotal) * 100;
 
                             data.SetSyncStatusInfo(serverItemCount: newTotal, percentage: (int)newPercent);
 
-                            if (Properties.TryGetValue("AppDataPath", out var appDataPath))
-                            {
-                                var path = Path.Combine(appDataPath.Value.ToString(), "placeholder");
-                                Blurhasher.DownloadMusicItemBitmap(items, GetDb(data).Value, path, 12, 12);
-                            }
+                            // Download and set image code
+                            
+                            // if (Properties.TryGetValue("AppDataPath", out var appDataPath))
+                            // {
+                            //     var path = Path.Combine(appDataPath.Value.ToString(), "placeholder");
+                            //     Blurhasher.DownloadMusicItemBitmap(baseData, GetDb(data).Value, path, 12, 12);
+                            // }
 
-                            GetDb(data).Value.InsertRange(items, cancellationToken);
-                            if (items.Length < retrieve)
+                            GetDb(data).Value.InsertRange(baseData, cancellationToken);
+                            if (baseData.Length < retrieve)
                             {
                                 data.SetSyncStatusInfo(status: TaskStatus.RanToCompletion);
                                 continue;
@@ -496,6 +526,15 @@ namespace Portajel.Connections.Services.Jellyfin
                 // ignored
             }
             return true;
+        }
+        private async Task<string?> GetUserViewId(string serverId, string userId)
+        {
+            var request = new HttpRequestMessage(HttpMethod.Get, $"{serverId}/Users/{userId}/Views");
+            
+            using var response = await _httpClient.SendAsync(request);
+            var content = await response.Content.ReadAsStringAsync();
+            var resultObject = JsonConvert.DeserializeObject<JfItemsDto>(content);
+            return resultObject.Items.First(d => d.CollectionType == "music").Id.ToString();
         }
         private KeyValuePair<MediaCapabilities, IDbItemConnector> GetDb(IMediaDataConnector mediaDataConnector)
         {

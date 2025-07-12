@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Jellyfin.Sdk.Generated.Models;
 using Portajel.Connections.Structs;
+using MediaType = Portajel.Connections.Enum.MediaType;
 
 namespace Portajel.Connections.Services.Spotify
 {
@@ -15,16 +16,25 @@ namespace Portajel.Connections.Services.Spotify
         private IMediaDataConnector _mediaDataConnectorImplementation;
 
         public SyncStatusInfo SyncStatusInfo { get; set; }
-        public MediaTypes MediaType { get; set; } = MediaTypes.Playlist;
+        public MediaType MediaType { get; set; } = MediaType.Playlist;
 
         public void SetSyncStatusInfo(TaskStatus status, int percentage)
         {
             throw new NotImplementedException();
         }
 
-        public Task<BaseData[]> GetAllAsync(int? limit = null, int startIndex = 0, bool? getFavourite = null,
-            ItemSortBy setSortTypes = ItemSortBy.Album, SortOrder setSortOrder = SortOrder.Ascending, Guid?[] includeIds = null,
-            Guid?[] excludeIds = null, string serverUrl = "", CancellationToken cancellationToken = default)
+        public Task<BaseData[]> GetAllAsync(
+            int? limit = null, 
+            int startIndex = 0, 
+            bool? getFavourite = null,
+            ItemSortBy setSortTypes = ItemSortBy.Album, 
+            SortOrder setSortOrder = SortOrder.Ascending,
+            Guid? parentId = null,
+            Guid?[]? includeIds = null,
+            Guid?[]? excludeIds = null, 
+            string serverUrl = "", 
+            CancellationToken cancellationToken = default
+        )
         {
             throw new NotImplementedException();
         }

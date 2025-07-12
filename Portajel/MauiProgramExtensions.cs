@@ -36,7 +36,7 @@ namespace Portajel
                     fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
                     fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
                 })
-                ;
+                .Services.AddSingleton<HttpClient>();
 
 #if DEBUG
             builder.Logging.AddDebug();
@@ -63,6 +63,7 @@ namespace Portajel
             mauiAppBuilder.Services.AddSingleton<PlaylistListPage>();
             mauiAppBuilder.Services.AddSingleton<SongListPage>();
             mauiAppBuilder.Services.AddSingleton<ServerConnectionView>();
+            mauiAppBuilder.Services.AddSingleton<HomeSettings>();
             return mauiAppBuilder;
         }
     }

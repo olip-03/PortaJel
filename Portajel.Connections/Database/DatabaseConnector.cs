@@ -7,6 +7,7 @@ using System.Text.RegularExpressions;
 using Portajel.Connections.Data;
 using Portajel.Connections.Enum;
 using Portajel.Connections.Structs;
+using MediaType = Portajel.Connections.Enum.MediaType;
 
 namespace Portajel.Connections.Services.Database
 {
@@ -15,12 +16,6 @@ namespace Portajel.Connections.Services.Database
         public SQLiteConnection Database { get; }
         private const SQLiteOpenFlags DbFlags =
             SQLiteOpenFlags.ReadWrite | SQLiteOpenFlags.Create | SQLiteOpenFlags.SharedCache;
-        public IDbItemConnector AlbumData { get; set; }
-        public IDbItemConnector ArtistData { get; set; }
-        public IDbItemConnector SongData { get; set; }
-        public IDbItemConnector PlaylistData { get; set; }
-        public IDbItemConnector Genre { get; set; }
-
         public DbConnectors Connectors { get; } 
 
         // TODO: Storing Radio Stations in Db
@@ -39,11 +34,11 @@ namespace Portajel.Connections.Services.Database
             Database.CreateTable<GenreData>();
 
             Connectors = new(
-                album: new DatabaseAlbumConnector(Database),
-                artist: new DatabaseArtistConnector(Database),
-                genre: new DatabaseGenreConnector(Database),
-                playlist: new DatabasePlaylistConnector(Database),
-                song: new DatabaseSongConnector(Database)
+                album: new DatabaseItemTemplate(Database, MediaType.Album),
+                artist: new DatabaseItemTemplate(Database, MediaType.Artist),
+                genre: new DatabaseItemTemplate(Database, MediaType.Genre),
+                playlist: new DatabaseItemTemplate(Database, MediaType.Playlist),
+                song: new DatabaseItemTemplate(Database, MediaType.Song)
             );
         }
 

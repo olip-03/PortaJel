@@ -3,13 +3,14 @@ using Portajel.Connections.Interfaces;
 using Portajel.Connections.Enum;
 using SQLite;
 using Portajel.Connections.Structs;
+using MediaType = Portajel.Connections.Enum.MediaType;
 
 namespace Portajel.Connections.Services.FS;
 
 public class FileSystemPlaylistConnector : IMediaDataConnector, IMediaPlaylistInterface
 {
     private SQLiteAsyncConnection _database = null;
-    public MediaTypes MediaType => MediaTypes.Playlist;
+    public MediaType MediaType => MediaType.Playlist;
     public FileSystemPlaylistConnector(SQLiteAsyncConnection database)
     {
         _database = database;
@@ -22,9 +23,18 @@ public class FileSystemPlaylistConnector : IMediaDataConnector, IMediaPlaylistIn
         throw new NotImplementedException();
     }
 
-    public Task<BaseData[]> GetAllAsync(int? limit = null, int startIndex = 0, bool? getFavourite = null,
-        ItemSortBy setSortTypes = ItemSortBy.Album, SortOrder setSortOrder = SortOrder.Ascending, Guid?[] includeIds = null,
-        Guid?[] excludeIds = null, string serverUrl = "", CancellationToken cancellationToken = default)
+    public Task<BaseData[]> GetAllAsync(
+        int? limit = null, 
+        int startIndex = 0, 
+        bool? getFavourite = null,
+        ItemSortBy setSortTypes = ItemSortBy.Album, 
+        SortOrder setSortOrder = SortOrder.Ascending,
+        Guid? parentId = null,
+        Guid?[]? includeIds = null,
+        Guid?[]? excludeIds = null, 
+        string serverUrl = "", 
+        CancellationToken cancellationToken = default
+    )
     {
         throw new NotImplementedException();
     }

@@ -11,13 +11,19 @@ using Portajel.Connections.Interfaces;
 using Portajel.Connections.Services.Database;
 using Portajel.Connections.Structs;
 using Portajel.Desktop.Components.SettingsPanelViews;
+using Portajel.Desktop.Pages;
+using Portajel.Desktop.Structures.Services;
 using Portajel.Desktop.Structures.ViewModel;
+using ReactiveUI;
+using Splat;
 
 namespace Portajel.Desktop;
 
 class Program
 {
     public static CancellationTokenSource ClosingToken = new();
+    
+    public static RoutingState Router { get; } = new RoutingState();
     
     public static string AppDataPath = null!;
     public static string DbDataPath = null!;
@@ -46,7 +52,7 @@ class Program
                     DatabaseConnector db = new DatabaseConnector(DbDataPath);
                     return db;
                 })
-                .AddSingleton<ServerConnector>(serviceProvider =>
+                .AddSingleton<IServerConnector>(serviceProvider =>
                 {
                     try
                     {
@@ -68,11 +74,13 @@ class Program
                     }
                     return new ServerConnector();
                 })
+                .AddSingleton<LibraryViewCache>()
             .AddSingleton<MainWindowViewModel>()
             .AddSingleton<AddConnection>()
             .AddSingleton<MainWindow>()
             .BuildServiceProvider();
         Ioc.Default.ConfigureServices(provider);
+        Locator.CurrentMutable.Register(() => new LibraryView(), typeof(IViewFor<LibraryViewModel>));
         BuildAvaloniaApp()
             .StartWithClassicDesktopLifetime(args);
     }
