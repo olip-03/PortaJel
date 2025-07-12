@@ -24,10 +24,18 @@ public class FileSystemAlbumConnector : IMediaDataConnector
         throw new NotImplementedException();
     }
 
-    public Task<BaseData[]> GetAllAsync(int? limit = null, int startIndex = 0, bool? getFavourite = null,
-        ItemSortBy setSortTypes = ItemSortBy.Album, SortOrder setSortOrder = SortOrder.Ascending,
-        Guid?[] includeIds = null,
-        Guid?[] excludeIds = null, string serverUrl = "", CancellationToken cancellationToken = default)
+    public Task<BaseData[]> GetAllAsync(
+        int? limit = null, 
+        int startIndex = 0, 
+        bool? getFavourite = null,
+        ItemSortBy setSortTypes = ItemSortBy.Album, 
+        SortOrder setSortOrder = SortOrder.Ascending,
+        Guid? parentId = null,
+        Guid?[]? includeIds = null,
+        Guid?[]? excludeIds = null, 
+        string serverUrl = "", 
+        CancellationToken cancellationToken = default
+    )
     {
         throw new NotImplementedException();
     }

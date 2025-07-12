@@ -15,13 +15,18 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Http;
 using Portajel.Connections.Services.Database;
 using System.Runtime.CompilerServices;
+using System.Text.Json;
 using System.Threading;
 using System.Xml.Linq;
+using Newtonsoft.Json;
+using Portajel.Connections.Services.Jellyfin.Dto;
 using Portajel.Connections.Structs;
 using MediaType = Portajel.Connections.Enum.MediaType;
 
 namespace Portajel.Connections.Services.Jellyfin
 {
+    // Allocation nightmare. I'm actually not going to bother
+    // much here.
     public class JellyfinServerConnector : IMediaServerConnector
     {
         private HttpClient _httpClient = new();
@@ -243,13 +248,19 @@ namespace Portajel.Connections.Services.Jellyfin
                     { "User-Agent", $"{appName}/{appVersion}" },
                     { "Accept", "application/json" },
                     { "Authorization", $"MediaBrowser Token=\"{accessToken}\", Client=\"Portajel\", Device=\"{Properties["DeviceName"].Value}\", DeviceId=\"{Properties["DeviceID"].Value}\", Version=\"{Properties["AppVersion"].Value}\"" }
-                };  
-  
-                AlbumData = new JellyfinConnectorTemplate(MediaType.Album, _httpClient, _defaultHeaders, _sdkClientSettings.ServerUrl, _userDto.Id.Value);
-                ArtistData = new JellyfinConnectorTemplate(MediaType.Artist, _httpClient, _defaultHeaders, _sdkClientSettings.ServerUrl, _userDto.Id.Value);
-                SongData = new JellyfinConnectorTemplate(MediaType.Song, _httpClient, _defaultHeaders, _sdkClientSettings.ServerUrl, _userDto.Id.Value);
-                PlaylistData = new JellyfinConnectorTemplate(MediaType.Playlist, _httpClient, _defaultHeaders, _sdkClientSettings.ServerUrl, _userDto.Id.Value);
-                Genre = new JellyfinConnectorTemplate(MediaType.Genre, _httpClient, _defaultHeaders, _sdkClientSettings.ServerUrl, _userDto.Id.Value);
+                };
+                _httpClient.BaseAddress = new Uri(_sdkClientSettings.ServerUrl);
+                foreach (var header in _defaultHeaders)
+                {
+                    _httpClient.DefaultRequestHeaders.Add(header.Key, header.Value);
+                }
+
+                var userView = await GetUserViewId(_sdkClientSettings.ServerUrl, _userDto.Id.Value.ToString());
+                AlbumData = new JellyfinItemConnectorTemplate(MediaType.Album, _httpClient, _sdkClientSettings.ServerUrl, userView, _userDto.Id.Value);
+                ArtistData = new JellyfinItemConnectorTemplate(MediaType.Artist, _httpClient, _sdkClientSettings.ServerUrl,userView, _userDto.Id.Value);
+                SongData = new JellyfinItemConnectorTemplate(MediaType.Song, _httpClient, _sdkClientSettings.ServerUrl, userView, _userDto.Id.Value);
+                PlaylistData = new JellyfinItemConnectorTemplate(MediaType.Playlist, _httpClient, _sdkClientSettings.ServerUrl, userView, _userDto.Id.Value);
+                Genre = new JellyfinItemConnectorTemplate(MediaType.Genre, _httpClient, _sdkClientSettings.ServerUrl, userView, _userDto.Id.Value);
                 Feeds = new JellyfinFeedConnector(_database, Properties["URL"].Value.ToString());
             }
             catch (ApiException apiEx)
@@ -515,6 +526,15 @@ namespace Portajel.Connections.Services.Jellyfin
                 // ignored
             }
             return true;
+        }
+        private async Task<string?> GetUserViewId(string serverId, string userId)
+        {
+            var request = new HttpRequestMessage(HttpMethod.Get, $"{serverId}/Users/{userId}/Views");
+            
+            using var response = await _httpClient.SendAsync(request);
+            var content = await response.Content.ReadAsStringAsync();
+            var resultObject = JsonConvert.DeserializeObject<JfItemsDto>(content);
+            return resultObject.Items.First(d => d.CollectionType == "music").Id.ToString();
         }
         private KeyValuePair<MediaCapabilities, IDbItemConnector> GetDb(IMediaDataConnector mediaDataConnector)
         {

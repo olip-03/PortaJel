@@ -36,6 +36,7 @@ public interface IMediaDataConnector
         bool? getFavourite = null,
         ItemSortBy setSortTypes = ItemSortBy.Album, 
         SortOrder setSortOrder = SortOrder.Ascending,
+        Guid? parentId = null,
         Guid?[]? includeIds = null,
         Guid?[]? excludeIds = null, 
         string serverUrl = "", 

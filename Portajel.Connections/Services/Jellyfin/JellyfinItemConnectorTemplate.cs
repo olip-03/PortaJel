@@ -11,52 +11,50 @@ using MediaType = Portajel.Connections.Enum.MediaType;
 
 namespace Portajel.Connections.Services.Jellyfin;
 
-public class JellyfinConnectorTemplate : IMediaDataConnector
+public class JellyfinItemConnectorTemplate : IMediaDataConnector
 {
     private readonly HttpClient _httpClient;
-    private readonly Dictionary<string, string> _defaultHeaders;
     private readonly string _serverUrl;
     private readonly Guid _userId;
+    private readonly string _serverParentId;
 
-    public JellyfinConnectorTemplate(
+    public JellyfinItemConnectorTemplate(
         MediaType mediaType, 
         HttpClient httpClient,
-        Dictionary<string, string> defaultHeaders,
         string serverUrl,
+        string serverParentId,
         Guid userId)
     {
         MediaType = mediaType;
         _httpClient = httpClient;
-        _defaultHeaders = defaultHeaders;
         _serverUrl = serverUrl;
+        _serverParentId = serverParentId;
         _userId = userId;
-
-        foreach (var header in defaultHeaders)
-        {
-            _httpClient.DefaultRequestHeaders.Add(header.Key, header.Value);
-        }
     }
 
     public MediaType MediaType { get; }
     public SyncStatusInfo SyncStatusInfo { get; set; } = new();
 
     public async Task<BaseData[]> GetAllAsync(
-        int? limit = null,
-        int startIndex = 0,
+        int? limit = null, 
+        int startIndex = 0, 
         bool? getFavourite = null,
-        ItemSortBy setSortTypes = ItemSortBy.Album,
+        ItemSortBy setSortTypes = ItemSortBy.Album, 
         SortOrder setSortOrder = SortOrder.Ascending,
+        Guid? parentId = null,
         Guid?[]? includeIds = null,
-        Guid?[]? excludeIds = null,
-        string serverUrl = "",
-        CancellationToken cancellationToken = default)
+        Guid?[]? excludeIds = null, 
+        string serverUrl = "", 
+        CancellationToken cancellationToken = default
+    )
     {
         var apiUrl = BuildApiString(
             _serverUrl, 
             GetIncludeItemType(), 
             _userId.ToString(), 
             startIndex, 
-            limit ?? 50,
+            limit: limit,
+            parentId: parentId,
             getFavourite: getFavourite,
             sortBy: setSortTypes,
             sortOrder: setSortOrder,
@@ -114,7 +112,7 @@ public class JellyfinConnectorTemplate : IMediaDataConnector
 
         using var request = CreateRequest(HttpMethod.Get, apiUrl);
         using var response = await _httpClient.SendAsync(request, cancellationToken);
-        var content = await response.Content.ReadAsStringAsync();
+        var content = await response.Content.ReadAsStringAsync(cancellationToken);
         var resultObject = JsonConvert.DeserializeObject<JfItemsDto>(content);
         
         return resultObject?.TotalRecordCount ?? 0;
@@ -138,19 +136,15 @@ public class JellyfinConnectorTemplate : IMediaDataConnector
     private HttpRequestMessage CreateRequest(HttpMethod method, string url)
     {
         var request = new HttpRequestMessage(method, url);
-        foreach (var header in _defaultHeaders)
-        {
-            request.Headers.Add(header.Key, header.Value);
-        }
         return request;
     }
 
     private string BuildApiString(
-        string url, 
-        string type, 
-        string userId, 
-        int startIndex, 
-        int limit,
+        string url = "",
+        string type = "",
+        string userId = "",
+        int? startIndex = 0,
+        int? limit = 0,
         Guid? parentId = null,
         bool? getFavourite = null,
         ItemSortBy? sortBy = null,
@@ -159,38 +153,93 @@ public class JellyfinConnectorTemplate : IMediaDataConnector
         Guid?[]? excludeIds = null,
         bool enableTotalRecordCount = false)
     {
-        var apiUrl = $"{url}/Items?" +
-                    $"userId={userId}&" +
-                    $"startIndex={startIndex}&" +
-                    $"limit={limit}&" +
-                    $"recursive=true&" +
-                    $"enableUserData=true&" +
-                    $"includeItemTypes={type}&" +
-                    $"enableTotalRecordCount={enableTotalRecordCount.ToString().ToLower()}&";
+        if (string.IsNullOrWhiteSpace(url))
+        {
+            throw new ArgumentException("URL cannot be null or empty", nameof(url));
+        }
+        var queryParams = new List<string>();
+        if (!string.IsNullOrWhiteSpace(userId))
+        {
+            queryParams.Add($"userId={userId}");
+        }
 
-        if (parentId.HasValue)
-            apiUrl += $"parentId={parentId}&";
+        if (startIndex.HasValue)
+        {
+            queryParams.Add($"startIndex={startIndex.Value}");
+        }
 
+        if (limit.HasValue)
+        {
+            queryParams.Add($"limit={limit}");
+        }
+        queryParams.Add("recursive=true");
+        queryParams.Add("enableUserData=true");
+        if (!string.IsNullOrWhiteSpace(type))
+        {
+            queryParams.Add($"includeItemTypes={type}");
+        }
+        queryParams.Add($"enableTotalRecordCount={enableTotalRecordCount.ToString().ToLower()}");
+        
+        if (parentId.HasValue && parentId.Value != Guid.Empty)
+        {
+            queryParams.Add($"parentId={parentId}");
+        }
+        else
+        {
+            queryParams.Add($"parentId={_serverParentId}");
+        }
+        
         if (getFavourite.HasValue)
-            apiUrl += $"isFavorite={getFavourite.Value.ToString().ToLower()}&";
-
+        {
+            queryParams.Add($"isFavorite={getFavourite.Value.ToString().ToLower()}");
+        }
         if (sortBy.HasValue)
-            apiUrl += $"sortBy={sortBy}&";
-
+        {
+            queryParams.Add($"sortBy={sortBy.Value}");
+        }
         if (sortOrder.HasValue)
-            apiUrl += $"sortOrder={sortOrder}&";
+        {
+            queryParams.Add($"sortOrder={sortOrder.Value}");
+        }
 
-        if (includeIds?.Length > 0)
-            apiUrl += $"ids={string.Join(",", includeIds)}&";
+        if (includeIds != null && includeIds.Length > 0)
+        {
+            var validIncludeIds = includeIds
+                .Where(g => g.HasValue && g.Value != Guid.Empty)
+                .Select(g => g.Value.ToString("N"));
 
-        if (excludeIds?.Length > 0)
-            apiUrl += $"excludeItemIds={string.Join(",", excludeIds)}&";
+            var joinedIncludeIds = string.Join(",", validIncludeIds);
+            if (!string.IsNullOrEmpty(joinedIncludeIds))
+            {
+                queryParams.Add($"ids={joinedIncludeIds}");
+            }
+        }
 
+        if (excludeIds != null && excludeIds.Length > 0)
+        {
+            var validExcludeIds = excludeIds
+                .Where(g => g.HasValue && g.Value != Guid.Empty)
+                .Select(g => g.Value.ToString("N"));
+
+            var joinedExcludeIds = string.Join(",", validExcludeIds);
+            if (!string.IsNullOrEmpty(joinedExcludeIds))
+            {
+                queryParams.Add($"excludeItemIds={joinedExcludeIds}");
+            }
+        }
+        
         var fields = GetIncludeFields();
-        if (fields.Length > 0)
-            apiUrl += $"fields={string.Join(",", fields)}&";
-
-        return apiUrl.TrimEnd('&');
+        if (fields != null && fields.Length > 0)
+        {
+            queryParams.Add($"fields={string.Join(",", fields)}");
+        }
+        
+        var apiUrl = $"{url.TrimEnd('/')}/Items?{string.Join("&", queryParams)}";
+        if (MediaType == MediaType.Genre)
+        {
+            apiUrl = $"{url.TrimEnd('/')}/Genres?{string.Join("&", queryParams)}"; 
+        }
+        return apiUrl;
     }
 
     private string BuildSimilarApiString(string url, Guid id, Guid userId, int limit)
@@ -214,7 +263,7 @@ public class JellyfinConnectorTemplate : IMediaDataConnector
             MediaType.Song => "Audio",
             MediaType.AudioBook => "AudioBook",
             MediaType.Playlist => "Playlist",
-            MediaType.Genre => "Genre",
+            MediaType.Genre => "MusicAlbum, MusicArtist, MusicGenre, Audio",
             _ => throw new ArgumentOutOfRangeException()
         };
     }
@@ -228,11 +277,30 @@ public class JellyfinConnectorTemplate : IMediaDataConnector
                 "DateLastSaved",
                 "DateLastMediaAdded",
                 "ProviderIds",
-                "ExternalUrls"
+                "ExternalUrls",
+                "Genres",
+                "ParentId"
             ],
-            MediaType.Artist => ["DateCreated"],
-            MediaType.Song => [],
-            MediaType.Playlist => [],
+            MediaType.Artist => [
+                "DateCreated",
+                "ParentId",
+                "ProviderIds", 
+                "Overview"
+            ],
+            MediaType.Song => [
+                "DateCreated",
+                "DateLastMediaAdded",
+                "ParentId",
+                "ProviderIds",
+                "ExternalUrls",
+                "MediaStreams"
+            ],
+            MediaType.Playlist => [
+                "DateCreated",
+                "DateLastMediaAdded",
+                "ParentId",
+                "Path"
+            ],
             MediaType.Genre => [],
             MediaType.AudioBook => [],
             _ => throw new ArgumentOutOfRangeException()
@@ -243,11 +311,11 @@ public class JellyfinConnectorTemplate : IMediaDataConnector
     {
         return MediaType switch
         {
-            MediaType.Album => result.Items?.Select(dto => AlbumData.Builder(dto, serverUrl)).AsArray<BaseData>() ?? [],
-            // MediaType.Artist => result.Items?.Select(dto => ArtistData.Builder(dto, serverUrl)).AsArray<BaseData>() ?? [],
-            // MediaType.Song => result.Items?.Select(dto => SongData.Builder(dto, serverUrl)).AsArray<BaseData>() ?? [],
-            // MediaType.Playlist => result.Items?.Select(dto => PlaylistData.Builder(dto, serverUrl)).AsArray<BaseData>() ?? [],
-            // MediaType.Genre => result.Items?.Select(dto => GenreData.Builder(dto, serverUrl)).AsArray<BaseData>() ?? [],
+            MediaType.Album => result.Items?.Select(dto => JfBaseItemDto.AlbumBuilder(dto, serverUrl)).AsArray<BaseData>() ?? [],
+            MediaType.Artist => result.Items?.Select(dto => JfBaseItemDto.ArtistBuilder(dto, serverUrl)).AsArray<BaseData>() ?? [],
+            MediaType.Song => result.Items?.Select(dto => JfBaseItemDto.SongBuilder(dto, serverUrl)).AsArray<BaseData>() ?? [],
+            MediaType.Playlist => result.Items?.Select(dto => JfBaseItemDto.PlaylistBuilder(dto, serverUrl)).AsArray<BaseData>() ?? [],
+            MediaType.Genre => result.Items?.Select(dto => JfBaseItemDto.GenreBuilder(dto, serverUrl)).AsArray<BaseData>() ?? [],
             MediaType.AudioBook => [], // TODO: Implement AudioBooks :)
             _ => throw new ArgumentOutOfRangeException()
         };

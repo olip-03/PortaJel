@@ -24,6 +24,13 @@ public partial class SettingsPage : ContentPage
                 Description = "Customise what's shown on the home page",
                 Icon = "home.png",
                 NavigationLocation = "settings/home"
+            },
+            new()
+            {
+                Title = "Debug",
+                Description = "Debugging options and interfaces for the backend.",
+                Icon = "bug.png",
+                NavigationLocation = "settings/debug"
             }
         };
         BindingContext = _viewModel;

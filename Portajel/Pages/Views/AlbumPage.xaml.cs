@@ -24,7 +24,7 @@ namespace Portajel.Pages.Views
             _database = database;
             _server = server;
             InitializeComponent();
-            GetNewAlbumData();
+            // GetNewAlbumData();
         }
 
         public void ApplyQueryAttributes(IDictionary<string, object> query)
@@ -47,25 +47,20 @@ namespace Portajel.Pages.Views
             var test = _connectionProperties.TryGetValue("URL", out connectorProperty);
         }
 
-        private async void GetNewAlbumData()
-        {
-            if (_viewModel.Id == null) return;
-            var servers = _server.Servers;
-
-            var tasks = servers.Select(async server =>
-            {
-                var item = await server.DataConnectors["Album"].GetAsync(_viewModel.Id.Value, _viewModel.ServerAddress);
-                if(item is AlbumData album)
-                {
-                    var songIds = album.GetSongIds().Select(id => (Guid?)id).ToArray();
-                    var songData = await server.DataConnectors["Song"].GetAllAsync(includeIds: songIds);
-                    var songs = songData.Select(s => (SongData)s);
-                    _viewModel = new(songs, album);
-                    BindingContext = _viewModel;
-                }
-            });
-
-            await Task.WhenAll(tasks);
-        }
+        // private async void GetNewAlbumData()
+        // {
+        //     if (_viewModel.Id == null) return;
+        //     var servers = _server.Servers;
+        //
+        //     var tasks = servers.Select(async server =>
+        //     {
+        //         var item = await server.DataConnectors["Album"].GetAsync(_viewModel.Id.Value, _viewModel.ServerAddress);
+        //         if(item is AlbumData album)
+        //         {
+        //         }
+        //     });
+        //
+        //     await Task.WhenAll(tasks);
+        // }
     }
 }

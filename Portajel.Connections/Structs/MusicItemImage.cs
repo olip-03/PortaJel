@@ -3,303 +3,122 @@ using Jellyfin.Sdk.Generated.Models;
 using Portajel.Connections.Data;
 using Portajel.Connections.Database;
 using Portajel.Connections.Services;
+using Portajel.Connections.Services.Jellyfin.Dto;
 using SkiaSharp;
 
 namespace Portajel.Connections.Structs
 {
-    public class MusicItemImage
+    public static class MusicItemImage
     {
-        public string ServerAddress { get; set; } = string.Empty;
-        public string Source { get; set; } = string.Empty;
-        public string Blurhash { get; set; } = string.Empty;
-        public int soureResolution { get; set; } = 500;
-        public string sourceAtResolution
+        public static string GetImgSource(string serverUrl, JfBaseItemDto baseItem, JfImageType Type = JfImageType.Primary)
         {
-            get
+            // https://media.oli.fm/Items/0008ba8bfd86aeb5856923c2e4b5c13a/Images/Primary?fillHeight=251&fillWidth=251&quality=96&tag=6c8386e6be4adb6e15d6e3b294fa1733
+            string value = $"default_album.png";
+            switch (baseItem.Type)
             {
-                return SourceAtResolution(soureResolution);
-            }
-            private set { }
-        }
-        public MusicItemImageType musicItemImageType { get; set; } = MusicItemImageType.url;
-
-        ///<summary>
-        ///A read-only instance of the Data.MusicItemImage structure with default values.
-        ///</summary>
-        public static readonly MusicItemImage Empty = new();
-
-        /// <summary>
-        /// Appends the URL with information that'll request it at a different size. Useful for web optimization when we dont need a full res image.
-        /// </summary>
-        /// <param name="px">The reqeusted resolution in pixels</param>
-        /// <returns>Image at the requested resolution, by the 'px' variable.</returns>
-        public string SourceAtResolution(int px)
-        {
-            if (musicItemImageType == MusicItemImageType.url)
-            {
-                string toReturn = Source + $"&fillHeight={px}&fillWidth={px}&quality=96";
-                return toReturn;
-            }
-            return Source;
-        }
-        public static Task<string?> BlurhashToBase64Async(string? blurhash, int width = 0, int height = 0, float brightness = 1)
-        {
-            if (string.IsNullOrWhiteSpace(blurhash))
-            {
-                return Task.FromResult<string?>(string.Empty);
-            }
-            try
-            {
-                // TODO: SQLite DB for Blurhashes you have already decoded ;) 
-                // Assuming you have a method to decode the blurhash into a pixel array
-                Pixel[,] pixels = new Pixel[width, height];
-                Core.Decode(blurhash, pixels);
-
-                // Create a SkiaSharp bitmap
-                using (SKBitmap bitmap = new SKBitmap(width, height))
-                {
-                    // Lock the pixels of the bitmap
-                    using (var canvas = bitmap.PeekPixels())
+                case "MusicAlbum":
+                    value = $"default_album.png";
+                    break;
+                case "MusicArtist":
+                    value = $"default_artist.png";
+                    break;
+                case "Audio":
+                    // We need imgSrc from parent 
+                    if (baseItem.ImageBlurHashes.ContainsKey("Primary"))
                     {
-                        for (int y = 0; y < height; y++)
-                        {
-                            for (int x = 0; x < width; x++)
-                            {
-                                var pixel = pixels[x, y];
-                                int scaledRed = (int)(pixel.Red * 255);
-                                int scaledGreen = (int)(pixel.Green * 255);
-                                int scaledBlue = (int)(pixel.Blue * 255);
-
-                                // Increase brightness by multiplying with a factor (e.g., 1.2 for 20% increase)
-                                float brightnessFactor = 2f * brightness; // Additional brightness
-                                scaledRed = (int)(scaledRed * brightnessFactor);
-                                scaledGreen = (int)(scaledGreen * brightnessFactor);
-                                scaledBlue = (int)(scaledBlue * brightnessFactor);
-
-                                // Clamp values to ensure they stay within the valid range (0-255)
-                                scaledRed = Math.Clamp(scaledRed, 0, 255);
-                                scaledGreen = Math.Clamp(scaledGreen, 0, 255);
-                                scaledBlue = Math.Clamp(scaledBlue, 0, 255);
-
-                                // Convert int to byte
-                                byte red = (byte)scaledRed;
-                                byte green = (byte)scaledGreen;
-                                byte blue = (byte)scaledBlue;
-
-                                // Create SKColor
-                                SKColor color = new SKColor(red, green, blue);
-                                bitmap.SetPixel(x, y, color);
-                            }
-                        }
+                        value = $"{serverUrl}/Items/{GuidString(baseItem.ParentId)}/Images/Primary";
                     }
-
-                    // Convert the bitmap to a base64 string
-                    using (var image = SKImage.FromBitmap(bitmap))
-                    using (var data = image.Encode(SKEncodedImageFormat.Png, 100))
-                    using (var stream = new MemoryStream())
+                    else if (baseItem.ImageBlurHashes.ContainsKey("Backdrop"))
                     {
-                        data.SaveTo(stream);
-                        byte[] imageBytes = stream.ToArray();
-                        string base64String = Convert.ToBase64String(imageBytes);
-                        return Task.FromResult<string?>(base64String);
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                string? noval = null;
-                return Task.FromResult(noval);
-            }
-        }
-        public static Task<string?> BlurhashToBase64Async(BaseData musicItem, int width = 0, int height = 0, float brightness = 1)
-        {
-            string base64 = string.Empty;
-            if (musicItem is AlbumData)
-            {
-                AlbumData? album = musicItem as AlbumData;
-                return Task.FromResult(BlurhashToBase64Async(album.ImgBlurhash, 20, 20).Result);
-            }
-            if (musicItem is SongData)
-            {
-                SongData? song = musicItem as SongData;
-                return Task.FromResult(BlurhashToBase64Async(song.ImgBlurhash, 20, 20).Result);
-            }
-            if (musicItem is ArtistData)
-            {
-                ArtistData? artist = musicItem as ArtistData;
-                return Task.FromResult(BlurhashToBase64Async(artist.ImgBlurhash, 20, 20).Result);
-            }
-            if (musicItem is PlaylistData)
-            {
-                PlaylistData? PlaylistData = musicItem as PlaylistData;
-                // TODO: Implementation 
-                // string? imgString = await MusicItemImage.BlurhashToBase64Async(playlist.ImgBlurhash, 20, 20);
-                // if (imgString != null)
-                // {
-                //     placeholderImages[i] = imgString;
-                // }
-            }
-            return Task.FromResult<string?>(null);
-        }
-        public static MusicItemImage Builder(BaseItemDto baseItem, string server, ImageBuilderImageType? imageType = ImageBuilderImageType.Primary)
-        {
-            MusicItemImage image = new();
-            image.ServerAddress = server;
-            image.musicItemImageType = MusicItemImageType.url;
-            string imgType = "Primary";
-
-            if (baseItem.ImageTags.AdditionalData.Count() == 0)
-            {
-                return Empty;
-            }
-
-            switch (imageType)
-            {
-                case ImageBuilderImageType.Backdrop:
-                    imgType = "Backdrop";
-                    if (baseItem.ImageBlurHashes.Backdrop != null)
-                    { // Set backdrop img 
-                        string? hash = baseItem.ImageBlurHashes.Backdrop.AdditionalData.First().Value.ToString();
-                        if (hash != null)
-                        {
-                            image.Blurhash = hash;
-                        }
-                    }
-                    else if (baseItem.ImageBlurHashes.Primary != null)
-                    { // if there is no backdrop, fall back to primary image
-                        string? hash = baseItem.ImageBlurHashes.Primary.AdditionalData.First().Value.ToString();
-                        imgType = "Primary";
-                        if (hash != null)
-                        {
-                            image.Blurhash = hash;
-                        }
+                        value = $"{serverUrl}/Items/{GuidString(baseItem.Id)}/Images/Backdrop/0";
                     }
                     break;
-                case ImageBuilderImageType.Logo:
-                    imgType = "Logo";
-                    if (baseItem.ImageBlurHashes.Logo != null)
+            }
+            switch (Type)
+            {
+                case JfImageType.Primary:
+                    if (baseItem.ImageTags.ContainsKey("Primary"))
                     {
-                        string? hash = baseItem.ImageBlurHashes.Logo.AdditionalData.First().Value.ToString();
-                        if (hash != null)
-                        {
-                            image.Blurhash = hash;
-                        }
+                        value = $"{serverUrl}/Items/{GuidString(baseItem.Id)}/Images/Primary?tag={baseItem.ImageTags["Primary"]}";
+                    }
+                    else if (baseItem.ImageTags.ContainsKey("Backdrop"))
+                    {
+                        value = $"{serverUrl}Items/{GuidString(baseItem.Id)}/Images/Backdrop/0";
+                    }
+                    break;
+                case JfImageType.Backdrop:
+                    if (baseItem.ImageBlurHashes.ContainsKey("Backdrop"))
+                    {
+                        value = $"{serverUrl}/Items/{GuidString(baseItem.Id)}/Images/Backdrop/0";
                     }
                     else
                     {
-                        image.Blurhash = string.Empty;
-                        return image; // bascially returning nothing if no logo is found
+                        value = "";
                     }
                     break;
-                default:
-                    imgType = "Primary";
-                    if (baseItem.ImageBlurHashes.Primary != null)
+                case JfImageType.Logo:
+                    if (baseItem.ImageTags.ContainsKey("Logo"))
                     {
-                        string? hash = baseItem.ImageBlurHashes.Primary.AdditionalData.First().Value.ToString();
-                        if (hash != null)
-                        {
-                            image.Blurhash = hash;
-                        }
+                        value = $"{serverUrl}/Items/{GuidString(baseItem.Id)}/Images/Logo?tag={baseItem.ImageTags["Logo"]}";
                     }
                     else
                     {
-                        image.Blurhash = string.Empty;
+                        value = "";
+                    }
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(Type), Type, null);
+            }
+
+            return value;
+        }
+
+        public static string GetImgBlurhash(string serverUrl, JfBaseItemDto baseItem, JfImageType Type = JfImageType.Primary)
+        {
+            string value = $"";
+            switch (baseItem.Type)
+            {
+                case "Audio":
+                    // We need imgSrc from parent 
+                    if (baseItem.ImageBlurHashes.ContainsKey("Primary"))
+                    {
+                        value = $"{baseItem.ImageBlurHashes["Primary"].First().Value}";
+                    }
+                    else if (baseItem.ImageBlurHashes.ContainsKey("Backdrop"))
+                    {
+                        value = $"{baseItem.ImageBlurHashes["Backdrop"].First().Value}";
                     }
                     break;
             }
-
-            if (baseItem.Type == BaseItemDto_Type.MusicAlbum)
+            switch (Type)
             {
-                if (baseItem.ImageBlurHashes.Primary != null)
-                {
-                    image.Source = server + "/Items/" + baseItem.Id + "/Images/" + imgType;
-                }
-                else
-                {
-                    image.Source = "emptyAlbum.png";
-                }
-            }
-            else if (baseItem.Type == BaseItemDto_Type.Playlist)
-            {
-                image.Source = server + "/Items/" + baseItem.Id + "/Images/" + imgType;
-
-                // image.blurHash = baseItem.ImageBlurHashes.Primary.FirstOrDefault().Value;
-            }
-            else if (baseItem.Type == BaseItemDto_Type.Audio)
-            {
-                if (baseItem.AlbumId != null)
-                {
-                    image.Source = server + "/Items/" + baseItem.AlbumId + "/Images/" + imgType;
-                }
-                else
-                {
-                    image.Source = server + "/Items/" + baseItem.Id + "/Images/" + imgType;
-                }
-                // image.blurHash = baseItem.ImageBlurHashes.Primary.FirstOrDefault().Value;
-            }
-            else if (baseItem.Type == BaseItemDto_Type.MusicArtist)
-            {
-                image.Source = server + "/Items/" + baseItem.Id + "/Images/" + imgType;
-            }
-            else if (baseItem.Type == BaseItemDto_Type.MusicGenre && baseItem.ImageBlurHashes.Primary != null)
-            {
-                image.Source = server + "/Items/" + baseItem.Id + "/Images/" + imgType;
-                image.Blurhash = baseItem.ImageBlurHashes.Primary.AdditionalData.First().Value.ToString();
-            }
-            else if (baseItem.ImageBlurHashes.Primary != null && baseItem.AlbumId != null)
-            {
-                image.Source = server + "/Items/" + baseItem.AlbumId + "/Images/" + imgType;
-                image.Blurhash = baseItem.ImageBlurHashes.Primary.AdditionalData.First().Value.ToString();
-            }
-            else if (baseItem.ImageBlurHashes.Primary != null)
-            {
-                image.Source = server + "/Items/" + baseItem.Id.ToString() + "/Images/" + imgType;
-                image.Blurhash = baseItem.ImageBlurHashes.Primary.AdditionalData.First().Value.ToString();
-            }
-            else if (baseItem.ArtistItems != null)
-            {
-                image.Source = server + "/Items/" + baseItem.ArtistItems.First().Id + "/Images/" + imgType;
-            }
-
-            switch (imageType)
-            {
-                case ImageBuilderImageType.Backdrop:
-                    image.Source += "?format=jpg";
+                case JfImageType.Primary:
+                    if (baseItem.ImageTags.ContainsKey("Primary"))
+                    {
+                        var key = baseItem.ImageTags["Primary"];
+                        value = baseItem.ImageBlurHashes["Primary"][key];
+                    }
                     break;
-                case ImageBuilderImageType.Logo:
-                    imgType = "Logo";
+                case JfImageType.Backdrop:
+                    if (baseItem.ImageBlurHashes.ContainsKey("Backdrop"))
+                    {
+                        value = baseItem.ImageBlurHashes["Backdrop"].First().Value;
+                    }
+                    break;
+                case JfImageType.Logo:
                     break;
                 default:
-                    image.Source += "?format=jpg";
-                    break;
+                    throw new ArgumentOutOfRangeException(nameof(Type), Type, null);
             }
-
-            return image;
+            return value;
         }
-        public static MusicItemImage Builder(NameGuidPair nameGuidPair, string server)
+        
+        private static string GuidString(string id)
         {
-            MusicItemImage image = new();
-
-            image.musicItemImageType = MusicItemImageType.url;
-            image.Source = server + "/Items/" + nameGuidPair.Id + "/Images/Primary?format=jpg";
-
-            return image;
-        }
-        public void GenerateBlurHash(BaseData[] data)
-        {
-            for (int i = 0; i < data.Count(); i++)
-            {
-                try
-                {
-                    // data[i].ImgBlurhashBase64 = Blurhelper.BlurhashToBase64Async(data[i].ImgBlurhash, 5, 5);
-                }
-                catch (Exception)
-                {
-                    // ignored
-                }
-            }
+            return Guid.Parse(id).ToString("N");
         }
     }
+
     public enum MusicItemImageType
     {
         onDisk,

@@ -23,10 +23,10 @@
             <!--     BitmapOptimizations="True" -->
             <!--     DownsampleToViewSize="True"> -->
             <!-- </ffimageloading:CachedImage> -->
-            <comp:MusicImage ImageSource="{Binding BackgroundSource}"
-                             ZIndex="1"
-                             HeightRequest="{Binding ImageSize, Source={x:Reference Root}}"
-                             WidthRequest="{Binding ImageSize, Source={x:Reference Root}}"/>
+            <!-- <comp:MusicImage BlurHash="{Binding }" -->
+            <!--                  ZIndex="1" -->
+            <!--                  HeightRequest="{Binding ImageSize, Source={x:Reference Root}}" -->
+            <!--                  WidthRequest="{Binding ImageSize, Source={x:Reference Root}}"/> -->
         </Grid>
     </Border>
 </ContentView>

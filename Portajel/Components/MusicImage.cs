@@ -1,225 +1,211 @@
 ﻿using System;
-using System.IO;
-using System.Net.Http;
-using System.Threading;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
-using Microsoft.Maui.Controls;
+using System.Timers;
+using Blurhash;
+using FFImageLoading.Cache;
+using FFImageLoading.Maui;
+using Jellyfin.Sdk.Generated.Models;
 using SkiaSharp;
 using SkiaSharp.Views.Maui;
 using SkiaSharp.Views.Maui.Controls;
 
 namespace Portajel.Components
 {
-    public class MusicImage : SKCanvasView, IDisposable
+    public class MusicImage : Grid, IDisposable
     {
-        private SKBitmap? _bitmap = null;
-        private CancellationTokenSource? _cancellationTokenSource;
-        private readonly object _bitmapLock = new object();
-        private static readonly HttpClient _httpClient = new HttpClient();
+        internal static IServiceProvider? ServiceProvider { get; set; } = IPlatformApplication.Current?.Services;
+        private HttpClient? _client = default!;
+        private readonly Random _random = new Random();
+        private int _width => 64;
+        private int _height => 64;
+        private SKBitmap _sourceBitmap;
+        private SKBitmap _blurhashBitmap;
+        private string _lastBlurHash;
 
-        public static readonly BindableProperty ImageSourceProperty =
+        private bool _imageLoading = true;
+        private CancellationTokenSource _canTokenSource = new();
+
+        private SKCanvasView _blurhashCanvas;
+        private CachedImage _sourceImage;
+        
+        public static readonly BindableProperty BlurHashProperty =
             BindableProperty.Create(
-                nameof(ImageSource),
-                typeof(ImageSource),
-                
+                nameof(BlurHash),
+                typeof(string),
                 typeof(MusicImage),
-                defaultValue: null,
-                propertyChanged: OnImageSourceChanged
-            );
+                defaultValue: string.Empty,
+                propertyChanged: OnBlurHashChanged);
 
-        public static readonly BindableProperty PlaceholderColorProperty =
-            BindableProperty.Create(
-                nameof(PlaceholderColor),
-                typeof(Color),
-                typeof(MusicImage),
-                defaultValue: Colors.LightGray
-            );
-
-        public ImageSource? ImageSource
+        public string BlurHash
         {
-            get => (ImageSource?)GetValue(ImageSourceProperty);
-            set => SetValue(ImageSourceProperty, value);
+            get => (string)GetValue(BlurHashProperty);
+            set => SetValue(BlurHashProperty, value);
+        }
+        
+        public static readonly BindableProperty SourceProperty =
+            BindableProperty.Create(
+                nameof(Source),
+                typeof(string),
+                typeof(MusicImage),
+                defaultValue: string.Empty,
+                propertyChanged: OnSourceChanged);
+
+        public string Source
+        {
+            get => (string)GetValue(SourceProperty);
+            set => SetValue(SourceProperty, value);
+        }
+        
+        public MusicImage()
+        {
+            _client = ServiceProvider.GetService<HttpClient>();
+            _blurhashCanvas = new SKCanvasView()
+            {
+                ZIndex = 0
+            };
+            _blurhashCanvas.PaintSurface += OnPaintBlurhashSurface;
+            
+            _sourceImage = new CachedImage()
+            {
+                ZIndex = 1,
+                CacheType = FFImageLoading.Cache.CacheType.Memory,
+                RetryCount = 0,
+                FadeAnimationForCachedImages = true,
+                LoadingDelay = 500,
+                LoadingPriority = FFImageLoading.Work.LoadingPriority.Lowest,
+                HeightRequest = 64,
+                WidthRequest = 64,
+                Aspect = Aspect.AspectFill,
+                BitmapOptimizations = true,
+                DownsampleToViewSize = true,
+                BackgroundColor = Colors.Transparent
+            };
+            
+            Children.Add(_blurhashCanvas);
+            Children.Add(_sourceImage);
         }
 
-        public Color PlaceholderColor
+        private static void OnBlurHashChanged(BindableObject bindable, object oldValue, object newValue)
         {
-            get => (Color)GetValue(PlaceholderColorProperty);
-            set => SetValue(PlaceholderColorProperty, value);
+            if (bindable is MusicImage musicImage && newValue is string blurHash)
+            {
+                musicImage._blurhashBitmap?.Dispose();
+                musicImage._blurhashBitmap = null;
+                musicImage._lastBlurHash = null;
+                if (string.IsNullOrWhiteSpace(blurHash))
+                {
+                    musicImage._imageLoading = false;
+                }
+            }
         }
-
-        private static void OnImageSourceChanged(BindableObject bindable, object oldValue, object newValue)
+        private static async void OnSourceChanged(BindableObject bindable, object oldValue, object newValue)
         {
             if (bindable is MusicImage musicImage)
             {
-                _ = musicImage.LoadImageAsync();
+                // Clear previous image immediately
+                musicImage._sourceImage.Source = null;
+        
+                // If we had a previous source, clear it from cache to prevent recycling issues
+                if (oldValue is string oldSource && !string.IsNullOrEmpty(oldSource))
+                {
+                    await FFImageLoading.ImageService.Instance.InvalidateCacheEntryAsync(oldSource, CacheType.Memory);
+                }
+
+                if (newValue is string source && !string.IsNullOrEmpty(source))
+                {
+                    musicImage._sourceImage.Source = source;
+                    Trace.WriteLine($"MusicImage: Source changed to {source}");
+                }
+                else
+                {
+                    Trace.WriteLine("MusicImage: Source cleared");
+                }
             }
         }
-
-        public MusicImage()
+        
+        private void OnPaintBlurhashSurface(object? sender, SKPaintSurfaceEventArgs e)
         {
-            PaintSurface += OnPaintSurface;
-        }
-
-        protected override void OnParentSet()
-        {
-            base.OnParentSet();
-            if (ImageSource != null)
+            var canvas = e.Surface.Canvas;
+            canvas.Clear(new SKColor(48, 48, 48));
+            
+            if (string.IsNullOrEmpty(BlurHash))
             {
-                _ = LoadImageAsync();
-            }
-        }
-
-        private async Task LoadImageAsync()
-        {
-            if (ImageSource == null)
-            {
-                ClearBitmap();
                 return;
             }
 
-            _cancellationTokenSource?.Cancel();
-            _cancellationTokenSource = new CancellationTokenSource();
-            var cancellationToken = _cancellationTokenSource.Token;
-
             try
             {
-                var bitmap = await Task.Run(() => LoadImageInternal(ImageSource, cancellationToken), cancellationToken);
-
-                if (cancellationToken.IsCancellationRequested)
+                if (_blurhashBitmap == null || _lastBlurHash != BlurHash)
                 {
-                    bitmap?.Dispose();
-                    return;
+                    _blurhashBitmap?.Dispose();
+                    _blurhashBitmap = CreateBlurhashBitmap();
+                    _lastBlurHash = BlurHash;
                 }
 
-                lock (_bitmapLock)
+                if (_blurhashBitmap != null)
                 {
-                    _bitmap?.Dispose();
-                    _bitmap = bitmap;
+                    var info = e.Info;
+                    var destRect = new SKRect(0, 0, info.Width, info.Height);
+                    var paint = new SKPaint
+                    {
+                        Color = new SKColor(48, 48, 48)
+                    };
+                    canvas.DrawBitmap(_blurhashBitmap, destRect, paint);
+                    paint.Dispose();
                 }
-
-                InvalidateSurface();
-            }
-            catch (OperationCanceledException)
-            {
-                // Expected when cancelled
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"Error loading image: {ex.Message}");
-                ClearBitmap();
+                Trace.WriteLine($"MusicImage: Error decoding blurhash: {ex.Message}");
+                var fallbackColor = new SKColor(48, 48, 48); // Gray fallback
+                canvas.Clear(fallbackColor);
             }
         }
 
-        private void ClearBitmap()
+        private SKBitmap CreateBlurhashBitmap()
         {
-            lock (_bitmapLock)
-            {
-                _bitmap?.Dispose();
-                _bitmap = null;
-            }
-            InvalidateSurface();
-        }
+            var pixels = new Pixel[_width, _height];
+            Core.Decode(BlurHash, pixels);
 
-        private async Task<SKBitmap?> LoadImageInternal(ImageSource imageSource, CancellationToken cancellationToken)
-        {
-            Stream? stream = null;
-            try
+            var bitmap = new SKBitmap(_width, _height, SKColorType.Bgra8888, SKAlphaType.Opaque);
+            var pixelPtr = bitmap.GetPixels();
+            unsafe
             {
-                stream = await GetImageStreamAsync(imageSource, cancellationToken);
-                if (stream == null) return null;
+                var pixelSpan = new Span<byte>(pixelPtr.ToPointer(), bitmap.ByteCount);
+                int index = 0;
 
-                cancellationToken.ThrowIfCancellationRequested();
+                for (int y = 0; y < _height; y++)
+                {
+                    for (int x = 0; x < _width; x++)
+                    {
+                        var pixel = pixels[x, y];
 
-                return SKBitmap.Decode(stream);
-            }
-            finally
-            {
-                stream?.Dispose();
-            }
-        }
-
-        private async Task<Stream?> GetImageStreamAsync(ImageSource imageSource, CancellationToken cancellationToken)
-        {
-            return imageSource switch
-            {
-                FileImageSource fileSource => await GetFileStreamAsync(fileSource),
-                UriImageSource uriSource => await GetUriStreamAsync(uriSource, cancellationToken),
-                StreamImageSource streamSource => await streamSource.Stream(cancellationToken),
-                _ => null
-            };
-        }
-
-        private async Task<Stream?> GetFileStreamAsync(FileImageSource fileSource)
-        {
-            try
-            {
-                if (string.IsNullOrEmpty(fileSource.File)) return null;
-                return await FileSystem.OpenAppPackageFileAsync(fileSource.File);
-            }
-            catch
-            {
-                return null;
-            }
-        }
-
-        private async Task<Stream?> GetUriStreamAsync(UriImageSource uriSource, CancellationToken cancellationToken)
-        {
-            try
-            {
-                if (uriSource.Uri == null) return null;
-                var response = await _httpClient.GetAsync(uriSource.Uri, cancellationToken);
-                response.EnsureSuccessStatusCode();
-                return await response.Content.ReadAsStreamAsync();
-            }
-            catch
-            {
-                return null;
-            }
-        }
-
-        private void OnPaintSurface(object? sender, SKPaintSurfaceEventArgs e)
-        {
-            var canvas = e.Surface.Canvas;
-            var size = Math.Min(e.Info.Width, e.Info.Height);
-            var rect = new SKRect(0, 0, size, size);
-
-            canvas.Clear(PlaceholderColor.ToSKColor());
-
-            SKBitmap? currentBitmap;
-            lock (_bitmapLock)
-            {
-                currentBitmap = _bitmap;
+                        pixelSpan[index++] = (byte)MathUtils.LinearTosRgb(pixel.Blue);
+                        pixelSpan[index++] = (byte)MathUtils.LinearTosRgb(pixel.Green);
+                        pixelSpan[index++] = (byte)MathUtils.LinearTosRgb(pixel.Red);
+                        pixelSpan[index++] = 255;
+                    }
+                }
             }
 
-            if (currentBitmap != null)
-            {
-                canvas.DrawBitmap(currentBitmap, rect);
-            }
+            return bitmap;
         }
 
         public void Dispose()
         {
-            _cancellationTokenSource?.Cancel();
-            _cancellationTokenSource?.Dispose();
-
-            lock (_bitmapLock)
+            _blurhashBitmap?.Dispose();
+            _blurhashBitmap = null;
+            _sourceBitmap?.Dispose();
+            _sourceBitmap = null;
+            if (_blurhashCanvas != null)
             {
-                _bitmap?.Dispose();
-                _bitmap = null;
+                _blurhashCanvas.PaintSurface -= OnPaintBlurhashSurface;
+                _blurhashCanvas = null;
             }
-        }
-    }
-
-    public static class ColorExtensions
-    {
-        public static SKColor ToSKColor(this Color color)
-        {
-            return new SKColor(
-                (byte)(color.Red * 255),
-                (byte)(color.Green * 255),
-                (byte)(color.Blue * 255),
-                (byte)(color.Alpha * 255)
-            );
         }
     }
 }

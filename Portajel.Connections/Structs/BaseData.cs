@@ -1,6 +1,7 @@
 ﻿using Portajel.Connections.Data;
 using Portajel.Connections.Database;
 using Portajel.Connections.Enum;
+using Portajel.Connections.Services.Jellyfin.Dto;
 using SkiaSharp;
 using SQLite;
 
@@ -11,9 +12,9 @@ namespace Portajel.Connections.Structs
         [PrimaryKey, AutoIncrement] public virtual Guid? Id { get; set; }
         public Guid ServerId { get; set; }
         public Guid GlobalId { get; set; }
+        public Guid ParentId { get; set; }
         public virtual MediaType MediaType { get; set; } = MediaType.Album;
         [Indexed] public string Name { get; set; } = string.Empty;
-        public int Index { get; set; }
         public bool IsFavourite { get; set; }
         public int PlayCount { get; set; }
         public DateTimeOffset? DateAdded { get; set; }
@@ -22,7 +23,6 @@ namespace Portajel.Connections.Structs
         public string? ImgSource { get; set; }
         public string? ImgBlurhash { get; set; }
         public string? ImgBlurhashSource { get; set; }
-
         public AlbumData ToAlbum()
         {
             return (AlbumData)this;
@@ -62,5 +62,6 @@ namespace Portajel.Connections.Structs
             }
             return false;
         }
+        
     }
 }

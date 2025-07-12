@@ -1,10 +1,12 @@
 using System.Text.Json;
 using BenchmarkDotNet.Running;
+using CommandLine;
 using Jellyfin.Sdk.Generated.LiveTv.Recordings.Folders;
 using Newtonsoft.Json.Linq;
 using Portajel.Terminal.View;
 using Portajel.Terminal.Struct.Interface;
 using Portajel.Connections;
+using Portajel.Connections.Database;
 using Portajel.Connections.Services.Database;
 using Portajel.Terminal.Benchmark;
 using Portajel.Terminal.Struct;
@@ -25,16 +27,20 @@ namespace Portajel.Terminal
         private static bool pauseRefresh = false;
         static async Task Main(string[] args)
         {
-            DbBenchmark benchmark = new();
+            UIBenchmark benchmark = new();
             benchmark.Setup();
-            var baseData = await benchmark.GetAlbumData(1);
-            var json = JsonSerializer.Serialize(baseData);
-            
-            JToken jt = JToken.Parse(json);
-            string formatted = jt.ToString(Newtonsoft.Json.Formatting.Indented);
-            
-            Console.WriteLine(formatted);
-            //var summary = BenchmarkRunner.Run<DbBenchmark>();
+            var test = benchmark.GetBlurhashBitmap();
+            await benchmark.DownloadAndSave();
+            //
+            // var baseData = await Server.Servers.First().DataConnectors["Genre"].GetAllAsync(limit: 10, startIndex: 200);
+            // var media = baseData.Cast<GenreData>();
+            // var json = JsonSerializer.Serialize(media);
+            //
+            // JToken jt = JToken.Parse(json);
+            // string formatted = jt.ToString(Newtonsoft.Json.Formatting.Indented);
+            //
+            // Console.WriteLine(formatted);
+            // var summary = BenchmarkRunner.Run<UIBenchmark>();
         }
 
         public static void InitializeDatabase()

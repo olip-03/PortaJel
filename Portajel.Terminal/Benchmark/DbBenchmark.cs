@@ -73,11 +73,22 @@ public class DbBenchmark
     [Arguments(10)]
     [Arguments(50)]
     [Arguments(100)]
-    public async Task<BaseData[]> GetAlbumData(int limit)
+    public async Task<BaseData[]> GetArtistData(int limit)
     {
-        return await _server.Servers.First().DataConnectors["Album"].GetAllAsync(limit: 1);
+        await GetUserView();
+
+        return await _server.Servers.First().DataConnectors["Artist"].GetAllAsync(limit: limit);
     }
 
+    private async Task<string> GetUserView()
+    {
+        var request = new HttpRequestMessage(HttpMethod.Get, "https://media.oli.fm/Users/920896d5-d21b-4488-8f47-292603d7ecd3/Views");
+        using var response = await httpClient.SendAsync(request);
+        var content = await response.Content.ReadAsStringAsync();
+        
+        return "https://media.oli.fm/Users/920896d5-d21b-4488-8f47-292603d7ecd3/Views";
+    }
+    
     private async Task<byte[]> GetAlbumJsonUtf8Array(int startIndex, int limit)
     {
         var api = BuildApiString("https://media.oli.fm", "MusicAlbum","920896d5-d21b-4488-8f47-292603d7ecd3",startIndex,  limit);

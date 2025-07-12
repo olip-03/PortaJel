@@ -44,18 +44,7 @@ namespace Portajel
             {
                 if (serverConnector is not ServerConnector connector) return;
                 await connector.AuthenticateAsync();
-                foreach (var srv in connector.Servers)
-                {
-                    try
-                    {
-                        await srv.StartSyncAsync();
-                    }
-                    catch (Exception ex)
-                    {
-                        Trace.TraceError(ex.Message);
-                        continue;
-                    }
-                }
+                await connector.StartSyncAsync();
                 await SaveHelper.SaveData(connector);
             });
         }

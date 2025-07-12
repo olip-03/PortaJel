@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="UTF-8" ?>
+<?xml version="1.0" encoding="UTF-8" ?>
 <?xaml-comp compile="true" ?>
 <ResourceDictionary 
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
@@ -6,25 +6,25 @@
 
     <!-- Note: For Android please see also Platforms\Android\Resources\values\colors.xml -->
 
-    <Color x:Key="Primary">#594AE2</Color>
-    <Color x:Key="PrimaryDark">#3E2CDD</Color>
-    <Color x:Key="PrimaryDarkText">#FFFFFF</Color>
-    <Color x:Key="Secondary">#FF4081</Color>
-    <Color x:Key="SecondaryDarkText">#FFFFFF</Color>
-    <Color x:Key="Tertiary">#1EC8A5</Color>
+    <Color x:Key="Primary">#512BD4</Color>
+    <Color x:Key="PrimaryDark">#ac99ea</Color>
+    <Color x:Key="PrimaryDarkText">#242424</Color>
+    <Color x:Key="Secondary">#DFD8F7</Color>
+    <Color x:Key="SecondaryDarkText">#9880e5</Color>
+    <Color x:Key="Tertiary">#2B0B98</Color>
 
-    <Color x:Key="White">#FFFFFF</Color>
-    <Color x:Key="Black">#272C34</Color>
-    <Color x:Key="Magenta">#FF4081</Color>
-    <Color x:Key="MidnightBlue">#2B0B98</Color>
-    <Color x:Key="OffBlack">#424242</Color>
+    <Color x:Key="White">White</Color>
+    <Color x:Key="Black">Black</Color>
+    <Color x:Key="Magenta">#D600AA</Color>
+    <Color x:Key="MidnightBlue">#190649</Color>
+    <Color x:Key="OffBlack">#1f1f1f</Color>
 
-    <Color x:Key="Gray100">#F5F5F5</Color>
-    <Color x:Key="Gray200">#E0E0E0</Color>
-    <Color x:Key="Gray300">#BDBDBD</Color>
-    <Color x:Key="Gray400">#9E9E9E</Color>
-    <Color x:Key="Gray500">#757575</Color>
-    <Color x:Key="Gray600">#616161</Color>
+    <Color x:Key="Gray100">#E1E1E1</Color>
+    <Color x:Key="Gray200">#C8C8C8</Color>
+    <Color x:Key="Gray300">#ACACAC</Color>
+    <Color x:Key="Gray400">#919191</Color>
+    <Color x:Key="Gray500">#6E6E6E</Color>
+    <Color x:Key="Gray600">#404040</Color>
     <Color x:Key="Gray900">#212121</Color>
     <Color x:Key="Gray950">#141414</Color>
 
@@ -43,4 +43,3 @@
     <SolidColorBrush x:Key="Gray900Brush" Color="{StaticResource Gray900}"/>
     <SolidColorBrush x:Key="Gray950Brush" Color="{StaticResource Gray950}"/>
 </ResourceDictionary>
-

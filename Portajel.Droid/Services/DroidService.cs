@@ -49,20 +49,8 @@ namespace Portajel.Droid.Services
                 _ = Task.Run(async () =>
                 {
                     await serverConnector.AuthenticateAsync();
-                    foreach (var srv in serverConnector.Servers)
-                    {
-                        try
-                        {
-                            await srv.StartSyncAsync();
-                            await SaveHelper.SaveData(serverConnector);
-                        }
-                        catch (Exception ex)
-                        {
-                            System.Diagnostics.Trace.WriteLine(ex.Message);
-                            continue;
-                        }
-
-                    }
+                    await serverConnector.StartSyncAsync();
+                    await SaveHelper.SaveData(serverConnector);
                 });
             }
             catch (Exception ex)

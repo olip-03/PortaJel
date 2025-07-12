@@ -29,7 +29,6 @@ namespace Portajel.Structures.ViewModels.Pages.Views
             ServerId = data.ServerId;
             MediaType = data.MediaType;
             Name = data.Name;
-            Index = data.Index;
             IsFavourite = data.IsFavourite;
             PlayCount = data.PlayCount;
             DateAdded = data.DateAdded;
@@ -40,8 +39,6 @@ namespace Portajel.Structures.ViewModels.Pages.Views
             ImgBlurhashSource = data.ImgBlurhashSource;
             ArtistIdsJson = data.ArtistIdsJson;
             ArtistNames = data.ArtistNames;
-            SongIdsJson = data.SongIdsJson;
-            GetSimilarJson = data.GetSimilarJson;
             Songs = new ObservableCollectionAdapter<SongData>(songs.ToObservableCollection());
         }
     }
