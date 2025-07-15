@@ -1,24 +1,25 @@
+using System.Linq; // Make sure to include this namespace
 using Portajel.Connections.Interfaces;
 
-namespace Portajel.Connections.Structs;
-
-public class MediaServerList: List<IMediaServerConnector>
+namespace Portajel.Connections.Structs
 {
-    public MediaServerList()
+    public class MediaServerList : List<IMediaServerConnector>
     {
-        
-    }
-    
-    public IMediaServerConnector this[string name] => Find(s => s.GetAddress() == name);
-    
-    public void RemoveServer(IMediaServerConnector server)
-    {
-        this.Remove(server);
-    }
-
-    public void RemoveServer(string address)
-    {
-        var srv = this.First(s => s.GetAddress() == address);
-        this.Remove(srv);
+        public MediaServerList()
+        {
+        }
+        public IMediaServerConnector? this[string name] => this.FirstOrDefault(s => s.GetAddress() == name);
+        public void RemoveServer(IMediaServerConnector server)
+        {
+            this.Remove(server);
+        }
+        public void RemoveServer(string address)
+        {
+            var srv = this.FirstOrDefault(s => s.GetAddress() == address);
+            if (srv != null)
+            {
+                this.Remove(srv);
+            }
+        }
     }
 }

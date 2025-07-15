@@ -10,14 +10,7 @@ using Jellyfin.Sdk;
 using Jellyfin.Sdk.Generated.Models;
 using Microsoft.Kiota.Abstractions;
 using Microsoft.Kiota.Abstractions.Authentication;
-using Portajel.Connections.Services;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Http;
-using Portajel.Connections.Services.Database;
-using System.Runtime.CompilerServices;
-using System.Text.Json;
-using System.Threading;
-using System.Xml.Linq;
 using Newtonsoft.Json;
 using Portajel.Connections.Services.Jellyfin.Dto;
 using Portajel.Connections.Structs;
@@ -40,7 +33,7 @@ namespace Portajel.Connections.Services.Jellyfin
         public IMediaDataConnector SongData { get; set; } = null!;
         public IMediaDataConnector PlaylistData { get; set; } = null!;
         public IMediaDataConnector Genre { get; set; } = null!;
-        public IFeedConnector? Feeds { get; private set; } = null!;
+        public ConnectorFeeds? Feeds { get; set; } = null!;
         public Dictionary<string, IMediaDataConnector> DataConnectors => new()
         {
             { "Album", AlbumData },
@@ -57,13 +50,26 @@ namespace Portajel.Connections.Services.Jellyfin
             { MediaCapabilities.Playlist, true },
             { MediaCapabilities.Genre, true }
         };
+
+        public string Id { get; } = "JellyfinServerConnector";
         public string Name { get; } = "JellyFin";
         public string Description { get; } = "Enables connections to the Jellyfin Media Server.";
         public string Image { get; } = "icon_jellyfin.png";
-        public Dictionary<string, ConnectorProperty> Properties { get; set; } = new();
+        public ConnectorProperties Properties { get; set; } = new();
         public SyncStatusInfo SyncStatus { get; set; } = new();
         public List<Action<CancellationToken>> AuthenticateActions { get; set; } = new();
         public List<Action<CancellationToken>> StartSyncActions { get; set; } = new();
+
+        public JellyfinServerConnector()
+        {
+            
+        }
+        public JellyfinServerConnector(IDbConnector database, ConnectorProperties properties)
+        {
+            _database = database;
+            Properties = properties;
+            Feeds = new JellyfinConnectorFeeds(_database, Properties["URL"].Value.ToString());
+        }
         public JellyfinServerConnector(
             IDbConnector database,
             string url = "",
@@ -80,7 +86,7 @@ namespace Portajel.Connections.Services.Jellyfin
                 new()
                 {
                     {
-                        "AppName", new ConnectorProperty(
+                        "AppName", new ConnectorPropertyValue(
                             label: "App Name",
                             description: "The name of the Jellyfin Client Application.",
                             value: appName,
@@ -89,7 +95,7 @@ namespace Portajel.Connections.Services.Jellyfin
                             )
                     },
                     {
-                        "URL", new ConnectorProperty(
+                        "URL", new ConnectorPropertyValue(
                             label: "Url",
                             description: "The URL of the Jellyfin Server",
                             value: url,
@@ -97,7 +103,7 @@ namespace Portajel.Connections.Services.Jellyfin
                             userVisible: true)
                     },
                     {
-                        "Username", new ConnectorProperty(
+                        "Username", new ConnectorPropertyValue(
                             label: "Username",
                             description: "Username for data at Url.",
                             value: username,
@@ -105,7 +111,7 @@ namespace Portajel.Connections.Services.Jellyfin
                             userVisible: true)
                     },
                     {
-                        "Password", new ConnectorProperty(
+                        "Password", new ConnectorPropertyValue(
                             label: "Password",
                             description: "User password for data at Url.",
                             value: password,
@@ -114,7 +120,7 @@ namespace Portajel.Connections.Services.Jellyfin
                     },
 
                     {
-                        "AppVersion", new ConnectorProperty(
+                        "AppVersion", new ConnectorPropertyValue(
                             label: "App Version",
                             description: "The version of the Jellyfin Client Application.",
                             value: appVerison,
@@ -122,7 +128,7 @@ namespace Portajel.Connections.Services.Jellyfin
                             userVisible: false)
                     },
                     {
-                        "DeviceName", new ConnectorProperty(
+                        "DeviceName", new ConnectorPropertyValue(
                             label: "Device Name",
                             description: "The name of the device running this Jellyfin Client Application.",
                             value: deviceName,
@@ -130,7 +136,7 @@ namespace Portajel.Connections.Services.Jellyfin
                             userVisible: false)
                     },
                     {
-                        "DeviceID", new ConnectorProperty(
+                        "DeviceID", new ConnectorPropertyValue(
                             label: "Device Name",
                             description: "The name of the device running this Jellyfin Client Application.",
                             value: deviceId,
@@ -138,7 +144,7 @@ namespace Portajel.Connections.Services.Jellyfin
                             userVisible: false)
                     },
                     {
-                        "LastSync", new ConnectorProperty(
+                        "LastSync", new ConnectorPropertyValue(
                             label: "Last Sync",
                             description: "The last time a full sync ran for this data.",
                             value: url,
@@ -146,7 +152,7 @@ namespace Portajel.Connections.Services.Jellyfin
                             userVisible: false)
                     },
                     {
-                        "AppDataPath", new ConnectorProperty(
+                        "AppDataPath", new ConnectorPropertyValue(
                             label: "App Data Path",
                             description: "Application Data Path for storing files.",
                             value: appDataPath,
@@ -179,16 +185,16 @@ namespace Portajel.Connections.Services.Jellyfin
             {
                 ServiceCollection serviceCollection = new ServiceCollection();
                 serviceCollection.AddHttpClient("Default", c =>
-                {
-                    c.DefaultRequestHeaders.UserAgent.Add(
-                        new ProductInfoHeaderValue(
-                            (string)Properties["AppName"].Value.ToString(),
-                            (string)Properties["AppVersion"].Value.ToString()));
-                    c.DefaultRequestHeaders.Accept.Add(
-                        new MediaTypeWithQualityHeaderValue(MediaTypeNames.Application.Json, 1.0));
-                    c.DefaultRequestHeaders.Accept.Add(
-                        new MediaTypeWithQualityHeaderValue("*/*", 0.8));
-                })
+                    {
+                        c.DefaultRequestHeaders.UserAgent.Add(
+                            new ProductInfoHeaderValue(
+                                (string)Properties["AppName"].Value.ToString(),
+                                (string)Properties["AppVersion"].Value.ToString()));
+                        c.DefaultRequestHeaders.Accept.Add(
+                            new MediaTypeWithQualityHeaderValue(MediaTypeNames.Application.Json, 1.0));
+                        c.DefaultRequestHeaders.Accept.Add(
+                            new MediaTypeWithQualityHeaderValue("*/*", 0.8));
+                    })
                     .ConfigurePrimaryHttpMessageHandler(_ => new SocketsHttpHandler
                     {
                         AutomaticDecompression = DecompressionMethods.All,
@@ -229,7 +235,7 @@ namespace Portajel.Connections.Services.Jellyfin
                     _sdkClientSettings.SetAccessToken(authenticationResult.AccessToken);
                     _userDto = authenticationResult.User;
                     _sessionInfo = authenticationResult.SessionInfo;
-                    if(authenticationResult.AccessToken == null)
+                    if (authenticationResult.AccessToken == null)
                     {
                         return new AuthStatusInfo()
                         {
@@ -238,7 +244,7 @@ namespace Portajel.Connections.Services.Jellyfin
                         };
                     }
                 }
-                
+
                 string appName = (string)Properties["AppName"].Value;
                 string appVersion = (string)Properties["AppVersion"].Value;
                 string accessToken = authenticationResult?.AccessToken;
@@ -247,21 +253,16 @@ namespace Portajel.Connections.Services.Jellyfin
                 {
                     { "User-Agent", $"{appName}/{appVersion}" },
                     { "Accept", "application/json" },
-                    { "Authorization", $"MediaBrowser Token=\"{accessToken}\", Client=\"Portajel\", Device=\"{Properties["DeviceName"].Value}\", DeviceId=\"{Properties["DeviceID"].Value}\", Version=\"{Properties["AppVersion"].Value}\"" }
+                    {
+                        "Authorization",
+                        $"MediaBrowser Token=\"{accessToken}\", Client=\"Portajel\", Device=\"{Properties["DeviceName"].Value}\", DeviceId=\"{Properties["DeviceID"].Value}\", Version=\"{Properties["AppVersion"].Value}\""
+                    }
                 };
                 _httpClient.BaseAddress = new Uri(_sdkClientSettings.ServerUrl);
                 foreach (var header in _defaultHeaders)
                 {
                     _httpClient.DefaultRequestHeaders.Add(header.Key, header.Value);
                 }
-
-                var userView = await GetUserViewId(_sdkClientSettings.ServerUrl, _userDto.Id.Value.ToString());
-                AlbumData = new JellyfinItemConnectorTemplate(MediaType.Album, _httpClient, _sdkClientSettings.ServerUrl, userView, _userDto.Id.Value);
-                ArtistData = new JellyfinItemConnectorTemplate(MediaType.Artist, _httpClient, _sdkClientSettings.ServerUrl,userView, _userDto.Id.Value);
-                SongData = new JellyfinItemConnectorTemplate(MediaType.Song, _httpClient, _sdkClientSettings.ServerUrl, userView, _userDto.Id.Value);
-                PlaylistData = new JellyfinItemConnectorTemplate(MediaType.Playlist, _httpClient, _sdkClientSettings.ServerUrl, userView, _userDto.Id.Value);
-                Genre = new JellyfinItemConnectorTemplate(MediaType.Genre, _httpClient, _sdkClientSettings.ServerUrl, userView, _userDto.Id.Value);
-                Feeds = new JellyfinFeedConnector(_database, Properties["URL"].Value.ToString());
             }
             catch (ApiException apiEx)
             {
@@ -270,7 +271,7 @@ namespace Portajel.Connections.Services.Jellyfin
                 Trace.WriteLine($"Status code: {apiEx.ResponseStatusCode}");
                 Trace.WriteLine($"Source: {apiEx.Source}");
 
-                AuthStatus =  new AuthStatusInfo()
+                AuthStatus = new AuthStatusInfo()
                 {
                     State = AuthState.Failed,
                     Message = $"API Error: {apiEx.Message} (Status: {apiEx.ResponseStatusCode})"
@@ -281,20 +282,36 @@ namespace Portajel.Connections.Services.Jellyfin
             {
                 Trace.WriteLine($"Error: {ex.Message}");
                 Trace.WriteLine($"Source: {ex.StackTrace}");
-                AuthStatus =  new AuthStatusInfo()
+                AuthStatus = new AuthStatusInfo()
                 {
                     State = AuthState.Failed,
                     Message = $"{ex.Message}"
                 };
                 return AuthStatus;
             }
-
-            var actions = AuthenticateActions.Select(a => Task.Run(() =>
+            finally
             {
-                a.Invoke(cancellationToken);
-            }));
-            _ = Task.WhenAll(actions);
-            AuthStatus =  AuthStatusInfo.Ok();
+                var userView = await GetUserViewId(_sdkClientSettings.ServerUrl, _userDto.Id.Value.ToString());
+                AlbumData = new JellyfinItemConnectorTemplate(MediaType.Album, _httpClient,
+                    _sdkClientSettings.ServerUrl, userView, _userDto.Id.Value);
+                ArtistData = new JellyfinItemConnectorTemplate(MediaType.Artist, _httpClient,
+                    _sdkClientSettings.ServerUrl, userView, _userDto.Id.Value);
+                SongData = new JellyfinItemConnectorTemplate(MediaType.Song, _httpClient, _sdkClientSettings.ServerUrl,
+                    userView, _userDto.Id.Value);
+                PlaylistData = new JellyfinItemConnectorTemplate(MediaType.Playlist, _httpClient,
+                    _sdkClientSettings.ServerUrl, userView, _userDto.Id.Value);
+                Genre = new JellyfinItemConnectorTemplate(MediaType.Genre, _httpClient, _sdkClientSettings.ServerUrl,
+                    userView, _userDto.Id.Value);
+                // Don't set if not null. Can be set via constructor
+                Feeds ??= new JellyfinConnectorFeeds(_database, Properties["URL"].Value.ToString());
+
+                var actions = AuthenticateActions.Select(a => Task.Run(() =>
+                {
+                    a.Invoke(cancellationToken);
+                }));
+                _ = Task.WhenAll(actions);
+                AuthStatus =  AuthStatusInfo.Ok();
+            }
             return AuthStatus;
         }
         public async Task<bool> UpdateDb(CancellationToken cancellationToken = default)
@@ -477,14 +494,6 @@ namespace Portajel.Connections.Services.Jellyfin
         {
             return Task.FromResult(Array.Empty<BaseData>());
         }
-        public string GetUsername()
-        {
-            return (string)Properties["Username"].Value;
-        }
-        public string GetPassword()
-        {
-            return (string)Properties["Password"].Value;
-        }
         public string GetAddress()
         {
             return (string)Properties["URL"].Value;
@@ -492,16 +501,6 @@ namespace Portajel.Connections.Services.Jellyfin
         public string GetProfileImageUrl()
         {
             return "";
-        }
-        public UserCredentials GetUserCredentials()
-        {
-            return new UserCredentials(_sdkClientSettings.ServerUrl, (string)Properties["Username"].Value,
-                _userDto.Id.ToString(), (string)Properties["Password"].Value, _sessionInfo.Id,
-                _sdkClientSettings.AccessToken);
-        }
-        public MediaServerConnection GetConnectionType()
-        {
-            return MediaServerConnection.Jellyfin;
         }
         private async Task<bool> UpdateSyncStatus(CancellationToken cancellationToken = default)
         {

@@ -18,11 +18,11 @@ using CommunityToolkit.Maui.Views;
 
 namespace Portajel.Components.Library
 {
-    public partial class AlbumViewCell : VirtualViewCell
+    public partial class ArtistListViewCell : VirtualViewCell
     {
         private BaseData ItemData = null;
 
-        public AlbumViewCell()
+        public ArtistListViewCell()
         {
             InitializeComponent();
         }
@@ -30,14 +30,12 @@ namespace Portajel.Components.Library
         protected override void OnBindingContextChanged()
         {
             // you can also put cachedImage.Source = null; here to prevent showing old images occasionally
-            // Image.ImageSource = null;
             var item = BindingContext as BaseData;
             ItemData = item;
             if (item == null)
             {
                 return;
             }
-            // Image.ImageSource = item.ImgSource;
             base.OnBindingContextChanged();
         }
 

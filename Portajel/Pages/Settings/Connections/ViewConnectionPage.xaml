@@ -17,7 +17,7 @@
             x:Name="ViewCollections" 
             ItemsSource="{Binding ConnectionItems}" >
             <CollectionView.ItemTemplate>
-                <DataTemplate x:DataType="local:ConnectorProperty" >
+                <DataTemplate x:DataType="local:ConnectorProperties" >
                     <VerticalStackLayout>
                         <Label Margin="0, 0, 10, 5" AutomationId="Login" Text="{Binding Label}" />
                         <Entry Margin="0, 0, 0, 10" AutomationId="Password" Text="{Binding Value}" Placeholder="{Binding Description}" IsPassword="{Binding ProtectValue}" TextChanged="Entry_TextChanged"/>

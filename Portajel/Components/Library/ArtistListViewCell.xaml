@@ -6,18 +6,16 @@
     xmlns:music="clr-namespace:Portajel.Connections.Database;assembly=Portajel.Connections"
 	xmlns:comp="clr-namespace:Portajel.Components"
 	xmlns:cnv="clr-namespace:Portajel.Structures.Converters"
-    xmlns:ffimageloading="clr-namespace:FFImageLoading.Maui;assembly=FFImageLoading.Maui"
-    xmlns:sn="clr-namespace:Sharpnado.Tasks;assembly=Sharpnado.TaskMonitor"
-	x:Class="Portajel.Components.Library.GenreViewCell"
+	x:Class="Portajel.Components.Library.ArtistListViewCell"
 	x:Name="self"
     Opacity="1"
     HorizontalOptions="Fill"
 	SemanticProperties.Description="{Binding Name}"
 	SemanticProperties.HeadingLevel="Level3"
-	x:DataType="music:GenreData">
+	x:DataType="music:ArtistData">
 	<vlv:VirtualViewCell.Resources>
 		<cnv:SubtitleTextConverter x:Key="TextConverter" />
-	</vlv:VirtualViewCell.Resources>	
+	</vlv:VirtualViewCell.Resources>
 	<vlv:VirtualViewCell.Content>
 	    <Grid ColumnDefinitions="84, *" 
 	          RowDefinitions="42, 42" 
@@ -32,12 +30,12 @@
                 HorizontalOptions="Fill"
                 ZIndex="0">
             </Button>
-
+			
 	        <Border
 		        Grid.Column="0"
 		        Grid.RowSpan="2"
 		        StrokeThickness="0"
-		        StrokeShape="RoundRectangle 4"
+		        StrokeShape="RoundRectangle 64"
 		        HeightRequest="64"
 		        WidthRequest="64"
 		        ZIndex="5">
@@ -56,19 +54,14 @@
 	        </Border>
 
             <Label 
-                VerticalOptions="End"
+                VerticalOptions="Center"
                 Grid.Column="1"
+                Grid.RowSpan="2"
                 Text="{Binding Name}" 
                 FontSize="16"
                 FontAttributes="Bold"
                 LineBreakMode="TailTruncation"
                 MaxLines="1"/>
-            <Label
-	            Grid.Column="1"
-	            Grid.Row="1"
-	            Text="{Binding Converter={StaticResource TextConverter}}"
-	            LineBreakMode="TailTruncation"
-	            MaxLines="1"/>
         </Grid>
     </vlv:VirtualViewCell.Content>
 </vlv:VirtualViewCell>

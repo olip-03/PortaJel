@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Portajel.Connections.Interfaces;
+using Portajel.Structures.Functional;
 using Portajel.Structures.ViewModels.Settings;
 
 namespace Portajel.Pages.Settings;
@@ -19,16 +20,31 @@ public partial class HomeSettings : ContentPage
     {
         _server = server;
         _database = database;
+        UpdateList();
+        InitializeComponent();
+        BindingContext = _viewModel;
+    }
 
+    protected override void OnNavigatedTo(NavigatedToEventArgs args)
+    {
+        UpdateList();
+    }
+
+    protected override void OnNavigatingFrom(NavigatingFromEventArgs args)
+    {
+        SaveHelper.SaveData(_server);
+        base.OnNavigatingFrom(args);
+    }
+
+    private void UpdateList()
+    {
+        _viewModel.Feeds.Clear();
         foreach (var srv in _server.Servers)
         {
-            foreach (var feed in srv.Feeds.AvailableFeeds)
+            foreach (var feed in srv.Feeds)
             {
                 _viewModel.Feeds.Add(feed.Value);
             }
         }
-        
-        InitializeComponent();
-        BindingContext = _viewModel;
     }
 }

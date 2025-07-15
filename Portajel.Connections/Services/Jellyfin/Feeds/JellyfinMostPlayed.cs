@@ -8,38 +8,42 @@ namespace Portajel.Connections.Services.Jellyfin.Feeds;
 public class JellyfinMostPlayed : IMediaFeed
 {
     private readonly IDbConnector? _database;
-    public string Id { get; } = "JellyfinMostPlayed";
-    public string Name { get; } = "Most Played";
-    public string Description { get; } = "Most played from this library.";
-    public string ServerUrl { get; }
+    public string Id { get; set; } = "JellyfinMostPlayed";
+    public string Name { get; set; } = "Most Played";
+    public string Description { get; set; } = "Most played from this library.";
+    public string ServerUrl { get; set; }
     public bool IsEnabled { get; set; }
-    public List<ConnectorProperty> Properties { get; set; }
-    public BaseData[] GetFrom(int itemIndex, int amount)
-    {
-        return _database.Connectors.Album.GetAll(amount, itemIndex, setSortTypes: ItemSortBy.DateCreated);
-    }
-    public int Total()
-    {
-        return _database.Connectors.Album.GetTotalCount();
-    }
-
+    public List<ConnectorPropertyValue> Properties { get; set; }
     public JellyfinMostPlayed(IDbConnector database, string serverUrl, bool isEnabled)
     {
         _database = database;
         ServerUrl = serverUrl;
         IsEnabled = isEnabled;
-        Properties = new List<ConnectorProperty>()
+        Properties = new List<ConnectorPropertyValue>()
         {
-            new ConnectorProperty()
+            new ConnectorPropertyValue()
             {
                 Label = "ServerUrl",
                 Value = ServerUrl
             },
-            new ConnectorProperty()
+            new ConnectorPropertyValue()
             {
                 Label = "ViewStyle",
                 Value = FeedViewStyle.HorizontalGrid
             }
         };
+    }
+
+    public JellyfinMostPlayed()
+    {
+        
+    }
+    public BaseData[] GetFrom(int itemIndex, int amount)
+    {
+        return _database.Connectors.Album.GetAll(amount, itemIndex, setSortTypes: ItemSortBy.PlayCount);
+    }
+    public int Total()
+    {
+        return _database.Connectors.Album.GetTotalCount();
     }
 }

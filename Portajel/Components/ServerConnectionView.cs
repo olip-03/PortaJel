@@ -108,7 +108,7 @@ public class ServerConnectionView : Grid
                     }
                 );
             };
-
+        
             var view = new VerticalStackLayout
             {
                 ZIndex = 10,

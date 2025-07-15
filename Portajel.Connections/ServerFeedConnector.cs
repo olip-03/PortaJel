@@ -2,18 +2,24 @@ using Portajel.Connections.Interfaces;
 
 namespace Portajel.Connections;
 
-public class ServerFeedConnector: IFeedConnector
+public sealed class ServerConnectorFeeds: ConnectorFeeds
 {
-    public Dictionary<string, IMediaFeed> AvailableFeeds
+    private ServerConnector _serverConnector;
+    public ServerConnectorFeeds(ServerConnector serverConnector)
     {
-        get
-        {
-            return new Dictionary<string, IMediaFeed>();
-        }
+        _serverConnector= serverConnector;
+        Refresh();
     }
-
-    public void SetFeedState(string feedId, bool enabled = true)
+    public override void Refresh()
     {
-        throw new NotImplementedException();
+        Clear();
+        foreach (var server in _serverConnector.Servers)
+        {
+            if(server.Feeds == null) continue;
+            foreach (var feed in server.Feeds)
+            {
+                Add(feed.Key, feed.Value);
+            }
+        }
     }
 }

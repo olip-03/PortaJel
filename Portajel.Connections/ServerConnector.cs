@@ -9,13 +9,13 @@ namespace Portajel.Connections;
 //  https://media.olisshittyserver.xyz/api-docs/swagger/index.html
 public class ServerConnector : IServerConnector
 {
-    public MediaServerList Servers { get; } = [];
-    public IFeedConnector? Feeds { get; }
-    public Dictionary<string, ConnectorProperty> Properties { get; set; } = [];
+    public MediaServerList Servers { get; set; } = [];
+    public ConnectorFeeds? Feeds { get; }
+    public ConnectorProperties Properties { get; set; } = [];
     public List<Action<IMediaServerConnector>> AddServerActions { get; set; } = new();
     public ServerConnector()
     {
-        
+        Feeds  = new ServerConnectorFeeds(this);
     }
     public async Task<AuthStatusInfo> AuthenticateAsync(CancellationToken cancellationToken = default)
     {
@@ -66,7 +66,7 @@ public class ServerConnector : IServerConnector
         {
             try
             {
-                if (server.Properties.TryGetValue("LastSyncDate", out ConnectorProperty? value))
+                if (server.Properties.TryGetValue("LastSyncDate", out ConnectorPropertyValue? value))
                 {
                     DateTime lastSyncDate = DateTime.Parse((string)value.Value);
                     if ((DateTime.Now - lastSyncDate).TotalDays >= 90) // 3 months ~= 90 days

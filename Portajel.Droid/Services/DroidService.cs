@@ -20,6 +20,7 @@ using AndroidX.Core.App;
 using AndroidX.Core.Content;
 using Android.Opengl;
 using System.IO;
+using System.Transactions;
 using Microsoft.Maui.Storage;
 using Microsoft.Maui.ApplicationModel;
 using Microsoft.Maui.Platform;
@@ -50,7 +51,10 @@ namespace Portajel.Droid.Services
                 {
                     await serverConnector.AuthenticateAsync();
                     await serverConnector.StartSyncAsync();
-                    await SaveHelper.SaveData(serverConnector);
+                    if (serverConnector != null)
+                    {
+                        await SaveHelper.SaveData(serverConnector);
+                    }
                 });
             }
             catch (Exception ex)
@@ -91,15 +95,17 @@ namespace Portajel.Droid.Services
             var appDataDirectory = Path.Combine(FileSystem.AppDataDirectory, "MediaData");
             database = new DatabaseConnector(Path.Combine(mainDir, "portajeldb.sql"));
             var t = SaveHelper.LoadData(database, appDataDirectory);
-            t.Wait();
-            var result = t.Result; 
+
 
             try
             {
+                t.Wait();
+                var result = t.Result; 
                 serverConnector = (ServerConnector)result;
             }
             catch (Exception ex)
             {
+                serverConnector = new();
                 return;
             }
 

@@ -18,11 +18,11 @@ using CommunityToolkit.Maui.Views;
 
 namespace Portajel.Components.Library
 {
-    public partial class GenreViewCell : VirtualViewCell
+    public partial class GenreListViewCell : VirtualViewCell
     {
         private BaseData ItemData = null;
 
-        public GenreViewCell()
+        public GenreListViewCell()
         {
             InitializeComponent();
         }

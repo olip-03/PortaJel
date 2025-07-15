@@ -13,7 +13,7 @@ public partial class ViewConnectionPage : ContentPage, IQueryAttributable
 {
     private string url = default!;
 
-    private Dictionary<string, ConnectorProperty> _connectionProperties = new();
+    private Dictionary<string, ConnectorPropertyValue> _connectionProperties = new();
     private ViewConnectionViewModel _viewModel = new();
 
     private IServerConnector _server = default!;
@@ -35,7 +35,7 @@ public partial class ViewConnectionPage : ContentPage, IQueryAttributable
         {
             try
             {
-                var itemValue = (Dictionary<string, ConnectorProperty>)item.Value;
+                var itemValue = (Dictionary<string, ConnectorPropertyValue>)item.Value;
                 foreach (var setting in itemValue)
                 {
                     _connectionProperties.Add(setting.Key, setting.Value);
@@ -47,7 +47,7 @@ public partial class ViewConnectionPage : ContentPage, IQueryAttributable
             }
         }
 
-        ConnectorProperty? connectorProperty = new ConnectorProperty();
+        ConnectorPropertyValue? connectorProperty = new ConnectorPropertyValue();
         var test = _connectionProperties.TryGetValue("URL", out connectorProperty);
         if(test)
         {

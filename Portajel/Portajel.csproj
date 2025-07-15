@@ -30,6 +30,14 @@
 	  <MauiCss Remove="Services\**" />
 	  <MauiXaml Remove="Services\**" />
 	  <None Remove="Services\**" />
+	  <MauiXaml Update="Components\Library\AlbumGridViewCell.xaml">
+	    <SubType>Designer</SubType>
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <Compile Update="Components\Library\AlbumGridViewCell.xaml.cs">
+	    <DependentUpon>AlbumGridViewCell.xaml</DependentUpon>
+	    <SubType>Code</SubType>
+	  </Compile>
 	</ItemGroup>
 
 	<ItemGroup>
@@ -50,19 +58,19 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Compile Update="Components\Library\GenreViewCell.xaml.cs">
+	  <Compile Update="Components\Library\GenreListViewCell.xaml.cs">
 	    <DependentUpon>GenreViewCell.xaml</DependentUpon>
 	  </Compile>
-	  <Compile Update="Components\Library\SongViewCell.xaml.cs">
+	  <Compile Update="Components\Library\SongListViewCell.xaml.cs">
 	    <DependentUpon>SongViewCell.xaml</DependentUpon>
 	  </Compile>
-	  <Compile Update="Components\Library\PlaylistViewCell.xaml.cs">
+	  <Compile Update="Components\Library\PlaylistListViewCell.xaml.cs">
 	    <DependentUpon>PlaylistViewCell.xaml</DependentUpon>
 	  </Compile>
-	  <Compile Update="Components\Library\ArtistViewCell.xaml.cs">
+	  <Compile Update="Components\Library\ArtistListViewCell.xaml.cs">
 	    <DependentUpon>ArtistViewCell.xaml</DependentUpon>
 	  </Compile>
-	  <Compile Update="Components\Library\AlbumViewCell.xaml.cs">
+	  <Compile Update="Components\Library\AlbumListViewCell.xaml.cs">
 	    <DependentUpon>AlbumViewCell.xaml</DependentUpon>
 	  </Compile>
 	  <Compile Update="Pages\Settings\DebugPage.xaml.cs">
@@ -80,28 +88,25 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <MauiXaml Update="Components\Library\GenreViewCell.xaml">
+	  <MauiXaml Update="Components\Library\GenreListViewCell.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
-	  <MauiXaml Update="Components\Library\SongViewCell.xaml">
+	  <MauiXaml Update="Components\Library\SongListViewCell.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
-	  <MauiXaml Update="Components\Library\PlaylistViewCell.xaml">
+	  <MauiXaml Update="Components\Library\PlaylistListViewCell.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
-	  <MauiXaml Update="Components\Library\ArtistViewCell.xaml">
+	  <MauiXaml Update="Components\Library\ArtistListViewCell.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
-	  <MauiXaml Update="Components\Library\AlbumViewCell.xaml">
+	  <MauiXaml Update="Components\Library\AlbumListViewCell.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="Components\Modal\ModalAddService.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="Components\MusicListMedium.xaml">
-	    <Generator>MSBuild:Compile</Generator>
-	  </MauiXaml>
-	  <MauiXaml Update="Pages\HomePage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="Pages\LibraryPage.xaml">
@@ -230,23 +235,23 @@
 	    <Generator>MSBuild:Compile</Generator>
 	    <DependentUpon>ViewConnectionPage.xaml</DependentUpon>
 	  </AdditionalFiles>
-	  <AdditionalFiles Update="Components\Library\AlbumViewCell.xaml">
+	  <AdditionalFiles Update="Components\Library\AlbumListViewCell.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	    <DependentUpon>AlbumViewCell.xaml</DependentUpon>
 	  </AdditionalFiles>
-	  <AdditionalFiles Update="Components\Library\ArtistViewCell.xaml">
+	  <AdditionalFiles Update="Components\Library\ArtistListViewCell.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	    <DependentUpon>ArtistViewCell.xaml</DependentUpon>
 	  </AdditionalFiles>
-	  <AdditionalFiles Update="Components\Library\GenreViewCell.xaml">
+	  <AdditionalFiles Update="Components\Library\GenreListViewCell.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	    <DependentUpon>GenreViewCell.xaml</DependentUpon>
 	  </AdditionalFiles>
-	  <AdditionalFiles Update="Components\Library\PlaylistViewCell.xaml">
+	  <AdditionalFiles Update="Components\Library\PlaylistListViewCell.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	    <DependentUpon>PlaylistViewCell.xaml</DependentUpon>
 	  </AdditionalFiles>
-	  <AdditionalFiles Update="Components\Library\SongViewCell.xaml">
+	  <AdditionalFiles Update="Components\Library\SongListViewCell.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	    <DependentUpon>SongViewCell.xaml</DependentUpon>
 	  </AdditionalFiles>

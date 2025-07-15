@@ -15,7 +15,7 @@ public partial class ModalAddServer : ContentPage
 {
     private IServerConnector _serverConnector;
     private IMediaServerConnector _server;
-    private ObservableCollection<ConnectorProperty> ConnectionItems { get; set; } = new();
+    private ObservableCollection<ConnectorPropertyValue> ConnectionItems { get; set; } = new();
     public Action<IMediaServerConnector> OnLoginSuccess { get; set; }
     public ModalAddServer(IServerConnector primaryConnector, IMediaServerConnector server)
     {
@@ -53,6 +53,7 @@ public partial class ModalAddServer : ContentPage
         if (statusInfo.State == AuthState.Success )
         {
             _serverConnector.AddServer(_server);
+            _serverConnector.Feeds.Refresh();
             await SaveHelper.SaveData(_serverConnector);
             await Navigation.PopModalAsync();
             OnLoginSuccess.Invoke(_server);

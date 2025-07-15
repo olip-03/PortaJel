@@ -7,11 +7,20 @@ namespace Portajel.Structures.Adaptor;
 public class MediaFeedAdaptor: VirtualListViewAdapterBase<object, BaseData>
 {
     private IMediaFeed _feed;
+
+    public MediaFeedAdaptor()
+    {
+        
+    }
+    public MediaFeedAdaptor(IMediaFeed feed)
+    {
+        _feed = feed;
+    }
+    
     public override BaseData GetItem(int sectionIndex, int itemIndex)
     {
         return _feed.GetFrom(itemIndex, 1).First();
     }
-
     public override int GetNumberOfItemsInSection(int sectionIndex)
     {
         return _feed.Total();

@@ -9,12 +9,13 @@ namespace Portajel.Connections.Services.MusicBrainz;
 public class MusicBrainzConnector: IMediaServerConnector
 {
     public Dictionary<MediaCapabilities, bool> SupportedReturnTypes { get; set; }
-    public IFeedConnector? Feeds { get; }
+    public ConnectorFeeds? Feeds { get; set; }
     public Dictionary<string, IMediaDataConnector> DataConnectors { get; }
+    public string Id { get; } = "MusicBrainzConnector";
     public string Name { get; } = "MusicBrainz";
     public string Description { get; } = "Connection to MusicBrainz";
     public string Image { get; }
-    public Dictionary<string, ConnectorProperty> Properties { get; set; }
+    public ConnectorProperties Properties { get; set; }
     public SyncStatusInfo SyncStatus { get; set; }
     public AuthStatusInfo AuthStatus { get; set; }
     public async Task<AuthStatusInfo> AuthenticateAsync(CancellationToken cancellationToken = default)
@@ -46,32 +47,12 @@ public class MusicBrainzConnector: IMediaServerConnector
         throw new NotImplementedException();
     }
 
-    public string GetUsername()
-    {
-        throw new NotImplementedException();
-    }
-
-    public string GetPassword()
-    {
-        throw new NotImplementedException();
-    }
-
     public string GetAddress()
     {
         throw new NotImplementedException();
     }
 
     public string GetProfileImageUrl()
-    {
-        throw new NotImplementedException();
-    }
-
-    public UserCredentials GetUserCredentials()
-    {
-        throw new NotImplementedException();
-    }
-
-    public MediaServerConnection GetConnectionType()
     {
         throw new NotImplementedException();
     }

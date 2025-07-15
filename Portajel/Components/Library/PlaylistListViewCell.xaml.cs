@@ -15,14 +15,14 @@ using Jellyfin.Sdk.Generated.Models;
 using Portajel.Connections.Structs;
 using Sharpnado.Tabs;
 using CommunityToolkit.Maui.Views;
+using Portajel.Structures.ViewModels.Library;
 
 namespace Portajel.Components.Library
 {
-    public partial class ArtistViewCell : VirtualViewCell
+    public partial class PlaylistListViewCell : VirtualViewCell
     {
         private BaseData ItemData = null;
-
-        public ArtistViewCell()
+        public PlaylistListViewCell()
         {
             InitializeComponent();
         }
@@ -32,6 +32,7 @@ namespace Portajel.Components.Library
             // you can also put cachedImage.Source = null; here to prevent showing old images occasionally
             var item = BindingContext as BaseData;
             ItemData = item;
+            
             if (item == null)
             {
                 return;

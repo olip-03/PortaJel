@@ -6,42 +6,41 @@
     xmlns:music="clr-namespace:Portajel.Connections.Database;assembly=Portajel.Connections"
 	xmlns:comp="clr-namespace:Portajel.Components"
 	xmlns:cnv="clr-namespace:Portajel.Structures.Converters"
-	x:Class="Portajel.Components.Library.ArtistViewCell"
+	x:Class="Portajel.Components.Library.AlbumGridViewCell"
 	x:Name="self"
     Opacity="1"
     HorizontalOptions="Fill"
 	SemanticProperties.Description="{Binding Name}"
 	SemanticProperties.HeadingLevel="Level3"
-	x:DataType="music:ArtistData">
+	x:DataType="music:AlbumData">
 	<vlv:VirtualViewCell.Resources>
 		<cnv:SubtitleTextConverter x:Key="TextConverter" />
 	</vlv:VirtualViewCell.Resources>
 	<vlv:VirtualViewCell.Content>
-	    <Grid ColumnDefinitions="84, *" 
-	          RowDefinitions="42, 42" 
-	          HorizontalOptions="Fill">
-            <Button 
-                Clicked="Button_Clicked"
-                Grid.Row="0"
-                Grid.Column="0"
-                Grid.ColumnSpan="2"
-                Grid.RowSpan="2"
-                BackgroundColor="Transparent"
-                HorizontalOptions="Fill"
-                ZIndex="0">
-            </Button>
-			
-	        <Border
+        <Grid RowDefinitions="Auto, 42, 42"
+              Margin="16, 8,0,0"
+              HorizontalOptions="Fill">
+	        <Button
+		        Clicked="Button_Clicked"
+		        Grid.Row="0"
 		        Grid.Column="0"
 		        Grid.RowSpan="2"
+		        BackgroundColor="Transparent"
+		        HorizontalOptions="Fill"
+		        ZIndex="0">
+	        </Button>
+	        
+	        <Border
+		        Grid.Column="0"
+		        Grid.Row="0"
 		        StrokeThickness="0"
-		        StrokeShape="RoundRectangle 64"
-		        HeightRequest="64"
-		        WidthRequest="64"
+		        StrokeShape="RoundRectangle 4"
+		        HeightRequest="156"
+		        WidthRequest="156"
 		        ZIndex="5">
 		        <Border.Shadow>
 			        <Shadow Brush="Black"
-			                Offset="4, 4"
+			                Offset="2, 2"
 			                Radius="6"
 			                Opacity="0.4" />
 		        </Border.Shadow>
@@ -49,19 +48,26 @@
 		                         BlurHash="{Binding ImgBlurhash}"
 		                         Source="{Binding ImgSource}"
 		                         ZIndex="1"
-		                         HeightRequest="64"
-		                         WidthRequest="64"/>
+		                         HeightRequest="156"
+		                         WidthRequest="156"/>
 	        </Border>
-
-            <Label 
-                VerticalOptions="Center"
-                Grid.Column="1"
-                Grid.RowSpan="2"
-                Text="{Binding Name}" 
-                FontSize="16"
-                FontAttributes="Bold"
-                LineBreakMode="TailTruncation"
-                MaxLines="1"/>
+            
+			<StackLayout 
+				Grid.Row="1" 					
+				MaximumWidthRequest="156" 
+				Margin="0, 8">
+				<Label 
+					VerticalOptions="End"
+					Text="{Binding Name}" 
+					FontAttributes="Bold"
+					LineBreakMode="TailTruncation"
+					MaxLines="2"/>
+				<Label
+					Text="{Binding Converter={StaticResource TextConverter}}"
+					LineBreakMode="TailTruncation"
+					MaximumWidthRequest="156"
+					MaxLines="2"/>
+			</StackLayout>
         </Grid>
     </vlv:VirtualViewCell.Content>
 </vlv:VirtualViewCell>

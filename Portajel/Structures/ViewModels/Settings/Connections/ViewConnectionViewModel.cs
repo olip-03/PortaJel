@@ -10,6 +10,6 @@ namespace Portajel.Structures.ViewModels.Settings.Connections
 {
     public class ViewConnectionViewModel
     {
-        public ObservableCollection<ConnectorProperty> ConnectionItems { get; set; } = new();
+        public ObservableCollection<ConnectorPropertyValue> ConnectionItems { get; set; } = new();
     }
 }

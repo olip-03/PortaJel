@@ -12,7 +12,7 @@
              x:DataType="vm:AlbumPageViewModel">
     <ContentPage.Resources>
         <ResourceDictionary>
-            <adaptors:ItemTemplateSelector x:Key="ItemTemplateSelector" />
+            <adaptors:ListTemplateSelector x:Key="ItemTemplateSelector" />
         </ResourceDictionary>
     </ContentPage.Resources>
 

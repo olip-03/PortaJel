@@ -4,15 +4,15 @@ using Portajel.Connections.Structs;
 
 namespace Portajel.Structures.Adaptor;
 
-public class ItemTemplateSelector : VirtualListViewItemTemplateSelector
+public class ListTemplateSelector : VirtualListViewItemTemplateSelector
 {
-	public ItemTemplateSelector() : base()
+	public ListTemplateSelector() : base()
 	{
-		AlbumTemplate = new DataTemplate(typeof(AlbumViewCell));
-        ArtistTemplate = new DataTemplate(typeof(ArtistViewCell));
-        GenreTemplate = new DataTemplate(typeof(GenreViewCell));
-        PlaylistTemplate = new DataTemplate(typeof(PlaylistViewCell));
-        SongTemplate = new DataTemplate(typeof(SongViewCell));
+		AlbumTemplate = new DataTemplate(typeof(AlbumListViewCell));
+        ArtistTemplate = new DataTemplate(typeof(ArtistListViewCell));
+        GenreTemplate = new DataTemplate(typeof(GenreListViewCell));
+        PlaylistTemplate = new DataTemplate(typeof(PlaylistListViewCell));
+        SongTemplate = new DataTemplate(typeof(SongListViewCell));
     }
 
 	readonly DataTemplate AlbumTemplate;

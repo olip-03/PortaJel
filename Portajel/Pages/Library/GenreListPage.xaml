@@ -15,7 +15,7 @@
              x:DataType="local:DatabaseBindViewModel">
     <ContentPage.Resources>
         <ResourceDictionary>
-            <adaptors:ItemTemplateSelector x:Key="itemTemplateSelector" />
+            <adaptors:ListTemplateSelector x:Key="itemTemplateSelector" />
             <converters:ImageUrlConverter x:Key="ImageUrlConverter" />
         </ResourceDictionary>
     </ContentPage.Resources>

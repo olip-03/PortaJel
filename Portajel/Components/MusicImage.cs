@@ -77,8 +77,8 @@ namespace Portajel.Components
                 FadeAnimationForCachedImages = true,
                 LoadingDelay = 500,
                 LoadingPriority = FFImageLoading.Work.LoadingPriority.Lowest,
-                HeightRequest = 64,
-                WidthRequest = 64,
+                HeightRequest = HeightRequest,
+                WidthRequest = WidthRequest,
                 Aspect = Aspect.AspectFill,
                 BitmapOptimizations = true,
                 DownsampleToViewSize = true,
@@ -106,10 +106,7 @@ namespace Portajel.Components
         {
             if (bindable is MusicImage musicImage)
             {
-                // Clear previous image immediately
                 musicImage._sourceImage.Source = null;
-        
-                // If we had a previous source, clear it from cache to prevent recycling issues
                 if (oldValue is string oldSource && !string.IsNullOrEmpty(oldSource))
                 {
                     await FFImageLoading.ImageService.Instance.InvalidateCacheEntryAsync(oldSource, CacheType.Memory);
@@ -118,11 +115,6 @@ namespace Portajel.Components
                 if (newValue is string source && !string.IsNullOrEmpty(source))
                 {
                     musicImage._sourceImage.Source = source;
-                    Trace.WriteLine($"MusicImage: Source changed to {source}");
-                }
-                else
-                {
-                    Trace.WriteLine("MusicImage: Source cleared");
                 }
             }
         }

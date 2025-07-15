@@ -15,6 +15,7 @@ using Portajel.Components;
 using Portajel.Structures.ViewModels.Pages.Library;
 using Portajel.Pages.Library;
 using FFImageLoading.Maui;
+using Portajel.Connections.Definitions;
 
 namespace Portajel
 {
@@ -29,7 +30,7 @@ namespace Portajel
                 .UseVirtualListView()
                 .UseMauiCommunityToolkit()
                 .UseSkiaSharp()
-                .RegisterViewModels()
+                .RegisterMediaProviders()
                 .RegisterViews()
                 .ConfigureFonts(fonts =>
                 {
@@ -44,8 +45,12 @@ namespace Portajel
             return builder;
         }
 
-        public static MauiAppBuilder RegisterViewModels(this MauiAppBuilder mauiAppBuilder)
+        public static MauiAppBuilder RegisterMediaProviders(this MauiAppBuilder mauiAppBuilder)
         {
+            foreach (var serverDefinition in ConnectorDefinitions.ServerConnectorDefinitions)
+            {
+                mauiAppBuilder.Services.AddSingleton(serverDefinition.Value.Type);
+            }
             return mauiAppBuilder;
         }
 

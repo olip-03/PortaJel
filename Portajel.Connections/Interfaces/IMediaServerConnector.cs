@@ -7,15 +7,16 @@ namespace Portajel.Connections.Interfaces
 {
     public interface IMediaServerConnector
     {
-        Dictionary<MediaCapabilities, bool> SupportedReturnTypes { get; set; }
-        public IFeedConnector? Feeds { get; } 
-        Dictionary<string, IMediaDataConnector> DataConnectors { get; }
+        public string Id { get; }
         public string Name { get; }
         public string Description { get; }
         public string Image { get; }
-        public Dictionary<string, ConnectorProperty> Properties { get; set; }
         public SyncStatusInfo SyncStatus { get; set; }
         public AuthStatusInfo AuthStatus { get; set; }
+        public ConnectorFeeds? Feeds { get; set; }
+        public ConnectorProperties Properties { get; set; }
+        Dictionary<MediaCapabilities, bool> SupportedReturnTypes { get; set; }
+        Dictionary<string, IMediaDataConnector> DataConnectors { get; }
         Task<AuthStatusInfo> AuthenticateAsync(
             CancellationToken cancellationToken = default);
         Task<bool> UpdateDb(
@@ -35,11 +36,7 @@ namespace Portajel.Connections.Interfaces
             ItemSortBy setSortTypes = ItemSortBy.Name, 
             SortOrder setSortOrder = SortOrder.Ascending,
             CancellationToken cancellationToken = default);
-        string GetUsername();
-        string GetPassword();
         string GetAddress();
         string GetProfileImageUrl();
-        UserCredentials GetUserCredentials();
-        MediaServerConnection GetConnectionType();
     }
 }

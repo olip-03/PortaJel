@@ -1,11 +1,16 @@
 namespace Portajel.Connections.Services;
 
-public class ConnectorProperty
+public class ConnectorProperties: Dictionary<string, ConnectorPropertyValue>
 {
-    public ConnectorProperty()
+    
+}
+
+public class ConnectorPropertyValue
+{
+    public ConnectorPropertyValue()
     {
     }
-    public ConnectorProperty(string label, string description, object value, bool protectValue, bool userVisible, string icon = "")
+    public ConnectorPropertyValue(string label, string description, object value, bool protectValue, bool userVisible, string icon = "")
     {
         Label = label;
         Description = description;

@@ -10,13 +10,12 @@ namespace Portajel.Connections.Services.FS;
 public class FileSystemConnector : IMediaServerConnector
 {
     private SQLiteAsyncConnection _database = null;
-
     public IMediaDataConnector AlbumData { get; set; }
     public IMediaDataConnector ArtistData { get; set; }
     public IMediaDataConnector SongData { get; set; }
     public IMediaDataConnector PlaylistData { get; set; }
     public IMediaDataConnector Genre { get; set; }
-    public IFeedConnector? Feeds { get; }
+    public ConnectorFeeds? Feeds { get; set; }
     public Dictionary<string, IMediaDataConnector> DataConnectors => new()
     {
         { "Album", AlbumData },
@@ -33,13 +32,15 @@ public class FileSystemConnector : IMediaServerConnector
         { MediaCapabilities.Playlist, true },
         { MediaCapabilities.Genre, true }
     };
+
+    public string Id { get; } = "FileSystemConnector";
     public string Name { get; } = "File System";
     public string Description { get; } = "Enables connections to a local file system.";
     public string Image { get; } = "icon-spotify.png"; 
-    public Dictionary<string, ConnectorProperty> Properties { get; set; } =new Dictionary<string, ConnectorProperty>
+    public ConnectorProperties Properties { get; set; } = new()
     {
         {
-            "Paths", new ConnectorProperty(
+            "Paths", new ConnectorPropertyValue(
                 label: "Music Directories",
                 description: "The directories of music files in your file system.",
                 value: new List<string>(),
@@ -95,16 +96,6 @@ public class FileSystemConnector : IMediaServerConnector
     {
         return Task.FromResult(Array.Empty<BaseData>());
     }
-
-    public string GetUsername()
-    {
-        return null;
-    }
-    
-    public string GetPassword()
-    {
-        return null;
-    }
     
     public string GetAddress()
     {
@@ -114,15 +105,5 @@ public class FileSystemConnector : IMediaServerConnector
     public string GetProfileImageUrl()
     {
         return null;
-    }
-
-    public UserCredentials GetUserCredentials()
-    {
-        return new UserCredentials(string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty);
-    }
-
-    public MediaServerConnection GetConnectionType()
-    {
-        return MediaServerConnection.Filesystem;
     }
 }

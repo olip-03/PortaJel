@@ -12,7 +12,7 @@ namespace Portajel.Connections.Services.Spotify
         public IMediaDataConnector SongData { get; set; } = null;
         public IMediaDataConnector PlaylistData { get; set; } = new SpotifyServerPlaylistConnector();
         public IMediaDataConnector Genre { get; set; } = null;
-        public IFeedConnector? Feeds { get; }
+        public ConnectorFeeds? Feeds { get; set;  }
 
         public Dictionary<string, IMediaDataConnector> DataConnectors => new()
         {
@@ -30,13 +30,15 @@ namespace Portajel.Connections.Services.Spotify
             { MediaCapabilities.Playlist, true },
             { MediaCapabilities.Genre, true }
         };
+
+        public string Id { get; } = "SpotifyServerConnector";
         public string Name { get; } = "Spotify";
         public string Description { get; } = "Enables connections to Spotify.";
         public string Image { get; } = "icon_spotify.png"; 
-        public Dictionary<string, ConnectorProperty> Properties { get; set; } =new Dictionary<string, ConnectorProperty>
+        public ConnectorProperties Properties { get; set; } =new()
         {
             {
-                "Username", new ConnectorProperty(
+                "Username", new ConnectorPropertyValue(
                     label: "Username",
                     description: "The username of the Spotify User",
                     value: "",
@@ -44,7 +46,7 @@ namespace Portajel.Connections.Services.Spotify
                     userVisible: true)
             },
             {
-                "Password", new ConnectorProperty(
+                "Password", new ConnectorPropertyValue(
                     label: "Password",
                     description: "The Password of the Spotify User",
                     value: "",
@@ -90,17 +92,6 @@ namespace Portajel.Connections.Services.Spotify
             Properties["Password"].Value = password;
         }
         
-        
-        public string GetUsername()
-        {
-            return "";
-        }
-        
-        public string GetPassword()
-        {
-            return "";
-        }
-        
         public string GetAddress()
         {
             return "";
@@ -114,11 +105,6 @@ namespace Portajel.Connections.Services.Spotify
         public UserCredentials GetUserCredentials()
         {
             return new UserCredentials(Properties["Url"].Value.ToString(), Properties["Username"].Value.ToString(), string.Empty, Properties["Password"].Value.ToString(), string.Empty, string.Empty);
-        }
-        
-        public MediaServerConnection GetConnectionType()
-        {
-            return MediaServerConnection.Spotify;
         }
 
         public SpotifyServerConnector() 

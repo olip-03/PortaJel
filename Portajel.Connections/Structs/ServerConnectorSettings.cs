@@ -1,6 +1,5 @@
 using Newtonsoft.Json;
 using Portajel.Connections.Services;
-using Portajel.Connections.Services.Discogs;
 using Portajel.Connections.Services.FS;
 using Portajel.Connections.Services.Jellyfin;
 using Portajel.Connections.Services.Spotify;
@@ -12,82 +11,27 @@ namespace Portajel.Connections.Structs;
 
 public class ServerConnectorSettings
 {
-    public IServerConnector ServerConnector { get; private init; }
-    public ServerConnectorSettings(string json, IDbConnector database, string appDataDirectory)
-    {
-        ServerConnector = new ServerConnector();
-        if (string.IsNullOrWhiteSpace(json) || json == "{}")
-        {
-            return;
-        }
+    public List<ServerSettings> Servers { get; set; } = new();
+}
 
-        try
-        {
-            var serverProperties = JsonConvert.DeserializeObject<List<Dictionary<string, ConnectorProperty>>>(json);
-            if (serverProperties == null) return;
+public class ServerSettings
+{
+    public ConnectorProperties Properties { get; set; } = new();
+    public string Id { get; set; } = "";
+    public List<BaseMediaFeed> MediaFeeds { get; set; } = new();
+
+    public ServerSettings()
+    {
         
-            foreach (var props in serverProperties)
-            {
-                if (props.TryGetValue("ConnectorType", out var typeProperty))
-                {
-                    IMediaServerConnector server = null;
-                    var connectorTypeValue = typeProperty.Value?.ToString();
-                    if (int.TryParse(connectorTypeValue, out int connectorTypeInt))
-                    {
-                        switch (connectorTypeInt)
-                        {
-                            case 3: // JellyFin
-                                server = new JellyfinServerConnector(database)
-                                {
-                                    Properties = props
-                                };
-                                break;
-                        }
-                    }
-
-                    if (server != null)
-                    {
-                        server.Properties = props;
-                        ServerConnector.Servers.Add(server);
-                    }
-                }
-            }
-        }
-        catch (Exception ex)
+    }
+    public ServerSettings(IMediaServerConnector? mediaServerConnector)
+    {
+        if (mediaServerConnector == null)
         {
             return;
         }
-    }
-    
-    public ServerConnectorSettings(IServerConnector serverConnector, IMediaServerConnector[] servers)
-    {
-        ServerConnector = serverConnector;
-        if (ServerConnector.Servers.Count > 0) return;
-        if (servers == null) return;
-        foreach (var srv in servers)
-        {
-            ServerConnector.AddServer(srv);
-        }
-    }
-    
-    public string ToJson()
-    {
-        foreach (var server in ServerConnector.Servers)
-        {
-            if (!server.Properties.TryAdd("ConnectorType", new ConnectorProperty(
-                    label: "ConnectorType",
-                    description: "The Connection Type of this server.",
-                    value: server.GetConnectionType(),
-                    protectValue: false,
-                    userVisible: false)
-                ))
-            {
-                server.Properties["ConnectorType"].Value = server.GetConnectionType();
-            }
-        }
-        return JsonConvert.SerializeObject(
-            ServerConnector.Servers.Select(s => s.Properties), 
-            Formatting.Indented
-        );
+        Id = mediaServerConnector.Id;
+        Properties = mediaServerConnector.Properties;
+        MediaFeeds = mediaServerConnector.Feeds == null ? new List<BaseMediaFeed>() : mediaServerConnector.Feeds.Values.Select(f => new BaseMediaFeed(f)).ToList();
     }
 }

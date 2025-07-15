@@ -3,34 +3,36 @@
 	xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
 	xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
 	xmlns:vlv="clr-namespace:Microsoft.Maui.Controls;assembly=VirtualListView"
-    xmlns:music="clr-namespace:Portajel.Connections.Database;assembly=Portajel.Connections"
+	xmlns:music="clr-namespace:Portajel.Connections.Database;assembly=Portajel.Connections"
 	xmlns:comp="clr-namespace:Portajel.Components"
 	xmlns:cnv="clr-namespace:Portajel.Structures.Converters"
-	x:Class="Portajel.Components.Library.AlbumViewCell"
-	x:Name="self"
+	x:Class="Portajel.Components.Library.PlaylistListViewCell"
+	x:Name="ViewCell"
     Opacity="1"
     HorizontalOptions="Fill"
 	SemanticProperties.Description="{Binding Name}"
 	SemanticProperties.HeadingLevel="Level3"
-	x:DataType="music:AlbumData">
+	x:DataType="music:PlaylistData">
+	
 	<vlv:VirtualViewCell.Resources>
 		<cnv:SubtitleTextConverter x:Key="TextConverter" />
 	</vlv:VirtualViewCell.Resources>
+	
 	<vlv:VirtualViewCell.Content>
         <Grid ColumnDefinitions="84, *" 
               RowDefinitions="42, 42" 
               HorizontalOptions="Fill">
-	        <Button 
-		        Clicked="Button_Clicked"
-		        Grid.Row="0"
-		        Grid.Column="0"
-		        Grid.ColumnSpan="2"
-		        Grid.RowSpan="2"
-		        BackgroundColor="Transparent"
-		        HorizontalOptions="Fill"
-		        ZIndex="0">
-	        </Button>
-	        
+            <Button 
+                Clicked="Button_Clicked"
+                Grid.Row="0"
+                Grid.Column="0"
+                Grid.ColumnSpan="2"
+                Grid.RowSpan="2"
+                BackgroundColor="Transparent"
+                HorizontalOptions="Fill"
+                ZIndex="0">
+            </Button>
+
 	        <Border
 		        Grid.Column="0"
 		        Grid.RowSpan="2"
@@ -52,8 +54,8 @@
 		                         HeightRequest="64"
 		                         WidthRequest="64"/>
 	        </Border>
-            
-	        <Label 
+
+            <Label 
                 VerticalOptions="End"
                 Grid.Column="1"
                 Text="{Binding Name}" 
@@ -61,12 +63,12 @@
                 FontAttributes="Bold"
                 LineBreakMode="TailTruncation"
                 MaxLines="1"/>
-	        <Label
-		        Grid.Column="1"
-		        Grid.Row="1"
-		        Text="{Binding Converter={StaticResource TextConverter}}"
-		        LineBreakMode="TailTruncation"
-		        MaxLines="1"/>
+            <Label
+	            Grid.Column="1"
+	            Grid.Row="1"
+	            Text="{Binding Converter={StaticResource TextConverter}}"
+	            LineBreakMode="TailTruncation"
+	            MaxLines="1"/>
         </Grid>
     </vlv:VirtualViewCell.Content>
 </vlv:VirtualViewCell>

@@ -1,18 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Portajel.Connections.Enum
+namespace Portajel.Connections.Enum;
+public enum MediaType
 {
-    public enum MediaType
-    {
-        Album = 0,
-        Artist = 1,
-        Song = 2,
-        Playlist = 3,
-        Genre = 4,
-        AudioBook = 5,
-    }
+    Album = 0,
+    Artist = 1,
+    Song = 2,
+    Playlist = 3,
+    Genre = 4,
+    AudioBook = 5,
 }
