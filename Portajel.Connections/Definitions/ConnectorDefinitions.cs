@@ -36,17 +36,16 @@ public class ConnectorDefinitions
         },
     };
 
-    // If your media feeds also need database access, update this similarly
     public static Dictionary<string, ConnectorDefinition<IMediaFeed>> MediaFeedDefinitions { get; private set; } = new()
     {
         {
             "JellyfinRecentlyListened",
-            new((IDbConnector database, ConnectorProperties properties) => new JellyfinRecentlyListened(), typeof(JellyfinRecentlyListened))
+            new((IDbConnector database, ConnectorProperties properties) => new JellyfinRecentlyListened(database, properties), typeof(JellyfinRecentlyListened))
         },
         {
             "JellyfinRecentlyAdded",
-            new((IDbConnector database, ConnectorProperties properties) => new JellyfinRecentlyAdded(), typeof(JellyfinRecentlyAdded))
+            new((IDbConnector database, ConnectorProperties properties) => new JellyfinRecentlyAdded(database, properties), typeof(JellyfinRecentlyAdded))
         },
-        { "JellyfinMostPlayed", new((IDbConnector database, ConnectorProperties properties) => new JellyfinMostPlayed(), typeof(JellyfinMostPlayed)) }
+        { "JellyfinMostPlayed", new((IDbConnector database, ConnectorProperties properties) => new JellyfinMostPlayed(database, properties), typeof(JellyfinMostPlayed)) }
     };
 }

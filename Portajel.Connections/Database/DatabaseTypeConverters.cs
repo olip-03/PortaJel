@@ -48,7 +48,7 @@ public static class DatabaseTypeConverters
     
     public static bool InsertTyped<T>(SQLiteConnection database, BaseData musicItem) where T : BaseData, new()
     {
-        return database.Insert((T)musicItem) > 0;
+        return database.InsertOrReplace((T)musicItem) > 0;
     }
     
     public static bool InsertRangeTyped<T>(SQLiteConnection database, BaseData[] musicItems) where T : BaseData, new()
@@ -63,10 +63,16 @@ public static class DatabaseTypeConverters
         bool? getFavourite, 
         ItemSortBy setSortTypes, 
         SortOrder setSortOrder, 
+        Guid? parentId,
         Guid?[]? includeIds, 
         Guid?[]? excludeIds) where T : BaseData, new()
     {
         var query = database.Table<T>();
+        
+        if (parentId.HasValue)
+        {
+            query = query.Where(item => item.ParentId == parentId.Value);
+        }
         
         if (includeIds != null && includeIds.Any())
         {

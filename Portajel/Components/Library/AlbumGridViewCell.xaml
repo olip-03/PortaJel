@@ -15,6 +15,7 @@
 	x:DataType="music:AlbumData">
 	<vlv:VirtualViewCell.Resources>
 		<cnv:SubtitleTextConverter x:Key="TextConverter" />
+		<x:Double x:Key="ImageSize">170</x:Double>
 	</vlv:VirtualViewCell.Resources>
 	<vlv:VirtualViewCell.Content>
         <Grid RowDefinitions="Auto, 42, 42"
@@ -24,7 +25,7 @@
 		        Clicked="Button_Clicked"
 		        Grid.Row="0"
 		        Grid.Column="0"
-		        Grid.RowSpan="2"
+		        Grid.RowSpan="3"
 		        BackgroundColor="Transparent"
 		        HorizontalOptions="Fill"
 		        ZIndex="0">
@@ -35,8 +36,8 @@
 		        Grid.Row="0"
 		        StrokeThickness="0"
 		        StrokeShape="RoundRectangle 4"
-		        HeightRequest="156"
-		        WidthRequest="156"
+		        HeightRequest="{StaticResource ImageSize}"
+		        WidthRequest="{StaticResource ImageSize}"
 		        ZIndex="5">
 		        <Border.Shadow>
 			        <Shadow Brush="Black"
@@ -48,24 +49,25 @@
 		                         BlurHash="{Binding ImgBlurhash}"
 		                         Source="{Binding ImgSource}"
 		                         ZIndex="1"
-		                         HeightRequest="156"
-		                         WidthRequest="156"/>
+		                         HeightRequest="{StaticResource ImageSize}"
+		                         WidthRequest="{StaticResource ImageSize}"/>
 	        </Border>
             
 			<StackLayout 
 				Grid.Row="1" 					
-				MaximumWidthRequest="156" 
+				MaximumWidthRequest="{StaticResource ImageSize}" 
 				Margin="0, 8">
 				<Label 
 					VerticalOptions="End"
 					Text="{Binding Name}" 
 					FontAttributes="Bold"
 					LineBreakMode="TailTruncation"
+					MaximumWidthRequest="{StaticResource ImageSize}"
 					MaxLines="2"/>
 				<Label
 					Text="{Binding Converter={StaticResource TextConverter}}"
 					LineBreakMode="TailTruncation"
-					MaximumWidthRequest="156"
+					MaximumWidthRequest="{StaticResource ImageSize}"
 					MaxLines="2"/>
 			</StackLayout>
         </Grid>

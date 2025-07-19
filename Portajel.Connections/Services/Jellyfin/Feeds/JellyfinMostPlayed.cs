@@ -13,30 +13,44 @@ public class JellyfinMostPlayed : IMediaFeed
     public string Description { get; set; } = "Most played from this library.";
     public string ServerUrl { get; set; }
     public bool IsEnabled { get; set; }
-    public List<ConnectorPropertyValue> Properties { get; set; }
-    public JellyfinMostPlayed(IDbConnector database, string serverUrl, bool isEnabled)
+    public ConnectorProperties Properties { get; set; }
+    public FeedViewStyle ViewStyle { get; set; }
+
+    public JellyfinMostPlayed(IDbConnector database, ConnectorProperties properties)
+    {
+        _database = database;
+        Properties = properties;
+        ServerUrl = Properties["ServerUrl"].Value.ToString();
+        
+        System.Enum.TryParse<FeedViewStyle>(Properties["ServerUrl"].Value.ToString(), out var parsed);
+        ViewStyle = parsed;
+    }
+    public JellyfinMostPlayed(IDbConnector database, string serverUrl, bool isEnabled, FeedViewStyle viewStyle)
     {
         _database = database;
         ServerUrl = serverUrl;
         IsEnabled = isEnabled;
-        Properties = new List<ConnectorPropertyValue>()
+        ViewStyle = viewStyle;
+        Properties = new ConnectorProperties()
         {
-            new ConnectorPropertyValue()
             {
-                Label = "ServerUrl",
-                Value = ServerUrl
+                "ServerUrl", 
+                new ConnectorPropertyValue
+                {
+                    Label = "Server Url",
+                    Value = ServerUrl,
+                    Icon = "hub.svg"
+                }
             },
-            new ConnectorPropertyValue()
             {
-                Label = "ViewStyle",
-                Value = FeedViewStyle.HorizontalGrid
-            }
+                "ViewStyle", 
+                new ConnectorPropertyValue
+                {
+                    Label = "View Style",
+                    Value = ViewStyle,
+                }
+            },
         };
-    }
-
-    public JellyfinMostPlayed()
-    {
-        
     }
     public BaseData[] GetFrom(int itemIndex, int amount)
     {

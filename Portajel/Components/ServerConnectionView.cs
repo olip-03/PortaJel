@@ -24,6 +24,11 @@ public class ServerConnectionView : Grid
         _server = ServiceProvider.GetService<IServerConnector>();
         _database = ServiceProvider.GetService<IDbConnector>();
         BuildUI();
+        
+        Microsoft.Maui.Controls.Application.Current.RequestedThemeChanged += (s, a) =>
+        {
+            BuildUI();
+        };
     }
     
     public ServerConnectionView(IServerConnector server, IDbConnector dbConnector)
@@ -31,6 +36,11 @@ public class ServerConnectionView : Grid
         _server = server;
         _database = dbConnector;
         BuildUI();
+        
+        Microsoft.Maui.Controls.Application.Current.RequestedThemeChanged += (s, a) =>
+        {
+            BuildUI();
+        };
     }
 
     public void RefreshConnections()

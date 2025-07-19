@@ -7,6 +7,7 @@ using Portajel.Structures.Adaptor;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Data;
 using System.Linq;
 using System.Text;
@@ -14,15 +15,46 @@ using System.Threading.Tasks;
 
 namespace Portajel.Structures.ViewModels.Pages.Views
 {
-    public class AlbumPageViewModel: AlbumData
+    public class AlbumPageViewModel: AlbumData, INotifyPropertyChanged
     {
+        private ObservableCollection<SongData>? _songs;
+        public ObservableCollection<SongData>? Songs 
+        { 
+            get => _songs;
+            set
+            {
+                if (_songs != value)
+                {
+                    _songs = value;
+                    OnPropertyChanged(nameof(Songs));
+                }
+            }
+        }        
+        private ImageSource _playPauseIcon = "media_play.png";
+        public ImageSource PlayPauseIcon
+        {
+            get => _playPauseIcon;
+            set
+            {
+                if (_playPauseIcon != value)
+                {
+                    _playPauseIcon = value;
+                    OnPropertyChanged(nameof(PlayPauseIcon));
+                }
+            }
+        }
+        public event PropertyChangedEventHandler PropertyChanged;
+
         public AlbumPageViewModel() 
         {
 
         }
 
-        public ObservableCollectionAdapter<SongData>? Songs { get; set; }
-
+        protected void OnPropertyChanged(string propertyName)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+        
         public AlbumPageViewModel(IEnumerable<SongData> songs, AlbumData data)
         {
             Id = data.Id;
@@ -39,7 +71,7 @@ namespace Portajel.Structures.ViewModels.Pages.Views
             ImgBlurhashSource = data.ImgBlurhashSource;
             ArtistIdsJson = data.ArtistIdsJson;
             ArtistNames = data.ArtistNames;
-            Songs = new ObservableCollectionAdapter<SongData>(songs.ToObservableCollection());
+            Songs = songs.ToObservableCollection();
         }
     }
 }

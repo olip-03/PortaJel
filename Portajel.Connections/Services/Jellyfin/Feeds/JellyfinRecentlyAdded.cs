@@ -17,14 +17,45 @@ public class JellyfinRecentlyAdded : IMediaFeed
     }
     public string ServerUrl { get; set; } = null!;
     public bool IsEnabled { get; set; }
-    public List<ConnectorPropertyValue> Properties { get; set; }
-    public FeedViewStyle ViewStyle { get; }
+    public ConnectorProperties Properties { get; set; }
+    public FeedViewStyle ViewStyle { get; set; }
     private readonly IDbConnector? _database;
-
+    
+    public JellyfinRecentlyAdded(IDbConnector database, ConnectorProperties properties)
+    {
+        _database = database;
+        Properties = properties;
+        ServerUrl = Properties["ServerUrl"].Value.ToString();
+        
+        System.Enum.TryParse<FeedViewStyle>(Properties["ServerUrl"].Value.ToString(), out var parsed);
+        ViewStyle = parsed;
+    }
     public JellyfinRecentlyAdded(IDbConnector database, string serverUrl, bool isEnabled, FeedViewStyle viewStyle)
     {
-        ViewStyle = viewStyle;
         _database = database;
+        ServerUrl = serverUrl;
+        IsEnabled = isEnabled;
+        ViewStyle = viewStyle;
+        Properties = new ConnectorProperties()
+        {
+            {
+                "ServerUrl", 
+                new ConnectorPropertyValue
+                {
+                    Label = "Server Url",
+                    Value = ServerUrl,
+                    Icon = "hub.svg"
+                }
+            },
+            {
+                "ViewStyle", 
+                new ConnectorPropertyValue
+                {
+                    Label = "View Style",
+                    Value = ViewStyle,
+                }
+            },
+        };
     }
     public JellyfinRecentlyAdded(IDbConnector database)
     {

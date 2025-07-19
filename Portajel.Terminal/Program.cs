@@ -27,10 +27,11 @@ namespace Portajel.Terminal
         private static bool pauseRefresh = false;
         static async Task Main(string[] args)
         {
-            UIBenchmark benchmark = new();
+            DownloadBenchmark benchmark = new();
             benchmark.Setup();
-            var test = benchmark.GetBlurhashBitmap();
-            await benchmark.DownloadAndSave();
+            var result = await benchmark.GetAlbumData();
+            // var test = benchmark.GetBlurhashBitmap();
+            // await benchmark.DownloadAndSave();
             //
             // var baseData = await Server.Servers.First().DataConnectors["Genre"].GetAllAsync(limit: 10, startIndex: 200);
             // var media = baseData.Cast<GenreData>();
@@ -40,7 +41,7 @@ namespace Portajel.Terminal
             // string formatted = jt.ToString(Newtonsoft.Json.Formatting.Indented);
             //
             // Console.WriteLine(formatted);
-            // var summary = BenchmarkRunner.Run<UIBenchmark>();
+            var summary = BenchmarkRunner.Run<DownloadBenchmark>();
         }
 
         public static void InitializeDatabase()

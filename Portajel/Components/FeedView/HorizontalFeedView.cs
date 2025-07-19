@@ -30,6 +30,8 @@ public class HorizontalFeedView: VerticalStackLayout
         };
         var vlv = new VirtualListView()
         {   
+            HorizontalOptions = LayoutOptions.Fill,
+            VerticalOptions = LayoutOptions.Fill,
             IsRefreshEnabled = true,
             SelectionMode = SelectionMode.None,
             Orientation = ListOrientation.Horizontal, 
@@ -39,7 +41,8 @@ public class HorizontalFeedView: VerticalStackLayout
         var container = new Grid()
         {
             HorizontalOptions = LayoutOptions.Fill,
-            HeightRequest = 264,
+            VerticalOptions = LayoutOptions.Fill, 
+            HeightRequest = 280,
             Children = { vlv }
         };
         HorizontalOptions = LayoutOptions.Fill;

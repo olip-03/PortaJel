@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+  xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+  xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+  xmlns:local="clr-namespace:Portajel.Connections.Structs;assembly=Portajel.Connections"
+  x:Class="Portajel.Components.Modal.ModalAddFeed" x:DataType="local:BaseMediaFeed">
+  <ContentPage.Background>
+    <!-- A semi-transparent background for a modal overlay -->
+    <SolidColorBrush Color="#77000000" />
+  </ContentPage.Background>
+  <VerticalStackLayout VerticalOptions="Center">
+    <Border
+      WidthRequest="400"
+      Stroke="Transparent"
+      BackgroundColor="{AppThemeBinding Light=White, Dark=Gray}"
+      Margin="20">
+      <Border.StrokeShape>
+        <RoundRectangle CornerRadius="5" />
+      </Border.StrokeShape>
+      <VerticalStackLayout Padding="20" Spacing="10">
+        <!-- Page Title -->
+        <Label FontSize="Title" Text="Add Media Feed" Margin="0,0,0,10" />
+
+        <!-- Feed Name -->
+        <Label Text="Feed Name" />
+        <Entry Placeholder="Enter feed name" Text="{Binding Name}" />
+        
+        <!-- From Sources -->
+        <Label Text="From sources" />
+        <Picker SelectedItem="{Binding ViewStyle}" Title="Select Media Sources">
+          <Picker.ItemsSource>
+            <x:Array Type="{x:Type x:String}">
+              <x:String>Default</x:String>
+              <x:String>Compact</x:String>
+              <x:String>Detailed</x:String>
+            </x:Array>
+          </Picker.ItemsSource>
+        </Picker>
+        
+        <!-- From Tables -->
+        <Label Text="Data Types" />
+        <Picker SelectedItem="{Binding ViewStyle}" Title="Select types of data">
+          <Picker.ItemsSource>
+            <x:Array Type="{x:Type x:String}">
+              <x:String>Default</x:String>
+              <x:String>Compact</x:String>
+              <x:String>Detailed</x:String>
+            </x:Array>
+          </Picker.ItemsSource>
+        </Picker>
+        
+        <!-- Filter by -->
+        <Label Text="Filter By" />
+        <Picker SelectedItem="{Binding ViewStyle}" Title="Select Filter">
+          <Picker.ItemsSource>
+            <x:Array Type="{x:Type x:String}">
+              <x:String>Date Played</x:String>
+              <x:String>Date Added</x:String>
+              <x:String>Review Score</x:String>
+            </x:Array>
+          </Picker.ItemsSource>
+        </Picker>
+        
+        <!-- Order Picker -->
+        <Label Text="Order By" />
+        <Picker SelectedItem="{Binding ViewStyle}" Title="Select Order">
+          <Picker.ItemsSource>
+            <x:Array Type="{x:Type x:String}">
+              <x:String>Ascending</x:String>
+              <x:String>Descending</x:String>
+            </x:Array>
+          </Picker.ItemsSource>
+        </Picker>
+        
+        <!-- View Style Picker -->
+        <Label Text="View Style" />
+        <Picker SelectedItem="{Binding ViewStyle}" Title="Select View Style">
+          <Picker.ItemsSource>
+            <x:Array Type="{x:Type x:String}">
+              <x:String>Default</x:String>
+              <x:String>Compact</x:String>
+              <x:String>Detailed</x:String>
+            </x:Array>
+          </Picker.ItemsSource>
+        </Picker>
+        
+        <!-- Action buttons -->
+        <HorizontalStackLayout HorizontalOptions="Center" Margin="0,20,0,0">
+          <Button Text="Cancel" Clicked="Cancel_OnClicked" />
+          <Button Text="Confirm" Margin="10,0,0,0" Clicked="Confirm_OnClicked" />
+        </HorizontalStackLayout>
+      </VerticalStackLayout>
+    </Border>
+  </VerticalStackLayout>
+</ContentPage>

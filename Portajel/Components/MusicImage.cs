@@ -22,6 +22,7 @@ namespace Portajel.Components
         private readonly Random _random = new Random();
         private int _width => 64;
         private int _height => 64;
+        
         private SKBitmap _sourceBitmap;
         private SKBitmap _blurhashBitmap;
         private string _lastBlurHash;
@@ -31,6 +32,7 @@ namespace Portajel.Components
 
         private SKCanvasView _blurhashCanvas;
         private CachedImage _sourceImage;
+        private Color _backgroundColor = Color.FromRgba(0, 0, 0, 255);
         
         public static readonly BindableProperty BlurHashProperty =
             BindableProperty.Create(
@@ -87,6 +89,24 @@ namespace Portajel.Components
             
             Children.Add(_blurhashCanvas);
             Children.Add(_sourceImage);
+            
+            Microsoft.Maui.Controls.Application.Current.RequestedThemeChanged += (s, a) =>
+            {
+                UpdateColor();
+            };
+            UpdateColor();
+        }
+
+        private void UpdateColor()
+        {
+            var imageColor = Application.Current.Resources.TryGetValue(
+                "BackgroundColor", 
+                out object primaryColor
+            );
+            if (imageColor)
+            {
+                _backgroundColor = (Color)primaryColor;
+            }
         }
 
         private static void OnBlurHashChanged(BindableObject bindable, object oldValue, object newValue)
@@ -122,12 +142,16 @@ namespace Portajel.Components
         private void OnPaintBlurhashSurface(object? sender, SKPaintSurfaceEventArgs e)
         {
             var canvas = e.Surface.Canvas;
-            canvas.Clear(new SKColor(48, 48, 48));
-            
+            var info   = e.Info;
+
+            var r = (byte)(_backgroundColor.Red   * 255);
+            var g = (byte)(_backgroundColor.Green * 255);
+            var b = (byte)(_backgroundColor.Blue  * 255);
+            var a = (byte)(_backgroundColor.Alpha * 255);
+            canvas.Clear(new SKColor(r, g, b, a));
+
             if (string.IsNullOrEmpty(BlurHash))
-            {
                 return;
-            }
 
             try
             {
@@ -135,26 +159,28 @@ namespace Portajel.Components
                 {
                     _blurhashBitmap?.Dispose();
                     _blurhashBitmap = CreateBlurhashBitmap();
-                    _lastBlurHash = BlurHash;
+                    _lastBlurHash  = BlurHash;
                 }
-
+                
                 if (_blurhashBitmap != null)
                 {
-                    var info = e.Info;
                     var destRect = new SKRect(0, 0, info.Width, info.Height);
-                    var paint = new SKPaint
+                    using var blurPaint = new SKPaint
                     {
-                        Color = new SKColor(48, 48, 48)
+                        ImageFilter = SKImageFilter.CreateBlur(
+                            sigmaX: 8, // horizontal blur radius
+                            sigmaY: 8, // vertical blur radius
+                            tileMode: SKShaderTileMode.Decal
+                        )
                     };
-                    canvas.DrawBitmap(_blurhashBitmap, destRect, paint);
-                    paint.Dispose();
+                    canvas.DrawBitmap(_blurhashBitmap, destRect, blurPaint);
                 }
             }
             catch (Exception ex)
             {
                 Trace.WriteLine($"MusicImage: Error decoding blurhash: {ex.Message}");
-                var fallbackColor = new SKColor(48, 48, 48); // Gray fallback
-                canvas.Clear(fallbackColor);
+                canvas.Clear(new SKColor(255, 255, 255));
+
             }
         }
 

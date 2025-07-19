@@ -39,6 +39,7 @@ public class DatabaseItemTemplate: IDbItemConnector
         bool? getFavourite = null, 
         ItemSortBy setSortTypes = ItemSortBy.Album, 
         SortOrder setSortOrder = SortOrder.Descending, 
+        Guid? parentId = null,
         Guid?[]? includeIds = null, 
         Guid?[]? excludeIds = null, 
         CancellationToken cancellationToken = default)
@@ -47,7 +48,7 @@ public class DatabaseItemTemplate: IDbItemConnector
         return (BaseData[])typeof(DatabaseTypeConverters)
             .GetMethod(nameof(DatabaseTypeConverters.GetTypedAll), BindingFlags.Public | BindingFlags.Static)!
             .MakeGenericMethod(_dataType)
-            .Invoke(null, new object[] { _database, limit, startIndex, getFavourite, setSortTypes, setSortOrder, includeIds, excludeIds })!;
+            .Invoke(null, new object[] { _database, limit, startIndex, getFavourite, setSortTypes, setSortOrder, parentId, includeIds, excludeIds })!;
     }
 
     public BaseData Get(Guid id, CancellationToken cancellationToken = default)

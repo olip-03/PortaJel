@@ -11,7 +11,8 @@ public interface IMediaFeed
     public string Description { get; set; }
     public string ServerUrl { get; set; }
     public bool IsEnabled { get; set; }
-    public List<ConnectorPropertyValue> Properties { get; set; }
+    public FeedViewStyle ViewStyle { get; set; }
+    public ConnectorProperties Properties { get; set; }
     public BaseData[] GetFrom(int itemIndex, int amount);
     public int Total();
 }

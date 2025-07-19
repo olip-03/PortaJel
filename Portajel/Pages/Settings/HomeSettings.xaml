@@ -4,24 +4,12 @@
              xmlns:vm="clr-namespace:Portajel.Structures.ViewModels.Settings"
              xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
              xmlns:interfaces="clr-namespace:Portajel.Connections.Interfaces;assembly=Portajel.Connections"
+             xmlns:services="clr-namespace:Portajel.Connections.Services;assembly=Portajel.Connections"
              Title="Home Settings"
              x:DataType="vm:HomeSettingsViewModel"
              x:Class="Portajel.Pages.Settings.HomeSettings">
     <VerticalStackLayout>
-        <Grid Margin="16, 10">    
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="Auto"/>
-            </Grid.ColumnDefinitions>
-
-            <VerticalStackLayout Grid.Column="0" VerticalOptions="Center">
-                <Label Text="Merge Similar" FontAttributes="Bold"/>
-                <Label Text="Feeds from similar providers become one feed"/>
-            </VerticalStackLayout>
-            <CheckBox Grid.Column="1" VerticalOptions="Center"/>
-        </Grid>
-
-        <Label Margin="16, 16, 0, 0" Text="Feed order" FontSize="20"/>
+        <Label Margin="16, 0, 16, 16" Text="Feed order" FontSize="20"/>
         <CollectionView ItemsSource="{Binding Feeds}" CanReorderItems="True">
             <CollectionView.ItemTemplate>
                 <DataTemplate x:DataType="interfaces:IMediaFeed">
@@ -31,27 +19,50 @@
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
-                        <Image Source="menu.png" Margin="0, 0, 16, 0">
+                        
+                        <Button Grid.ColumnSpan="2" Grid.Column="1" BackgroundColor="Transparent" ZIndex="0"/>
+                        
+                        <Image Grid.Column="0" Source="menu.png" Margin="0, 0, 16, 0">
                             <Image.Behaviors>
-                                <toolkit:IconTintColorBehavior TintColor="{StaticResource PrimaryDarkText}" />
+                                <toolkit:IconTintColorBehavior TintColor="{StaticResource PrimaryTextColor}" />
                             </Image.Behaviors>
                         </Image>
                         
-                        <VerticalStackLayout Grid.Column="1" VerticalOptions="Center">
+                        <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" InputTransparent="True">
                             <Label Text="{Binding Name}" FontAttributes="Bold"/>
                             <Label Text="{Binding Description}"/>
                             
-                            <StackLayout HorizontalOptions="Fill" BindableLayout.ItemsSource="{Binding Properties}" 
-                                         Orientation="Horizontal">
-                                <BindableLayout.ItemTemplate>
-                                    <DataTemplate>
-                                        <Border HorizontalOptions="Fill" Width="120" Stroke="{StaticResource PrimaryDark}">
-                                            <Label Text="{Binding Name}"/>
-                                        </Border>
-                                    </DataTemplate>
-                                </BindableLayout.ItemTemplate>
-                            </StackLayout>
+                            <ScrollView Orientation="Horizontal" 
+                                        CascadeInputTransparent="False"
+                                        HorizontalScrollBarVisibility="Never"
+                                        Margin="0, 6, 0, 0">
+                                <StackLayout Orientation="Horizontal"
+                                             Spacing="6"
+                                             BindableLayout.ItemsSource="{Binding Properties.Values}">
+                                    <BindableLayout.ItemTemplate>
+                                        <DataTemplate x:DataType="services:ConnectorPropertyValue">
+                                            <Border Padding="12,6" MaximumHeightRequest="40" 
+                                                    StrokeShape="RoundRectangle 50"
+                                                    Stroke="{DynamicResource Primary}">
+                                                <HorizontalStackLayout>
+                                                    <Image Source="{Binding Icon}" 
+                                                           Margin="0, 0, 6, 0"
+                                                           HeightRequest="24">
+                                                        <Image.Behaviors>
+                                                            <toolkit:IconTintColorBehavior TintColor="{StaticResource Primary}" />
+                                                        </Image.Behaviors>
+                                                    </Image>
+                                                    <Label Text="{Binding Value}" 
+                                                           Margin="0, 0, 6, 0"
+                                                           VerticalOptions="Center"/>
+                                                </HorizontalStackLayout>
+                                            </Border>
+                                        </DataTemplate>
+                                    </BindableLayout.ItemTemplate>
+                                </StackLayout>
+                            </ScrollView>
                         </VerticalStackLayout>
+                        
                         <HorizontalStackLayout Grid.Column="2">
                             <CheckBox VerticalOptions="Center" IsChecked="{Binding IsEnabled}"/>
                         </HorizontalStackLayout>
@@ -59,5 +70,6 @@
                 </DataTemplate>
             </CollectionView.ItemTemplate>
         </CollectionView>
+        <Button Text="Add feed" Margin="16" Clicked="Button_OnClicked"/> 
     </VerticalStackLayout>
 </ContentPage>

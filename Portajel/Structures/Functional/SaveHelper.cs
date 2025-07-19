@@ -48,6 +48,8 @@ namespace Portajel.Structures.Functional
                             existingFeed.ServerUrl = savedFeed.ServerUrl;
                             existingFeed.IsEnabled = savedFeed.IsEnabled;
                             existingFeed.Properties = savedFeed.Properties;
+                            existingFeed.ViewStyle = savedFeed.ViewStyle;
+                            existingFeed.ServerUrl = savedFeed.ServerUrl;
                         }
                         servers.Add(newServer);
                     }

@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Portajel.Components.Modal;
 using Portajel.Connections.Interfaces;
+using Portajel.Connections.Structs;
 using Portajel.Structures.Functional;
 using Portajel.Structures.ViewModels.Settings;
 
@@ -46,5 +48,18 @@ public partial class HomeSettings : ContentPage
                 _viewModel.Feeds.Add(feed.Value);
             }
         }
+    }
+
+    private async void Button_OnClicked(object? sender, EventArgs e)
+    {
+        string dataPath = FileSystem.AppDataDirectory;
+        BaseMediaFeed feed = new BaseMediaFeed();
+        await Application.Current.MainPage.Navigation.PushModalAsync(
+            new ModalAddFeed(_server, feed) 
+            { 
+                OnLoginSuccess = ((e) => { UpdateList(); }) 
+            }, 
+            true
+        );
     }
 }

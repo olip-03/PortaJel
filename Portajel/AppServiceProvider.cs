@@ -8,6 +8,6 @@ namespace Portajel
 {
     public static class AppServiceProvider
     {
-
+        
     }
 }

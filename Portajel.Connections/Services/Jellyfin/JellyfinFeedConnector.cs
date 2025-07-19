@@ -42,7 +42,8 @@ namespace Portajel.Connections.Services.Jellyfin
             var mostPlayed = new JellyfinMostPlayed(
                 _database, 
                 _serverUrl, 
-                false
+                false,
+                FeedViewStyle.HorizontalGrid
             );
             
             Add(recentlyListened.Id, recentlyListened); 

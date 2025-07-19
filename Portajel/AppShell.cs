@@ -7,12 +7,13 @@ using Microsoft.Maui.Controls.PlatformConfiguration.AndroidSpecific;
 using ShellItem = Microsoft.Maui.Controls.ShellItem;
 using Portajel.Pages.Views;
 using Portajel.Components;
+using Portajel.Structures.Functional;
 
 namespace Portajel
 {
     public partial class AppShell : Shell
     {
-        private Color _primaryDark = Color.FromRgba(0, 0, 0, 255);
+        private Color _primaryColor = Color.FromRgba(0, 0, 0, 255);
 
         public AppShell()
         {
@@ -27,16 +28,16 @@ namespace Portajel
             Routing.RegisterRoute("settings/debug/database", typeof(DebugDatabase));
             Routing.RegisterRoute("album", typeof(AlbumPage));
 
-            var imageColor = Microsoft.Maui.Controls.Application.Current.Resources.TryGetValue("PrimaryDark", out object primaryColor);
-            if (imageColor)
+            Microsoft.Maui.Controls.Application.Current.RequestedThemeChanged += (s, a) =>
             {
-                _primaryDark = (Color)primaryColor;
-            }
+                UpdateTheme();
+            };
+            UpdateTheme();
 
             if (DeviceInfo.Platform == DevicePlatform.WinUI)
             {
                 FlyoutBehavior = FlyoutBehavior.Locked;
-                FlyoutBackdrop = _primaryDark;
+                FlyoutBackdrop = _primaryColor;
                 foreach (var item in DesktopTargetUI())
                 {
                     Items.Add(item);
@@ -51,6 +52,28 @@ namespace Portajel
                 }
             }            
         }
+
+        private void UpdateTheme()
+        {
+            var platformTheme = Microsoft.Maui.Controls.Application.Current.PlatformAppTheme;
+
+            switch (platformTheme)
+            {
+                case AppTheme.Dark:
+                    ThemeHelper.UpdatePrimaryColor("Dark");
+                    break;
+                default:
+                    ThemeHelper.UpdatePrimaryColor("Light");
+                    break;
+            }
+            
+            var hasPrimaryColor = Microsoft.Maui.Controls.Application.Current.Resources.TryGetValue("Primary", out object primaryColor);
+            if (hasPrimaryColor)
+            {
+                _primaryColor = (Color)primaryColor;
+            }
+        }
+        
         private ShellItem[] DesktopTargetUI()
         {
             var homeItem = new FlyoutItem

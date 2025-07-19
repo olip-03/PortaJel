@@ -1,4 +1,6 @@
+using System.Buffers;
 using System.Net.Http;
+using System.Text;
 using Jellyfin.Sdk;
 using Jellyfin.Sdk.Generated.Models;
 using Microsoft.Kiota.Abstractions.Extensions;
@@ -17,7 +19,7 @@ public class JellyfinItemConnectorTemplate : IMediaDataConnector
     private readonly string _serverUrl;
     private readonly Guid _userId;
     private readonly string _serverParentId;
-
+    private ArrayPool<byte> _arrayPool = ArrayPool<byte>.Shared;
     public JellyfinItemConnectorTemplate(
         MediaType mediaType, 
         HttpClient httpClient,
@@ -60,17 +62,17 @@ public class JellyfinItemConnectorTemplate : IMediaDataConnector
             sortOrder: setSortOrder,
             includeIds: includeIds,
             excludeIds: excludeIds);
-
-        using var request = CreateRequest(HttpMethod.Get, apiUrl);
-        using var response = await _httpClient.SendAsync(request, cancellationToken);
-        var content = await response.Content.ReadAsStringAsync();
-        var resultObject = JsonConvert.DeserializeObject<JfItemsDto>(content);
+        
+        ReadOnlySpan<byte> resultByes = await _httpClient.GetByteArrayAsync(apiUrl, cancellationToken);
+        string jsonStr = Encoding.UTF8.GetString(resultByes);
+        var resultObject = JsonConvert.DeserializeObject<JfItemsDto>(jsonStr);
         
         return ReturnBuilder(resultObject, _serverUrl);
     }
 
     public async Task<BaseData> GetAsync(Guid id, string serverUrl = "", CancellationToken cancellationToken = default)
     {
+        // unavoidable. Maybe consider this on the stack, it's going to be called a fucking lot 
         var apiUrl = BuildApiString(
             _serverUrl,
             GetIncludeItemType(),
@@ -79,10 +81,9 @@ public class JellyfinItemConnectorTemplate : IMediaDataConnector
             1,
             includeIds: [id]);
 
-        using var request = CreateRequest(HttpMethod.Get, apiUrl);
-        using var response = await _httpClient.SendAsync(request, cancellationToken);
-        var content = await response.Content.ReadAsStringAsync();
-        var resultObject = JsonConvert.DeserializeObject<JfItemsDto>(content);
+        ReadOnlySpan<byte> resultByes = await _httpClient.GetByteArrayAsync(apiUrl, cancellationToken);
+        string jsonStr = Encoding.UTF8.GetString(resultByes);
+        var resultObject = JsonConvert.DeserializeObject<JfItemsDto>(jsonStr);
         
         return ReturnBuilder(resultObject, _serverUrl).First();
     }

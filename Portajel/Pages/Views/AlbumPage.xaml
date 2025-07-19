@@ -1,4 +1,5 @@
-<?xml version="1.0" encoding="utf-8" ?>
+<?xml version="1.0" encoding="utf-8"?>
+
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:vm="clr-namespace:Portajel.Structures.ViewModels.Pages.Views"
@@ -7,119 +8,232 @@
              xmlns:ffimageloading="clr-namespace:FFImageLoading.Maui;assembly=FFImageLoading.Maui"
              xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
              xmlns:vlv="clr-namespace:Microsoft.Maui.Controls;assembly=VirtualListView"
-             x:Class="Portajel.Pages.Views.AlbumPage"
+             xmlns:components="clr-namespace:Portajel.Components"
+             xmlns:converters="clr-namespace:Portajel.Structures.Converters"
              Shell.NavBarIsVisible="False"
+             x:Class="Portajel.Pages.Views.AlbumPage"
              x:DataType="vm:AlbumPageViewModel">
     <ContentPage.Resources>
         <ResourceDictionary>
+            <converters:SubtitleTextConverter x:Key="TextConverter" />
             <adaptors:ListTemplateSelector x:Key="ItemTemplateSelector" />
+            <x:Double x:Key="ImageSize">256</x:Double>
+            <Thickness x:Key="TopPadding" 
+                       Top="{StaticResource SystemHeaderHeight}" 
+                       Left="0" 
+                       Right="0" 
+                       Bottom="0" />
         </ResourceDictionary>
     </ContentPage.Resources>
 
-    <ScrollView>
+    <RefreshView Refreshing="RefreshView_OnRefreshing">
         <Grid>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
-            </Grid.ColumnDefinitions>
-            <Grid.RowDefinitions>
-                <RowDefinition Height="64"/>
-                <RowDefinition Height="*"/>
-            </Grid.RowDefinitions>
-
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="64"/>
-                    <ColumnDefinition Width="*"/>
-                </Grid.ColumnDefinitions>
+            <!-- Sticky header that sits at the top -->
+            <Grid ZIndex="3"
+                  VerticalOptions="Start"
+                  ColumnDefinitions="Auto, *, Auto">
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="64"/>
-                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="{StaticResource SystemHeaderHeight}"/>
+                    <RowDefinition Height="56"/>
                 </Grid.RowDefinitions>
                 
-                <Grid                     
-                    Grid.Row="1"
-                     Grid.Column="0"
-                     ZIndex="10"
-                     VerticalOptions="Start"
-                     WidthRequest="48"
-                     HeightRequest="48">
-                    <Button InputTransparent="False"
-                        BackgroundColor="Transparent"
-                        CornerRadius="50">
-                    </Button>
-                    <Image Source="arrowback.png" WidthRequest="32" InputTransparent="True">
-                        <Image.Behaviors>
-                            <toolkit:IconTintColorBehavior TintColor="{StaticResource PrimaryDark}" />
-                        </Image.Behaviors>
-                    </Image>
-                </Grid>
-
-                <Image Source="{Binding ImgBlurhashSource}"
-                       ZIndex="0"
-                       Grid.RowSpan="2"
-                       Grid.ColumnSpan="2">
-                </Image>
-
-                <BoxView Grid.RowSpan="2"
-                        Grid.ColumnSpan="2">
-                    <BoxView.Background>
-                        <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
-                            <GradientStop Color="{StaticResource OffBlack}" Offset="0.0" />
-                            <GradientStop Color="Transparent" Offset="0.1" />
-                            <GradientStop Color="{StaticResource OffBlack}" Offset="1.0" />
-                        </LinearGradientBrush>
-                    </BoxView.Background>
-                </BoxView>
+                <Rectangle
+                    x:Name="HeaderBackground"
+                    Grid.ColumnSpan="2" 
+                    Grid.RowSpan="2" 
+                    ZIndex="0"
+                    BackgroundColor="{StaticResource BackgroundColor}"
+                    Opacity="0"/>
+                <components:CircleButton 
+                    ZIndex="1"
+                    ImageSource="arrowback.png" 
+                    Margin="12" 
+                    Size="42" 
+                    ImageSize="32" 
+                    ImageColor="{StaticResource PrimaryTextColor}"
+                    BackgroundColor="Transparent" 
+                    Clicked="CircleButton_OnClicked"
+                    Grid.Row="1" Grid.Column="0"/>
+                <!-- TODO: Edit button, for when the time comes to implement that -->
+                <!-- <components:CircleButton  -->
+                <!--     ImageSource="search.png"  -->
+                <!--     Margin="12" Size="42"  -->
+                <!--     ImageSize="32"  -->
+                <!--     ImageColor="{StaticResource PrimaryTextColor}" -->
+                <!--     BackgroundColor="Transparent"  -->
+                <!--     Grid.Row="1" Grid.Column="2"/> -->
             </Grid>
+            
+            <!-- Contents -->
+            <ScrollView ZIndex="2" Scrolled="ScrollView_OnScrolled">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    
+                    <!-- Background Image -->
+                    <Grid Grid.Row="0" ZIndex="0">
+                        <components:MusicImage
+                            Opacity="0.8"
+                            VerticalOptions="Fill"
+                            BlurHash="{Binding ImgBlurhash}" />
+                        <BoxView Grid.RowSpan="2"
+                                 Grid.ColumnSpan="2">
+                            <BoxView.Background>
+                                <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                                    <GradientStop Color="Transparent" Offset="0.0" />
+                                    <GradientStop Color="{StaticResource BackgroundColor}" Offset="1.0" />
+                                </LinearGradientBrush>
+                            </BoxView.Background>
+                        </BoxView>
+                    </Grid>
+                    
+                    <VerticalStackLayout Grid.Row="0" Padding="{StaticResource TopPadding}">
+                        <Border HeightRequest="56" 
+                                HorizontalOptions="Fill" 
+                                StrokeThickness="0">
+                            <Label Text="Album • 1995" 
+                                   HorizontalOptions="Center"
+                                   VerticalOptions="Center"
+                                   FontSize="14"/>
+                        </Border>
+                        
+                        <Border
+                            StrokeThickness="0"
+                            StrokeShape="RoundRectangle 4"
+                            HeightRequest="{StaticResource ImageSize}"
+                            WidthRequest="{StaticResource ImageSize}"
+                            ZIndex="5">
+                            <Border.Shadow>
+                                <Shadow Brush="Black"
+                                        Offset="4, 4"
+                                        Radius="6"
+                                        Opacity="0.4" />
+                            </Border.Shadow>
+                            <components:MusicImage BlurHash="{Binding ImgBlurhash}"
+                                                   Source="{Binding ImgSource}"
+                                                   ZIndex="1"
+                                                   HeightRequest="{StaticResource ImageSize}"
+                                                   WidthRequest="{StaticResource ImageSize}" />
+                        </Border>
 
-            <VerticalStackLayout  Grid.Row="0" Padding="12, 64" ZIndex="0">
-                <Grid      
-                    Grid.RowSpan="2"
-                    Grid.ColumnSpan="2"
-                    WidthRequest="256">
-                    <Image Source="{Binding ImgBlurhashSource}"
-                        ZIndex="1"
-                        WidthRequest="256"
-                        HeightRequest="256"
-                        Aspect="Fill"
-                        Grid.RowSpan="2"
-                        Grid.ColumnSpan="2"/>
-                    <ffimageloading:CachedImage 
-                         x:Name="Image"
-                         Grid.Column="0"
-                         LoadingDelay="500"
-                         CacheType="Memory"
-                         WidthRequest="256"
-                         HeightRequest="256"
-                         Aspect="Fill"
-                         RetryCount="0"
-                         FadeAnimationForCachedImages="False"
-                         LoadingPriority="Highest"
-                         Source="{Binding ImgSource}"
-                         BitmapOptimizations="True"
-                         DownsampleToViewSize="False"
-                         ZIndex="5">
-                    </ffimageloading:CachedImage>
+                        <Label Text="{Binding Name}"
+                               Margin="16, 12,16 ,6"
+                               HorizontalOptions="Center"
+                               HorizontalTextAlignment="Center"
+                               FontSize="24" />
+                        <Label Text="{Binding ArtistNames}"
+                               Margin="16, 0,16 ,0"
+                               HorizontalOptions="Center"
+                               HorizontalTextAlignment="Center"
+                               FontSize="18" />
+                        
+                        <!-- Controls -->
+                        <HorizontalStackLayout HorizontalOptions="Center" Spacing="16" Margin="0, 24,0 ,6">
+                            <components:CircleButton 
+                                ImageSource="download.png" 
+                                Size="42" 
+                                ImageSize="24" 
+                                ImageColor="{StaticResource PrimaryTextColor}"
+                                BackgroundColor="{StaticResource SecondaryTextColor}" />
+                            
+                            <components:CircleButton 
+                                ImageSource="favourite_empty.png" 
+                                Size="42" 
+                                ImageSize="24" 
+                                ImageColor="{StaticResource PrimaryTextColor}"
+                                BackgroundColor="{StaticResource SecondaryTextColor}" />                        
+                            
+                            <components:CircleButton 
+                                Clicked="PlayPause_OnClicked"
+                                ImageSource="{Binding PlayPauseIcon}"
+                                Size="64" 
+                                ImageSize="38"
+                                ImageColor="{StaticResource BackgroundColor}"
+                                BackgroundColor="{StaticResource PrimaryTextColor}"/>
+                            
+                            <components:CircleButton 
+                                ImageSource="library_add.png" 
+                                Size="42" 
+                                ImageSize="24" 
+                                ImageColor="{StaticResource PrimaryTextColor}"
+                                BackgroundColor="{StaticResource SecondaryTextColor}"/>
+                            
+                            <components:CircleButton 
+                                ImageSource="more_vert.png" 
+                                Size="42" 
+                                ImageSize="24" 
+                                ImageColor="{StaticResource PrimaryTextColor}"
+                                BackgroundColor="{StaticResource SecondaryTextColor}" />
+                        </HorizontalStackLayout>
+                    </VerticalStackLayout>
+                    
+                    <VerticalStackLayout Grid.Row="1" Margin="0, 24,0 ,6">
+                         <!-- Songs -->
+                        <StackLayout x:Name="SongContainer"
+                                     Opacity="0"
+                                     Orientation="Vertical"
+                                     BindableLayout.ItemsSource="{Binding Songs}">
+                            <BindableLayout.ItemTemplate>
+                                <DataTemplate x:DataType="music:SongData">
+                                    <SwipeView>
+                                        <SwipeView.RightItems>
+                                            <SwipeItems Mode="Execute">
+                                                <SwipeItem Text="Like"
+                                                           IconImageSource="like.png"
+                                                           BackgroundColor="LightBlue"
+                                                           Invoked="OnLikeSwipeItemInvoked" />
+                                            </SwipeItems>
+                                        </SwipeView.RightItems>
+                                        <SwipeView.LeftItems>
+                                            <SwipeItems Mode="Execute">
+                                                <SwipeItem Text="Add to Queue"
+                                                           IconImageSource="queue.png"
+                                                           BackgroundColor="LightGreen"
+                                                           Invoked="OnAddToQueueSwipeItemInvoked" />
+                                            </SwipeItems>
+                                        </SwipeView.LeftItems>
+
+                                        <!-- Song item content -->
+                                        <Grid BackgroundColor="{StaticResource BackgroundColor}">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                            </Grid.ColumnDefinitions>
+                                            
+                                            <Button ZIndex="0" BackgroundColor="Transparent" Grid.ColumnSpan="2"></Button>
+                                            
+                                            <VerticalStackLayout Grid.Column="0" Margin="16, 8">
+                                                <Label FontAttributes="Bold" FontSize="16" Text="{Binding Name}"/>
+                                                <Label Text="{Binding Converter={StaticResource TextConverter}}"/>
+                                            </VerticalStackLayout>
+                                            
+                                            <HorizontalStackLayout Grid.Column="1" HorizontalOptions="End" 
+                                                                   Margin="0, 0, 16, 0"
+                                                                   VerticalOptions="Center">
+                                                <components:CircleButton 
+                                                    ImageSource="favourite_empty.png" 
+                                                    Size="42" 
+                                                    ImageSize="24" 
+                                                    ImageColor="{StaticResource PrimaryTextColor}"
+                                                    BackgroundColor="Transparent" />
+                                                <components:CircleButton 
+                                                    HorizontalOptions="End"
+                                                    ImageSource="more_vert.png" 
+                                                    Size="42" 
+                                                    ImageSize="24" 
+                                                    ImageColor="{StaticResource PrimaryTextColor}"
+                                                    BackgroundColor="Transparent" />
+                                            </HorizontalStackLayout>
+                                        </Grid>
+                                    </SwipeView>
+                                </DataTemplate>
+                            </BindableLayout.ItemTemplate>
+                        </StackLayout>
+                    </VerticalStackLayout>
                 </Grid>
-                <Label Text="{Binding Name}" FontSize="32"  HorizontalTextAlignment="Center" Margin="12"/>
-                <Label Text="{Binding ArtistNames}" TextColor="{StaticResource Gray300}" HorizontalTextAlignment="Center" FontSize="Medium"/>
-                <HorizontalStackLayout HorizontalOptions="Center" Margin="24" Grid.Column="1">
-                    <Button></Button>
-                    <Button></Button>
-                    <Button Text="Play"></Button>
-                    <Button></Button>
-                    <Button></Button>
-                </HorizontalStackLayout>
-                <vlv:VirtualListView
-                x:Name="vlv"
-                HorizontalOptions="Fill"
-                VerticalOptions="Fill"
-                IsRefreshEnabled="True"
-                Adapter="{Binding Songs}"
-                SelectionMode="None"
-                ItemTemplateSelector="{StaticResource ItemTemplateSelector}">
-                </vlv:VirtualListView>
-            </VerticalStackLayout>
+            </ScrollView>
         </Grid>
-    </ScrollView>
+    </RefreshView>
 </ContentPage>

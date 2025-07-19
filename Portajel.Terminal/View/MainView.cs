@@ -77,7 +77,7 @@ namespace Portajel.Terminal.View
                             status.Add($"{srv.Name} - Signing in...");
                             break;
                         case AuthState.Success:
-                            status.Add($"{srv.Name} - Logged in as {srv.GetUsername()}");
+                            // status.Add($"{srv.Name} - Logged in as {srv.GetUsername()}");
                             break;
                         case AuthState.Failed:
                             status.Add($"{srv.Name} - Failed to sign in!");

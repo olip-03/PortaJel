@@ -10,7 +10,7 @@
         <Border 
             WidthRequest="400" 
             Stroke="Transparent"
-            BackgroundColor="{StaticResource Gray900}"
+            BackgroundColor="{StaticResource BackgroundColor}"
             Margin="20">
             <Border.StrokeShape>
                 <RoundRectangle CornerRadius="5"/>
