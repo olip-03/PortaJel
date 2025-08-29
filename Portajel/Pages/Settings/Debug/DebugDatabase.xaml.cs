@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Portajel.Connections.Interfaces;
 
 namespace Portajel.Pages.Settings.Debug;
@@ -43,6 +44,10 @@ public partial class DebugDatabase : ContentPage, IDisposable
         catch (OperationCanceledException)
         {
             // Timer was canceled, this is expected
+        }
+        catch (Exception ex)
+        { 
+            Trace.WriteLine(ex);
         }
     }
 

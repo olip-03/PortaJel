@@ -12,6 +12,7 @@
     <Color x:Key="Secondary">#DFD8F7</Color>
     <Color x:Key="Tertiary">#ac99ea</Color>
     <Color x:Key="BackgroundColor">White</Color>
+    <Color x:Key="TertiaryBackground">White</Color>
     <Color x:Key="PrimaryTextColor">Black</Color>
     <Color x:Key="SecondaryTextColor">#404040</Color>
     
@@ -19,13 +20,15 @@
     <Color x:Key="LightSecondary">#DFD8F7</Color>
     <Color x:Key="LightTertiary">#9880e5</Color>
     <Color x:Key="LightBackgroundColor">White</Color>
+    <Color x:Key="LightTertiaryBackground">White</Color>
     <Color x:Key="LightPrimaryTextColor">Black</Color>
     <Color x:Key="LightSecondaryTextColor">#6E6E6E</Color>
     
     <Color x:Key="DarkPrimary">#ac99ea</Color>
     <Color x:Key="DarkSecondary">#9880e5</Color>
     <Color x:Key="DarkTertiary">#DFD8F7</Color>
-    <Color x:Key="DarkBackgroundColor">#1f1f1f</Color>
+    <Color x:Key="DarkBackgroundColor">#141414</Color>
+    <Color x:Key="DarkTertiaryBackground">#1c1c1c</Color>
     <Color x:Key="DarkPrimaryTextColor">#E1E1E1</Color>
     <Color x:Key="DarkTextColor">#ACACAC</Color>
 

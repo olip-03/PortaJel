@@ -19,6 +19,7 @@ public class JfBaseItemDto
     public string CollectionType { get; set; }
     public DateTime DateCreated { get; set; }
     public DateTime? PremiereDate { get; set; }
+    public int? ProductionYear { get; set; }
     public List<JfExternalUrl> ExternalUrls { get; set; } = new();
     public string? ChannelId { get; set; }
     public double? CommunityRating { get; set; }
@@ -29,7 +30,6 @@ public class JfBaseItemDto
     public int AlbumCount { get; set; }
     public List<JfGenreItem> GenreItems { get; set; } = new();
     public int IndexNumber { get; set; }
-    public int? ProductionYear { get; set; }
     public Dictionary<string, string> ProviderIds { get; set; } = new();
     public bool IsFolder { get; set; }
     public string Type { get; set; } = string.Empty;
@@ -56,9 +56,9 @@ public class JfBaseItemDto
         return new AlbumData()
         {
             ServerId = Guid.Parse(baseItem.Id),
-            Id = GuidHelper.GenerateNewGuidFromHash(Guid.Parse(baseItem.Id), server),
+            Id = Guid.Parse(baseItem.ParentId),
             GlobalId = BuildGlobalId(baseItem),
-            ParentId = Guid.Parse(baseItem.ParentId),
+            ParentId = GuidHelper.GenerateNewGuidFromHash(Guid.Parse(baseItem.ParentId), server),
             Name = baseItem.Name ?? string.Empty,
             IsFavourite = baseItem.UserData.IsFavorite,
             PlayCount = baseItem.UserData.PlayCount,
@@ -70,7 +70,9 @@ public class JfBaseItemDto
             ArtistNames = BuildArtistString(baseItem),
             ArtistIdsJson =
                 JsonConvert.SerializeObject(baseItem.ArtistItems.Select(idPair => idPair.Id.ToString() ?? "")),
-            GenresJson = GetGenreString(baseItem, server)
+            GenresJson = GetGenreString(baseItem, server),
+            PremiereDate = baseItem.PremiereDate,
+            PremiereYear = baseItem.ProductionYear,
         };
     }
 
@@ -120,6 +122,8 @@ public class JfBaseItemDto
             ArtistIdsJson =
                 JsonConvert.SerializeObject(baseItem.ArtistItems.Select(idPair => idPair.Id.ToString() ?? "")),
             StreamUrl = BuildStreamUrl(server, Guid.Parse(baseItem.Id)),
+            PremiereDate = baseItem.PremiereDate,
+            PremiereYear = baseItem.ProductionYear,
         };
     }
 

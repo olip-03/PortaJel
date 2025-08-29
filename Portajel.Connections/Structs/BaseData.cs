@@ -10,9 +10,9 @@ namespace Portajel.Connections.Structs
     public abstract class BaseData
     {
         [PrimaryKey, AutoIncrement] public virtual Guid? Id { get; set; }
-        public Guid ServerId { get; set; }
-        public Guid GlobalId { get; set; }
-        public Guid ParentId { get; set; }
+        [Indexed] public Guid ServerId { get; set; }
+        [Indexed] public Guid GlobalId { get; set; }
+        [Indexed] public Guid ParentId { get; set; }
         public virtual MediaType MediaType { get; set; } = MediaType.Album;
         [Indexed] public string Name { get; set; } = string.Empty;
         public bool IsFavourite { get; set; }

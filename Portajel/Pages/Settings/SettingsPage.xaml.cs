@@ -39,6 +39,7 @@ public partial class SettingsPage : ContentPage
     protected override void OnNavigatedTo(NavigatedToEventArgs args)
     {
         ServerConnectionView = new(_serverConnector, _dbConnector);
+        ServerConnectionView.RefreshConnections();
         base.OnNavigatedTo(args);
     }
 

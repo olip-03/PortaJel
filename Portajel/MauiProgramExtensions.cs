@@ -15,7 +15,9 @@ using Portajel.Components;
 using Portajel.Structures.ViewModels.Pages.Library;
 using Portajel.Pages.Library;
 using FFImageLoading.Maui;
+using Microsoft.Maui.LifecycleEvents;
 using Portajel.Connections.Definitions;
+using Portajel.Pages.Views;
 
 namespace Portajel
 {
@@ -38,7 +40,6 @@ namespace Portajel
                     fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
                 })
                 .Services.AddSingleton<HttpClient>();
-
 #if DEBUG
             builder.Logging.AddDebug();
 #endif
@@ -62,13 +63,18 @@ namespace Portajel
             mauiAppBuilder.Services.AddSingleton<MusicListItem>();
             mauiAppBuilder.Services.AddSingleton<ConnectionsPage>();
             mauiAppBuilder.Services.AddSingleton<DebugDatabase>();
-            mauiAppBuilder.Services.AddSingleton<AlbumListPage>();
-            mauiAppBuilder.Services.AddSingleton<ArtistListPage>();
-            mauiAppBuilder.Services.AddSingleton<GenreListPage>();
-            mauiAppBuilder.Services.AddSingleton<PlaylistListPage>();
-            mauiAppBuilder.Services.AddSingleton<SongListPage>();
+            
+            mauiAppBuilder.Services.AddTransient<AlbumListPage>();
+            mauiAppBuilder.Services.AddTransient<ArtistListPage>();
+            mauiAppBuilder.Services.AddTransient<GenreListPage>();
+            mauiAppBuilder.Services.AddTransient<PlaylistListPage>();
+            mauiAppBuilder.Services.AddTransient<SongListPage>();
+            
             mauiAppBuilder.Services.AddSingleton<ServerConnectionView>();
             mauiAppBuilder.Services.AddSingleton<HomeSettings>();
+            mauiAppBuilder.Services.AddTransient<AlbumPage>();
+            mauiAppBuilder.Services.AddTransient<ArtistPage>();
+
             return mauiAppBuilder;
         }
     }

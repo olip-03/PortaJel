@@ -17,6 +17,8 @@ namespace Portajel.Connections.Database
         public string ArtistNames { get; set; } = string.Empty;
         public override MediaType MediaType { get; set; } = MediaType.Album;
         public static AlbumData Empty { get; } = new();
+        public DateTimeOffset? PremiereDate { get; set; }
+        public int? PremiereYear { get; set; }
 
         public Guid[] GetArtistIds()
         {

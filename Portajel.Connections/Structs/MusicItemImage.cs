@@ -93,10 +93,10 @@ namespace Portajel.Connections.Structs
             switch (Type)
             {
                 case JfImageType.Primary:
-                    if (baseItem.ImageTags.ContainsKey("Primary"))
+                    if (baseItem.ImageBlurHashes.ContainsKey("Primary"))
                     {
-                        var key = baseItem.ImageTags["Primary"];
-                        value = baseItem.ImageBlurHashes["Primary"][key];
+                        var key = baseItem.ImageBlurHashes["Primary"];
+                        value = baseItem.ImageBlurHashes["Primary"].First().Value;
                     }
                     break;
                 case JfImageType.Backdrop:

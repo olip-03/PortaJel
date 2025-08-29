@@ -1,0 +1,15 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Portajel.Components.Media;
+
+public partial class MiniPlayer : ContentView
+{
+    public MiniPlayer()
+    {
+        InitializeComponent();
+    }
+}

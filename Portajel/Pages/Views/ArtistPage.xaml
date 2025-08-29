@@ -1,12 +1,135 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:Portajel.Structures.ViewModels.Pages.Views"
+             xmlns:components="clr-namespace:Portajel.Components"
+             xmlns:maui="clr-namespace:FFImageLoading.Maui;assembly=FFImageLoading.Maui"
+             xmlns:library="clr-namespace:Portajel.Components.Library"
+             xmlns:music="clr-namespace:Portajel.Connections.Database;assembly=Portajel.Connections"
+             xmlns:converters="clr-namespace:Portajel.Structures.Converters"
              x:Class="Portajel.Pages.Views.ArtistPage"
-             Title="ArtistPage">
-    <VerticalStackLayout>
-        <Label 
-            Text="Welcome to .NET MAUI!"
-            VerticalOptions="Center" 
-            HorizontalOptions="Center" />
-    </VerticalStackLayout>
+             Shell.NavBarIsVisible="False"
+             x:DataType="vm:ArtistPageViewModel">
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <converters:SubtitleTextConverter x:Key="TextConverter" />
+        </ResourceDictionary>
+    </ContentPage.Resources>
+    <RefreshView Refreshing="RefreshView_OnRefreshing">
+        <Grid>
+            <components:FakeShellHeader x:Name="Header" 
+                                        BackButtonClicked="Header_OnBackButtonClicked" 
+                                        ZIndex="3" 
+                                        VerticalOptions="Start"/>
+            <ScrollView>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    
+                    <!-- Background Image -->
+                    <Grid 
+                        Grid.ColumnSpan="2"
+                          ZIndex="0" 
+                          HorizontalOptions="Fill" 
+                          HeightRequest="{Binding BackgroundHeight}">
+                        <components:MusicImage
+                            VerticalOptions="Fill"
+                            Source="{Binding ImgSource}"
+                            BlurHash="{Binding ImgBlurhash}" />
+                        <BoxView Grid.RowSpan="2"
+                                 Grid.ColumnSpan="2">
+                            <BoxView.Background>
+                                <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                                    <GradientStop Color="Transparent" Offset="0.0" />
+                                    <GradientStop Color="{StaticResource BackgroundColor}" Offset="1.0" />
+                                </LinearGradientBrush>
+                            </BoxView.Background>
+                        </BoxView>
+                    </Grid>
+                    
+                    <!-- Logo and name -->
+                    <Grid Grid.Row="0" Grid.Column="0"
+                          RowDefinitions="Auto, Auto"
+                          VerticalOptions="End"
+                          HorizontalOptions="Center"
+                          Margin="0, 0, 16, 0">
+                        <maui:CachedImage 
+                            Grid.Row="0"
+                            Source="{Binding LogoImgSource}" 
+                            FadeAnimationDuration="500"/>
+                        <Label Grid.Row="1"
+                               Text="{Binding Name}" 
+                               FontSize="26"
+                               HorizontalTextAlignment="Center"/>
+                    </Grid> 
+                    
+                    <components:PlaybackControls Grid.Row="2"></components:PlaybackControls>
+                    
+                    <Grid Grid.Column="0" Grid.Row="3"  Margin="0, 24,0 ,6">
+                            <CollectionView x:Name="AlbumContainer" 
+                                         ItemsSource="{Binding Albums}">
+                                <CollectionView.ItemTemplate>
+                                    <DataTemplate x:DataType="music:AlbumData">
+                                        <Grid HeightRequest="84"
+                                              ColumnDefinitions="84, *" 
+                                              RowDefinitions="42, 42" 
+                                              HorizontalOptions="Fill">
+                                            <Button 
+                                                Grid.Row="0"
+                                                Grid.Column="0"
+                                                Grid.ColumnSpan="2"
+                                                Grid.RowSpan="2"
+                                                Clicked="AlbumButton_OnClicked"
+                                                BackgroundColor="Transparent"
+                                                HorizontalOptions="Fill"
+                                                ZIndex="0">
+                                            </Button>
+                                            <Border
+                                                Grid.Column="0"
+                                                Grid.RowSpan="2"
+                                                StrokeThickness="0"
+                                                StrokeShape="RoundRectangle 4"
+                                                HeightRequest="64"
+                                                WidthRequest="64"
+                                                ZIndex="5">
+                                                <Border.Shadow>
+                                                    <Shadow Brush="Black"
+                                                            Offset="4, 4"
+                                                            Radius="6"
+                                                            Opacity="0.4" />
+                                                </Border.Shadow>
+                                                <components:MusicImage Grid.RowSpan="2"
+                                                                 BlurHash="{Binding ImgBlurhash}"
+                                                                 Source="{Binding ImgSource}"
+                                                                 ZIndex="1"
+                                                                 HeightRequest="64"
+                                                                 WidthRequest="64"/>
+                                            </Border>
+                                            <Label 
+                                                VerticalOptions="End"
+                                                Grid.Column="1"
+                                                Text="{Binding Name}" 
+                                                FontSize="16"
+                                                FontAttributes="Bold"
+                                                LineBreakMode="TailTruncation"
+                                                MaxLines="1"/>
+                                            <Label
+                                                Grid.Column="1"
+                                                Grid.Row="1"
+                                                Text="{Binding Converter={StaticResource TextConverter}}"
+                                                LineBreakMode="TailTruncation"
+                                                MaxLines="1"/>
+                                        </Grid>
+                                    </DataTemplate>
+                                </CollectionView.ItemTemplate>
+                            </CollectionView>
+                    </Grid>
+                </Grid>
+            </ScrollView>
+        </Grid>
+    </RefreshView>
 </ContentPage>

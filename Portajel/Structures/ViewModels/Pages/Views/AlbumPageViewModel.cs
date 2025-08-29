@@ -12,6 +12,7 @@ using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Portajel.Connections.Structs;
 
 namespace Portajel.Structures.ViewModels.Pages.Views
 {
@@ -55,23 +56,34 @@ namespace Portajel.Structures.ViewModels.Pages.Views
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
         
-        public AlbumPageViewModel(IEnumerable<SongData> songs, AlbumData data)
+        public AlbumPageViewModel(BaseData[] songs, AlbumData data)
         {
-            Id = data.Id;
-            ServerId = data.ServerId;
-            MediaType = data.MediaType;
-            Name = data.Name;
-            IsFavourite = data.IsFavourite;
-            PlayCount = data.PlayCount;
-            DateAdded = data.DateAdded;
-            DatePlayed = data.DatePlayed;
-            ServerAddress = data.ServerAddress;
-            ImgSource = data.ImgSource;
-            ImgBlurhash = data.ImgBlurhash;
-            ImgBlurhashSource = data.ImgBlurhashSource;
-            ArtistIdsJson = data.ArtistIdsJson;
-            ArtistNames = data.ArtistNames;
-            Songs = songs.ToObservableCollection();
+            Update(songs, data);
+        }
+
+        public void Update(BaseData[] songs, AlbumData? data)
+        {
+            if (data != null)
+            {
+                Id = data.Id;
+                ServerId = data.ServerId;
+                MediaType = data.MediaType;
+                Name = data.Name;
+                IsFavourite = data.IsFavourite;
+                PlayCount = data.PlayCount;
+                DateAdded = data.DateAdded;
+                DatePlayed = data.DatePlayed;
+                ServerAddress = data.ServerAddress;
+                ImgSource = data.ImgSource;
+                ImgBlurhash = data.ImgBlurhash;
+                ImgBlurhashSource = data.ImgBlurhashSource;
+                ArtistIdsJson = data.ArtistIdsJson;
+                ArtistNames = data.ArtistNames;
+            }
+            Songs = songs.Select(s => s.ToSong()).
+                OrderBy(s => s.DiskNumber).
+                ThenBy(s => s.IndexNumber).
+                ToObservableCollection();
         }
     }
 }

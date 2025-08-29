@@ -14,7 +14,10 @@ namespace Portajel
     public partial class AppShell : Shell
     {
         private Color _primaryColor = Color.FromRgba(0, 0, 0, 255);
+        private Color _tertiaryBackground = Color.FromRgba(0, 0, 0, 255);
 
+        private BottomNavBar _bottomNavBar = null!;
+        
         public AppShell()
         {
             Title = "Portajel";
@@ -27,6 +30,7 @@ namespace Portajel
             Routing.RegisterRoute("settings/debug/map", typeof(DebugMap));
             Routing.RegisterRoute("settings/debug/database", typeof(DebugDatabase));
             Routing.RegisterRoute("album", typeof(AlbumPage));
+            Routing.RegisterRoute("artist", typeof(ArtistPage));
 
             Microsoft.Maui.Controls.Application.Current.RequestedThemeChanged += (s, a) =>
             {
@@ -34,29 +38,17 @@ namespace Portajel
             };
             UpdateTheme();
 
-            if (DeviceInfo.Platform == DevicePlatform.WinUI)
-            {
-                FlyoutBehavior = FlyoutBehavior.Locked;
-                FlyoutBackdrop = _primaryColor;
-                foreach (var item in DesktopTargetUI())
-                {
-                    Items.Add(item);
-                }
-            }
-            else
-            {
-                FlyoutBehavior = FlyoutBehavior.Disabled;
-                foreach (var item in MobileTargetUI())
-                {
-                    Items.Add(item);
-                }
-            }            
+            _bottomNavBar = BuildTabBar();
+                
+            FlyoutBehavior = FlyoutBehavior.Disabled;
+            Items.Add(_bottomNavBar);
         }
 
         private void UpdateTheme()
         {
             var platformTheme = Microsoft.Maui.Controls.Application.Current.PlatformAppTheme;
-
+            BackgroundColor = Colors.Transparent;
+            
             switch (platformTheme)
             {
                 case AppTheme.Dark:
@@ -72,121 +64,14 @@ namespace Portajel
             {
                 _primaryColor = (Color)primaryColor;
             }
+            var hasTertiaryBackground = Microsoft.Maui.Controls.Application.Current.Resources.TryGetValue("TertiaryBackground", out object tertiaryBackground);
+            if (hasTertiaryBackground)
+            {
+                _tertiaryBackground = (Color)tertiaryBackground;
+            }
         }
         
-        private ShellItem[] DesktopTargetUI()
-        {
-            var homeItem = new FlyoutItem
-            {
-                Title = "Home",
-                Icon = "home.png",
-                Items =
-                {
-                    new Tab
-                    {
-                        Items =
-                        {
-                            new ShellContent
-                            {
-                                ContentTemplate = new DataTemplate(typeof(Pages.HomePage))
-                            }
-                        }
-                    }
-                }
-            };
-            var playlistItem = new FlyoutItem
-            {
-                Title = "Playlists",
-                Icon = "playlist.png",
-                Items =
-                {
-                    new Tab
-                    {
-                        Items =
-                        {
-                            new ShellContent
-                            {
-                                ContentTemplate = new DataTemplate(typeof(Pages.Library.PlaylistListPage))
-                            }
-                        }
-                    }
-                }
-            };
-            var albumItem = new FlyoutItem
-            {
-                Title = "Albums",
-                Icon = "album.png",
-                Items =
-                {
-                    new Tab
-                    {
-                        Items =
-                        {
-                            new ShellContent
-                            {
-                                ContentTemplate = new DataTemplate(typeof(Pages.Library.AlbumListPage))
-                            }
-                        }
-                    }
-                }
-            };
-            var artistItems = new FlyoutItem
-            {
-                Title = "Artists",
-                Icon = "artist.png",
-                Items =
-                {
-                    new Tab
-                    {
-                        Items =
-                        {
-                            new ShellContent
-                            {
-                                ContentTemplate = new DataTemplate(typeof(Pages.Library.ArtistListPage))
-                            }
-                        }
-                    }
-                }
-            };
-            var songsItems = new FlyoutItem
-            {
-                Title = "Songs",
-                Icon = "song.png",
-                Items =
-                {
-                    new Tab
-                    {
-                        Items =
-                        {
-                            new ShellContent
-                            {
-                                ContentTemplate = new DataTemplate(typeof(Pages.Library.SongListPage))
-                            }
-                        }
-                    }
-                }
-            };
-            var genreItems = new FlyoutItem
-            {
-                Title = "Genres",
-                Icon = "genre.png",
-                Items =
-                {
-                    new Tab
-                    {
-                        Items =
-                        {
-                            new ShellContent
-                            {
-                                ContentTemplate = new DataTemplate(typeof(Pages.Library.GenreListPage))
-                            }
-                        }
-                    }
-                }
-            };
-            return [homeItem, playlistItem, albumItem, artistItems, songsItems, genreItems];
-        }
-        private ShellItem[] MobileTargetUI()
+        private BottomNavBar BuildTabBar(Color? background = null)
         {
             var tabBar = new BottomNavBar();
             var homeTab = new Tab
@@ -244,7 +129,7 @@ namespace Portajel
             tabBar.Items.Add(searchTab);
             tabBar.Items.Add(libraryTab);
             
-            return [tabBar];
+            return tabBar;
         }
     }
 }

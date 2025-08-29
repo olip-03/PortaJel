@@ -356,13 +356,13 @@ namespace Portajel.Connections.Services.Jellyfin
                         data.SetSyncStatusInfo(serverItemCount: GetDb(data).Value.GetTotalCount());
                         if(items.Length < retrieve)
                         {
-                            data.SetSyncStatusInfo(status: TaskStatus.Faulted, percentage: (int)100);
-                            continue;
+                            data.SetSyncStatusInfo(status: TaskStatus.RanToCompletion, percentage: (int)100);
+                            break;
                         }
                         if (checkCount >= retrieve)
                         {
                             data.SetSyncStatusInfo(status: TaskStatus.RanToCompletion, percentage: (int)100);
-                            continue;
+                            break;
                         }
                     }
                     catch (Exception ex)
@@ -392,7 +392,7 @@ namespace Portajel.Connections.Services.Jellyfin
             }));
             _ = Task.WhenAll(actions);
             int maxConcurrency = TaskScheduler.Current.MaximumConcurrencyLevel;
-            int maxTasks = 500;
+            int maxTasks = 100;
             await UpdateSyncStatus(cancellationToken);
             var tasks = DataConnectors.Values.Select(data => Task.Run(async () =>
             {
@@ -449,7 +449,7 @@ namespace Portajel.Connections.Services.Jellyfin
                             if (baseData.Length < retrieve)
                             {
                                 data.SetSyncStatusInfo(status: TaskStatus.RanToCompletion);
-                                continue;
+                                break;
                             }
 
                             workers = DataConnectors.Values.Where(d => d.SyncStatusInfo.TaskStatus == TaskStatus.Running).Count();
@@ -460,7 +460,7 @@ namespace Portajel.Connections.Services.Jellyfin
                             Trace.TraceError(ex.Message);
                             Trace.TraceError(ex.StackTrace);
                             data.SetSyncStatusInfo(status: TaskStatus.Faulted);
-                            continue;
+                            break;
                         }
                     }
                 }

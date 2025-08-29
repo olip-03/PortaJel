@@ -10,26 +10,40 @@
              xmlns:converters="clr-namespace:Portajel.Structures.Converters"
              xmlns:ffimageloading="clr-namespace:FFImageLoading.Maui;assembly=FFImageLoading.Maui"
              Shell.NavBarIsVisible="True"
+             Shell.BackgroundColor="{DynamicResource BackgroundColor}"
              Title="Album"
              x:Class="Portajel.Pages.Library.AlbumListPage"
              x:DataType="local:DatabaseBindViewModel">
+    
     <ContentPage.Resources>
         <ResourceDictionary>
-            <adaptors:ListTemplateSelector x:Key="itemTemplateSelector" />
+            <adaptors:ListTemplateSelector x:Key="ItemTemplateSelector" />
             <converters:ImageUrlConverter x:Key="ImageUrlConverter" />
         </ResourceDictionary>
     </ContentPage.Resources>
-
+    
+    <ContentPage.ToolbarItems>
+        <ToolbarItem Text="Favourites"
+                     Clicked="Favourite_OnClicked"
+                     IconImageSource="favourite_empty.png" />
+        <ToolbarItem Text="Order"
+                     Clicked="Order_OnClicked"
+                     IconImageSource="arrow_downward.png"/>
+        <ToolbarItem Text="Filter"
+                     Clicked="Filter_OnClicked"
+                     IconImageSource="filter_list.png" />
+    </ContentPage.ToolbarItems>
+    
     <Grid HorizontalOptions="Fill" VerticalOptions="Fill"> 
         <vlv:VirtualListView
-            x:Name="vlv"
+            x:Name="Vlv"
             HorizontalOptions="Fill"
             VerticalOptions="Fill"
             IsRefreshEnabled="True"
             RefreshCommand="{Binding RefreshCommand}"
             Adapter="{Binding Adapter}"
             SelectionMode="None"
-            ItemTemplateSelector="{StaticResource itemTemplateSelector}">
+            ItemTemplateSelector="{StaticResource ItemTemplateSelector}">
         </vlv:VirtualListView>
     </Grid>
 

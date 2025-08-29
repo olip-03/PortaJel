@@ -48,8 +48,7 @@ namespace Portajel
                 await SaveHelper.SaveData(connector);
             });
         }
-
-
+        
         protected override Window CreateWindow(IActivationState? activationState)
         {
             Window window = new Window(new AppShell());

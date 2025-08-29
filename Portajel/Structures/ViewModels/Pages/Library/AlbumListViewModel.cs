@@ -13,19 +13,19 @@ namespace Portajel.Structures.ViewModels.Pages.Library
             _database = database;
             Adapter = new MusicItemAdaptor(_database);
         }
-
         public MusicItemAdaptor? Adapter { get; set; }
 
         [RelayCommand]
-        async Task Refresh(Action completion)
+        public Task Refresh(Action completion)
         {
             Adapter = new MusicItemAdaptor(_database);
             System.Diagnostics.Debug.WriteLine("Refresh Complete");
             completion?.Invoke();
+            return Task.CompletedTask;
         }
 
         [RelayCommand]
-        void Scrolled(ScrolledEventArgs e)
+        public void Scrolled(ScrolledEventArgs e)
         {
             System.Diagnostics.Debug.WriteLine($"Scrolled: {e.ScrollX}, {e.ScrollY}");
         }

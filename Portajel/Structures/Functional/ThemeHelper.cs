@@ -27,6 +27,10 @@ public static class ThemeHelper
                 if (backgroundFound)
                     dictionaries["BackgroundColor"] = background; 
                 
+                var tertiaryBackgroundFound = dictionaries.TryGetValue(themeName + "TertiaryBackground", out var tertiaryBackground);
+                if (tertiaryBackgroundFound)
+                    dictionaries["TertiaryBackground"] = tertiaryBackground; 
+                
                 var primaryTextFound = dictionaries.TryGetValue(themeName + "PrimaryTextColor", out var primaryText);
                 if (primaryTextFound)
                     dictionaries["PrimaryTextColor"] = primaryText; 

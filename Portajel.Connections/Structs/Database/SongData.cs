@@ -12,14 +12,18 @@ namespace Portajel.Connections.Database
     {
         [PrimaryKey, AutoIncrement] public override Guid? Id { get; set; }
         public string? PlaylistId { get; set; }
+        public DateTimeOffset? PremiereDate { get; set; } //TODO: add value
+        public int? PremiereYear { get; set; } //TODO: add value
         public TimeSpan Duration { get; set; } = new();
         public int IndexNumber { get; set; } = 0;
         public int DiskNumber { get; set; } = 0;    
+        public int PlayCount { get; set; } = 0; //TODO: add value
         public bool IsDownloaded { get; set; } = false;
         public string? ArtistNames { get; set; }
         public string ArtistIdsJson { get; set; } = string.Empty;
         public string FileLocation { get; set; } = string.Empty;
         public string StreamUrl { get; set; } = string.Empty;
+        
         public override MediaType MediaType { get; set; } = MediaType.Song;
         public static SongData Empty { get; set; } = new();
     }

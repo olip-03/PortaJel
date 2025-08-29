@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:components="clr-namespace:Portajel.Components"
+             xmlns:components1="clr-namespace:Portajel.Structures.ViewModels.Components"
+             x:DataType="components1:PlaybackControlsViewModel"
+             x:Class="Portajel.Components.PlaybackControls">
+    <!-- Controls -->
+    <HorizontalStackLayout HorizontalOptions="Center" Spacing="16" Margin="0, 24,0 ,6">
+        <components:CircleButton
+            Clicked="DownloadButton_OnClicked"
+            ImageSource="download.png"
+            Size="42"
+            ImageSize="24"
+            ImageColor="{StaticResource PrimaryTextColor}"
+            BackgroundColor="{StaticResource SecondaryTextColor}" />
+
+        <components:CircleButton
+            Clicked="FavouriteButton_OnClicked"
+            ImageSource="favourite_empty.png"
+            Size="42"
+            ImageSize="24"
+            ImageColor="{StaticResource PrimaryTextColor}"
+            BackgroundColor="{StaticResource SecondaryTextColor}" />
+
+        <components:CircleButton
+            Clicked="PlayPauseButton_OnClicked"
+            ImageSource="{Binding PlayPauseIcon}"
+            Size="64"
+            ImageSize="38"
+            ImageColor="{StaticResource BackgroundColor}"
+            BackgroundColor="{StaticResource PrimaryTextColor}" />
+
+        <components:CircleButton
+            Clicked="LibraryAddButton_OnClicked"
+            ImageSource="library_add.png"
+            Size="42"
+            ImageSize="24"
+            ImageColor="{StaticResource PrimaryTextColor}"
+            BackgroundColor="{StaticResource SecondaryTextColor}" />
+
+        <components:CircleButton
+            Clicked="MoreButton_OnClicked"
+            ImageSource="more_vert.png"
+            Size="42"
+            ImageSize="24"
+            ImageColor="{StaticResource PrimaryTextColor}"
+            BackgroundColor="{StaticResource SecondaryTextColor}" />
+    </HorizontalStackLayout>
+</ContentView>

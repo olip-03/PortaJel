@@ -14,14 +14,13 @@ public partial class AlbumListPage : ContentPage
     private DatabaseBindViewModel _vm;
     private CancellationTokenSource CancellationTokenSource = new();
     private double scroll = 0;
-
     public AlbumListPage(IDbConnector database)
 	{
         _vm = new(database.Connectors.Album);
         InitializeComponent();
         BindingContext = _vm;
 
-        vlv.OnScrolled += Vlv_OnScrolled;
+        Vlv.OnScrolled += Vlv_OnScrolled;
 
         ImageService.Instance.SetPauseWork(true);
     }
@@ -42,5 +41,20 @@ public partial class AlbumListPage : ContentPage
     {
         CancellationTokenSource.Cancel();
         base.OnNavigatedFrom(args);
+    }
+
+    private void Favourite_OnClicked(object? sender, EventArgs e)
+    {
+        
+    }
+
+    private void Order_OnClicked(object? sender, EventArgs e)
+    {
+        
+    }
+
+    private void Filter_OnClicked(object? sender, EventArgs e)
+    {
+        // Throw modal to allow filter selection
     }
 }

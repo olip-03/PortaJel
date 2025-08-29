@@ -8,6 +8,9 @@ namespace Portajel.Components
 {
     public class BottomNavBar: TabBar
     {
-
+        public BottomNavBar()
+        {
+            
+        }
     }
 }

@@ -6,11 +6,14 @@
              xmlns:vm="clr-namespace:Portajel.Structures.ViewModels.Settings"
              xmlns:comp="clr-namespace:Portajel.Components"
              xmlns:models="clr-namespace:Portajel.Structures"
+             Shell.NavBarIsVisible="False"
              x:DataType="vm:SettingsPageViewModel"
              x:Class="Portajel.Pages.Settings.SettingsPage"
              Title="Settings">
     <ScrollView Orientation="Vertical">
         <VerticalStackLayout>
+            <comp:FakeShellHeader IgnoreSystemHeader="True"/>
+            
             <Label Margin="16, 16, 0, 0" Text="Connections" FontSize="20"/>
             <comp:ServerConnectionView x:Name="ServerConnectionView"/>
             

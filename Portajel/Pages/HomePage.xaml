@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:feed="clr-namespace:Portajel.Components.FeedView;assembly=Portajel"
+    xmlns:pages="clr-namespace:Portajel.Structures.ViewModels.Pages"
+    xmlns:components="clr-namespace:Portajel.Components"
+    x:Class="Portajel.Pages.HomePage"
+    Title="PortaJel"
+    x:DataType="pages:HomePageViewModel">
+
+    <ContentPage.ToolbarItems>
+        <ToolbarItem
+            Text="Settings"
+            IconImageSource="settings.png"
+            Clicked="NavigateSettings" />
+    </ContentPage.ToolbarItems>
+
+    <RefreshView
+        x:Name="RefreshViewMain"
+        Command="{Binding RefreshCommand}"
+        IsRefreshing="{Binding IsRefreshing}">
+
+        <ScrollView
+            x:Name="ScrollViewMain"
+            Orientation="Vertical">
+            <components:FeedGridView
+                x:Name="FeedList" />
+        </ScrollView>
+    </RefreshView>
+</ContentPage>

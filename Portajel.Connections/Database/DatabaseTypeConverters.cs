@@ -53,7 +53,15 @@ public static class DatabaseTypeConverters
     
     public static bool InsertRangeTyped<T>(SQLiteConnection database, BaseData[] musicItems) where T : BaseData, new()
     {
-        return database.InsertAll(musicItems.Cast<T>()) > 0;
+        int successCount = 0;
+        foreach (var musicItem in musicItems)
+        {
+            if (database.InsertOrReplace((T)musicItem) > 0)
+            {
+                successCount++;
+            }
+        }
+        return successCount > 0;
     }
     
     public static BaseData[] GetTypedAll<T>(

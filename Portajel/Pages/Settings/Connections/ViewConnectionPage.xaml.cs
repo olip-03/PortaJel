@@ -7,6 +7,8 @@ using Portajel.Structures.ViewModels.Settings.Connections;
 using System;
 using CommunityToolkit.Maui.Alerts;
 using CommunityToolkit.Maui.Core;
+using Portajel.Connections.Database;
+using SQLite;
 
 namespace Portajel.Pages.Settings.Connections;
 public partial class ViewConnectionPage : ContentPage, IQueryAttributable
@@ -75,9 +77,20 @@ public partial class ViewConnectionPage : ContentPage, IQueryAttributable
     {
         var srv = _server.Servers.First(s => s.GetAddress() == url);
         _server.Servers.Remove(srv);
+        
+        SQLiteConnection db = _database.Database;
+        // delete here
+        // srv.GetAddress() for server address
+        var serverId = srv.Id;
+
+        db.Execute("DELETE FROM AlbumData WHERE ServerId = ?", serverId);
+        db.Execute("DELETE FROM ArtistData WHERE ServerId = ?", serverId);
+        db.Execute("DELETE FROM PlaylistData WHERE ServerId = ?", serverId);
+        db.Execute("DELETE FROM SongData WHERE ServerId = ?", serverId);
+        
         await SaveHelper.SaveData(_server);
         await Shell.Current.GoToAsync("..");
-    }
+    }   
 
     private async void ToolbarItem_Clicked(object sender, EventArgs e)
     {

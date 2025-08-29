@@ -24,9 +24,11 @@ namespace Portajel.Droid
             {
                 // This is the core call to enable edge-to-edge
                 WindowCompat.SetDecorFitsSystemWindows(Window, false);
+                
                 Window.SetFlags(WindowManagerFlags.HardwareAccelerated, WindowManagerFlags.HardwareAccelerated);
                 Window.SetFlags(WindowManagerFlags.LayoutNoLimits, WindowManagerFlags.LayoutNoLimits);
-
+                //
+                
                 activity.Window.SetStatusBarColor(Android.Graphics.Color.Transparent);
                 activity.Window.SetNavigationBarColor(Android.Graphics.Color.Transparent);
             }

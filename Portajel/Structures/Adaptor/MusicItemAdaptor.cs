@@ -16,27 +16,20 @@ using System.Threading.Tasks;
 
 namespace Portajel.Structures.Adaptor
 { 
-    public class MusicItemAdaptor : VirtualListViewAdapterBase<object, BaseData>
+    public class MusicItemAdaptor(IDbItemConnector database) : VirtualListViewAdapterBase<object, BaseData>
     {
-        private IDbItemConnector _database;
-        public MusicItemAdaptor(IDbItemConnector database, int total) 
-        {
-            _database = database;
-        }
-        public MusicItemAdaptor(IDbItemConnector database)
-        {
-            _database = database;
-        }
         public override BaseData GetItem(int sectionIndex, int itemIndex)
         {
-            var result = _database.GetAll(limit: 1, startIndex: itemIndex, setSortOrder: SortOrder.Descending, setSortTypes: ItemSortBy.Name).First();
-            // result.Index = itemIndex;
-            return result ?? AlbumData.Empty;
+            var result = database.GetAll(
+                limit: 1, 
+                startIndex: itemIndex, 
+                setSortOrder: SortOrder.Descending, 
+                setSortTypes: ItemSortBy.Name).First();
+            return result;
         }
         public override int GetNumberOfItemsInSection(int sectionIndex)
         {
-            // If this happens to be too slow cache it and use a private int total
-            return _database.GetTotalCount();
+            return database.GetTotalCount();
         }
     }
 }

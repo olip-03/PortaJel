@@ -1,11 +1,8 @@
 
-using ExCSS;
+using System.Collections.ObjectModel;
 using Portajel.Connections.Database;
 using Portajel.Connections.Interfaces;
-using Portajel.Connections.Services;
 using Portajel.Structures.ViewModels.Pages.Views;
-using Portajel.Structures.ViewModels.Settings.Connections;
-using System.Data;
 using System.Diagnostics;
 using CommunityToolkit.Maui.Alerts;
 using CommunityToolkit.Maui.Core.Extensions;
@@ -14,15 +11,12 @@ namespace Portajel.Pages.Views
 {
     public partial class AlbumPage : ContentPage, IQueryAttributable
     {
-        private IDbConnector _database = default!;
-        private IServerConnector _server = default!;
-
-        private string url = default!;
-        private Dictionary<string, AlbumData> _connectionProperties = new();
-    
+        private readonly IDbConnector _database;
+        private readonly IServerConnector _server;
+        
         private AlbumPageViewModel _viewModel = new();
 
-        private bool _isPlaying = false;
+        private bool _isPlaying;
         public AlbumPage(IDbConnector database, IServerConnector server)
     	{
             _database = database;
@@ -38,17 +32,18 @@ namespace Portajel.Pages.Views
             {
                 try
                 {
-                    AlbumData? itemValue = item.Value as AlbumData;
-                    _viewModel = new([], itemValue);
+                    if (item.Value is AlbumData itemValue)
+                    {
+                        _viewModel = new([], itemValue);
+                    }
                     BindingContext = _viewModel;
                 }
-                catch (Exception ex)
+                catch
                 {
                     return;
                 }
             }
-            AlbumData? connectorProperty = new AlbumData();
-            var test = _connectionProperties.TryGetValue("URL", out connectorProperty);
+            Animate();
         }
         
         protected override void OnNavigatedTo(NavigatedToEventArgs args)
@@ -56,14 +51,14 @@ namespace Portajel.Pages.Views
             Update();
         }
         
-        private async void Update(bool retry = true)
+        private async void Update()
         {
-            var localSongs = _database.Connectors.Song.GetAll(parentId: _viewModel.Id).Cast<SongData>();
-            _viewModel.Songs = localSongs.ToObservableCollection();
-            Animate();
-
             try
             {
+                var localSongs = _database.Connectors.Song.GetAll(parentId: _viewModel.ServerId).ToArray();
+                _viewModel.Update(localSongs, null);
+                Animate();
+                
                 var server = _server.Servers[_viewModel.ServerAddress];
                 if (server != null)
                 {
@@ -73,53 +68,43 @@ namespace Portajel.Pages.Views
                     var songTask = server.DataConnectors["Song"].GetAllAsync(parentId: id);
 
                     await Task.WhenAll(albumTask, songTask);
-
-                    var album = albumTask.Result;
+                
+                    var album = albumTask.Result.ToAlbum();
                     var songs = songTask.Result;
-
-                    _viewModel.Songs = songs.Cast<SongData>().ToObservableCollection();
-                    // Todo: create insert or replace functions for database
-                    // _database.Connectors.Album.Insert(album);
-                    // _database.Connectors.Song.InsertRange(songs);
+                    
+                    _viewModel.Update(songs, album);
                 }
             }
-            catch (HttpRequestException httpEx)
+            catch (HttpRequestException dle)
             {
-                try
-                {
-                    var server = _server.Servers[_viewModel.ServerAddress];
-                    if (server != null)
-                    {
-                        await server.AuthenticateAsync();
-                    }
-                    if (retry)
-                    {
-                        Update(false);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Trace.WriteLine(ex.Message);
-                }
+                Trace.WriteLine(dle.Message);
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                // TODO: Message informing user of error
-                Trace.WriteLine(e.Message);
+                Trace.WriteLine(ex.Message);
             }
             finally
             {
-                Animate();
+                if (SongContainer.Opacity < 1)
+                {
+                    Animate();
+                }
             }
+        }
+
+        private async Task<AlbumPageViewModel?> Download()
+        {
+
+            return null;
         }
 
         private async void Animate()
         {
             try
             {
-                await SongContainer.FadeTo(1, 500, Easing.Linear);
+                await SongContainer.FadeTo(1, 500, Easing.SinInOut);
             }
-            catch (Exception e)
+            catch
             {
                 SongContainer.Opacity = 1;
             }
@@ -127,20 +112,20 @@ namespace Portajel.Pages.Views
         
         private async void CircleButton_OnClicked(object? sender, EventArgs e)
         {
-            await Shell.Current.GoToAsync("..", true);
+            try
+            {
+                await Shell.Current.GoToAsync("..", true);
+            }
+            catch
+            {
+                // ignored
+            }
         }
 
         private void PlayPause_OnClicked(object? sender, EventArgs e)
         {
             _isPlaying = !_isPlaying;
-            if (_isPlaying)
-            {
-                _viewModel.PlayPauseIcon = "media_pause.png";
-            }
-            else
-            {
-                _viewModel.PlayPauseIcon = "media_play.png";
-            }
+            _viewModel.PlayPauseIcon = _isPlaying ? "media_pause.png" : "media_play.png";
         }
         
         private void RefreshView_OnRefreshing(object? sender, EventArgs e)
@@ -156,12 +141,13 @@ namespace Portajel.Pages.Views
         {
             try
             {
+                // TODO: Implementation
                 if (sender is not SwipeItem swipeItem) return;
                 if (swipeItem.BindingContext is not SongData song) return;
                 var toast = Toast.Make($"{song.Name} added to favourites");
                 await toast.Show();
             }
-            catch (Exception exception)
+            catch
             {
                 Trace.WriteLine("AlbumPage: Failed to add song to favourites");
             }
@@ -171,18 +157,19 @@ namespace Portajel.Pages.Views
         {
             try
             {
+                // TODO: Implementation
                 if (sender is not SwipeItem swipeItem) return;
                 if (swipeItem.BindingContext is not SongData song) return;
                 var toast = Toast.Make($"{song.Name} added to queue");
                 await toast.Show();
             }
-            catch (Exception exception)
+            catch
             {
                 Trace.WriteLine("AlbumPage: Failed to add song to queue");
             }
         }
 
-        private async void ScrollView_OnScrolled(object sender, ScrolledEventArgs e)
+        private void ScrollView_OnScrolled(object sender, ScrolledEventArgs e)
         {
             const double minScroll = 280.0;
             const double maxScroll = 460.0;
@@ -190,7 +177,7 @@ namespace Portajel.Pages.Views
             if (scroll > 0)
             {
                 double opacity = Math.Clamp(scroll / (maxScroll - minScroll), 0.0, 1.0);
-                HeaderBackground.Opacity = opacity;
+                Header.UpdateBackgroundOpacity(opacity);
                 if (scroll >= 1)
                 {
                     
@@ -198,7 +185,19 @@ namespace Portajel.Pages.Views
             }
             else
             {
-                HeaderBackground.Opacity = 0;
+                Header.UpdateBackgroundOpacity(0);
+            }
+        }
+
+        private async void Header_OnBackButtonClicked(object? sender, EventArgs e)
+        {
+            try
+            {
+                await Shell.Current.GoToAsync("..", true);
+            }
+            catch (Exception ex)
+            {
+                Trace.WriteLine(ex.Message);
             }
         }
     }

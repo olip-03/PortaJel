@@ -5,6 +5,10 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:system="clr-namespace:System;assembly=System.Runtime">
   
+  <Style TargetType="ContentPage">
+    <Setter Property="Shell.BackgroundColor" Value="{DynamicResource BackgroundColor}"/>
+  </Style>
+  
   <Style TargetType="ActivityIndicator">
     <Setter Property="Color" Value="{DynamicResource Primary}"/>
   </Style>
@@ -433,18 +437,18 @@
     <Setter Property="Padding"         Value="0"/>
     <Setter Property="BackgroundColor" Value="{DynamicResource BackgroundColor}"/>
   </Style>
-
+  
   <Style TargetType="Shell" ApplyToDerivedTypes="True">
-    <Setter Property="Shell.BackgroundColor"       Value="{DynamicResource BackgroundColor}"/>
-    <Setter Property="Shell.ForegroundColor"       Value="{DynamicResource PrimaryTextColor}"/>
-    <Setter Property="Shell.TitleColor"            Value="{DynamicResource PrimaryTextColor}"/>
-    <Setter Property="Shell.DisabledColor"         Value="{DynamicResource Gray200}"/>
-    <Setter Property="Shell.UnselectedColor"       Value="{DynamicResource Gray200}"/>
-    <Setter Property="Shell.NavBarHasShadow"       Value="False"/>
-    <Setter Property="Shell.TabBarBackgroundColor" Value="{DynamicResource BackgroundColor}"/>
-    <Setter Property="Shell.TabBarForegroundColor" Value="{DynamicResource Primary}"/>
-    <Setter Property="Shell.TabBarTitleColor"      Value="{DynamicResource Primary}"/>
-    <Setter Property="Shell.TabBarUnselectedColor" Value="{DynamicResource Gray200}"/>
+    <Setter Property="BackgroundColor"       Value="{DynamicResource BackgroundColor}"/>
+    <Setter Property="ForegroundColor"       Value="{DynamicResource PrimaryTextColor}"/>
+    <Setter Property="TitleColor"            Value="{DynamicResource PrimaryTextColor}"/>
+    <Setter Property="DisabledColor"         Value="{DynamicResource Gray200}"/>
+    <Setter Property="UnselectedColor"       Value="{DynamicResource Gray200}"/>
+    <Setter Property="NavBarHasShadow"       Value="False"/>
+    <Setter Property="TabBarBackgroundColor" Value="{DynamicResource TertiaryBackground}"/>
+    <Setter Property="TabBarForegroundColor" Value="{DynamicResource Primary}"/>
+    <Setter Property="TabBarTitleColor"      Value="{DynamicResource Primary}"/>
+    <Setter Property="TabBarUnselectedColor" Value="{DynamicResource Gray200}"/>
   </Style>
 
   <Style TargetType="NavigationPage">

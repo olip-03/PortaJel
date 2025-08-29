@@ -7,7 +7,6 @@
              x:DataType="local:SearchPageViewModel"
              x:Class="Portajel.Pages.SearchPage"
              Title="Search">
-
     <Grid RowDefinitions="Auto,*" 
           RowSpacing="0">
         <SearchBar Grid.Row="0"
