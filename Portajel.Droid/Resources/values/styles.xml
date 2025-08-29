@@ -1,5 +1,5 @@
 ﻿<resources>
 	<style name="MainThemeEdgeToEdge" parent="Maui.MainTheme.NoActionBar">
-		<item name="maui_edgetoedge_optout">true</item>
+		<item name="maui_edgetoedge_optout">false</item>
 	</style>
 </resources>

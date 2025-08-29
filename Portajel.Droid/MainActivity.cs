@@ -31,12 +31,29 @@ namespace Portajel.Droid
                 
                 activity.Window.SetStatusBarColor(Android.Graphics.Color.Transparent);
                 activity.Window.SetNavigationBarColor(Android.Graphics.Color.Transparent);
+
+                var decorView = Window?.DecorView;
+                if (decorView != null)
+                {
+                    ViewCompat.SetOnApplyWindowInsetsListener(decorView, new CustomInsetsListener());
+                }
             }
             base.OnCreate(savedInstanceState);
         }
+
         public override ActionMode? OnWindowStartingActionMode(ActionMode.ICallback? callback)
         {
             return base.OnWindowStartingActionMode(callback);
+        }
+
+        public class CustomInsetsListener : Java.Lang.Object, AndroidX.Core.View.IOnApplyWindowInsetsListener
+        {
+            public WindowInsetsCompat OnApplyWindowInsets(Android.Views.View v, WindowInsetsCompat insets)
+            {
+                // For modals, we want to draw behind the status bar
+                // So we don't apply system bar insets
+                return WindowInsetsCompat.Consumed;
+            }
         }
     }
 }

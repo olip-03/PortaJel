@@ -1,19 +1,21 @@
-﻿using Portajel.Connections.Interfaces;
-using Portajel.Connections.Services.Database;
-using Portajel.Connections;
-using Portajel.Droid.Playback;
-using Portajel.Structures.Interfaces;
-using Portajel;
-using Microsoft.Maui.Hosting;
-using Portajel.Pages.Settings.Debug;
-using Portajel.Pages.Settings;
-using Portajel.Droid.Services;
-using PortaJel.Droid.Services;
-using Portajel.Services;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Maui.Handlers;
+using Microsoft.Maui.Hosting;
+using Microsoft.Maui.LifecycleEvents;
+using Portajel;
 using Portajel.Components;
+using Portajel.Connections;
+using Portajel.Connections.Interfaces;
+using Portajel.Connections.Services.Database;
+using Portajel.Droid.Playback;
 using Portajel.Droid.Render;
-using Microsoft.Extensions.DependencyInjection;
+using Portajel.Droid.Services;
+using Portajel.Pages.Settings;
+using Portajel.Pages.Settings.Debug;
+using Portajel.Render;
+using Portajel.Services;
+using Portajel.Structures.Interfaces;
+using PortaJel.Droid.Services;
 
 namespace Portajel.Droid
 {
@@ -37,6 +39,25 @@ namespace Portajel.Droid
                 var service = serviceProvider.GetRequiredService<DroidServiceController>();
                 DroidServerConnector droidServer = new DroidServerConnector(service);
                 return droidServer;
+            });
+
+            // Enables modal edge-to-edge
+            builder.ConfigureLifecycleEvents(lifecycleBuilder =>
+            {
+                lifecycleBuilder.AddAndroid(androidBuilder =>
+                {
+                    androidBuilder.OnCreate((activity, _) =>
+                    {
+                        if (activity is AndroidX.AppCompat.App.AppCompatActivity appCompatActivity)
+                        {
+                            var fragmentManager = appCompatActivity.SupportFragmentManager;
+                            fragmentManager?.RegisterFragmentLifecycleCallbacks(
+                                new CommunityToolkit.Maui.Core.Services.FragmentLifecycleManager(
+                                    new CustomDialogFragmentService()),
+                                false);
+                        }
+                    });
+                });
             });
 
             builder.Services.AddSingleton<IMediaController, MediaController>();

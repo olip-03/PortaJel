@@ -20,7 +20,10 @@ namespace Portajel.Droid.Render
     {
         public NavShellRenderer(Context context) : base(context)
         {
+
         }
+
+        
 
         protected override IShellBottomNavViewAppearanceTracker CreateBottomNavViewAppearanceTracker(ShellItem shellItem)
         {

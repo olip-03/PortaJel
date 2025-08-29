@@ -50,12 +50,6 @@
     <MauiXaml Update="Pages\Settings\Debug\DebugMap.xaml">
       <SubType>Designer</SubType>
     </MauiXaml>
-    <MauiXaml Update="Resources\Styles\DarkColors.xaml">
-      <SubType>Designer</SubType>
-    </MauiXaml>
-    <MauiXaml Update="Resources\Styles\LightColors.xaml">
-      <SubType>Designer</SubType>
-    </MauiXaml>
   </ItemGroup>
   <ItemGroup>
     <None Update="App.xaml">
