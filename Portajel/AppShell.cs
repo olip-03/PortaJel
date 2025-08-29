@@ -1,13 +1,15 @@
-﻿using Microsoft.Maui.Controls;
+﻿using CommunityToolkit.Maui.Behaviors;
+using CommunityToolkit.Maui.Core;
+using Microsoft.Maui.Controls;
+using Microsoft.Maui.Controls.PlatformConfiguration.AndroidSpecific;
+using Portajel.Components;
 using Portajel.Pages.Settings;
 using Portajel.Pages.Settings.Connections;
 using Portajel.Pages.Settings.Debug;
-using System.Diagnostics;
-using Microsoft.Maui.Controls.PlatformConfiguration.AndroidSpecific;
-using ShellItem = Microsoft.Maui.Controls.ShellItem;
 using Portajel.Pages.Views;
-using Portajel.Components;
 using Portajel.Structures.Functional;
+using System.Diagnostics;
+using ShellItem = Microsoft.Maui.Controls.ShellItem;
 
 namespace Portajel
 {
@@ -17,9 +19,14 @@ namespace Portajel
         private Color _tertiaryBackground = Color.FromRgba(0, 0, 0, 255);
 
         private BottomNavBar _bottomNavBar = null!;
-        
+        private StatusBarBehavior? statusBar = null;
+
         public AppShell()
         {
+            var app = Microsoft.Maui.Controls.Application.Current;
+            if (app == null)
+                throw new Exception("App cannot be null");
+
             Title = "Portajel";
 
             Routing.RegisterRoute("settings", typeof(SettingsPage));
@@ -32,7 +39,7 @@ namespace Portajel
             Routing.RegisterRoute("album", typeof(AlbumPage));
             Routing.RegisterRoute("artist", typeof(ArtistPage));
 
-            Microsoft.Maui.Controls.Application.Current.RequestedThemeChanged += (s, a) =>
+            app.RequestedThemeChanged += (s, a) =>
             {
                 UpdateTheme();
             };
@@ -46,31 +53,49 @@ namespace Portajel
 
         private void UpdateTheme()
         {
-            var platformTheme = Microsoft.Maui.Controls.Application.Current.PlatformAppTheme;
-            BackgroundColor = Colors.Transparent;
-            
+            var app = Microsoft.Maui.Controls.Application.Current;
+            if (app == null)
+                return;
+
+            StatusBarStyle statusBarStyle = StatusBarStyle.Default;
+            var platformTheme = Microsoft.Maui.Controls.Application.Current?.PlatformAppTheme;
             switch (platformTheme)
             {
                 case AppTheme.Dark:
+                    statusBarStyle = StatusBarStyle.LightContent;
                     ThemeHelper.UpdatePrimaryColor("Dark");
                     break;
                 default:
                     ThemeHelper.UpdatePrimaryColor("Light");
+                    statusBarStyle = StatusBarStyle.DarkContent;
                     break;
             }
-            
-            var hasPrimaryColor = Microsoft.Maui.Controls.Application.Current.Resources.TryGetValue("Primary", out object primaryColor);
-            if (hasPrimaryColor)
+
+            var hasPrimaryColor = app.Resources.TryGetValue("Primary", out object primaryColor);
+            if (hasPrimaryColor == true)
             {
                 _primaryColor = (Color)primaryColor;
             }
-            var hasTertiaryBackground = Microsoft.Maui.Controls.Application.Current.Resources.TryGetValue("TertiaryBackground", out object tertiaryBackground);
+            var hasTertiaryBackground = app.Resources.TryGetValue("TertiaryBackground", out object tertiaryBackground);
             if (hasTertiaryBackground)
             {
                 _tertiaryBackground = (Color)tertiaryBackground;
             }
+            BackgroundColor = _tertiaryBackground;
+
+            if (statusBar != null)
+            {
+                this.Behaviors.Remove(statusBar);
+            }
+            
+            statusBar = new StatusBarBehavior
+            {
+                StatusBarColor = _tertiaryBackground,
+                StatusBarStyle = statusBarStyle,
+            };
+            this.Behaviors.Add(statusBar);
         }
-        
+
         private BottomNavBar BuildTabBar(Color? background = null)
         {
             var tabBar = new BottomNavBar();

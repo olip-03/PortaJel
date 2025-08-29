@@ -12,7 +12,8 @@
              Title="Settings">
     <ScrollView Orientation="Vertical">
         <VerticalStackLayout>
-            <comp:FakeShellHeader IgnoreSystemHeader="True"/>
+            <comp:FakeShellHeader IgnoreSystemHeader="False" 
+                                  BackButtonClicked="FakeShellHeader_BackButtonClicked"/>
             
             <Label Margin="16, 16, 0, 0" Text="Connections" FontSize="20"/>
             <comp:ServerConnectionView x:Name="ServerConnectionView"/>

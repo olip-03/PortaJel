@@ -3,14 +3,15 @@ using Android.Content;
 using Android.Content.PM;
 using Android.Content.Res;
 using Android.OS;
-using Microsoft.Maui;
 using Android.Runtime;
-using Microsoft.Maui.Controls;
 using Android.Views;
 using AndroidX.Core.View;
+using Microsoft.Maui;
+using Microsoft.Maui.Controls;
 using Microsoft.Maui.Controls.Compatibility.Platform.Android;
 using Microsoft.Maui.Handlers;
 using Microsoft.Maui.Platform;
+using Portajel.Render;
 
 namespace Portajel.Droid
 {
@@ -23,15 +24,13 @@ namespace Portajel.Droid
             if (activity?.Window != null)
             {
                 // This is the core call to enable edge-to-edge
-                WindowCompat.SetDecorFitsSystemWindows(Window, false);
+                WindowCompat.SetDecorFitsSystemWindows(Window ?? throw new Exception("Null check failed"), false);
                 
                 Window.SetFlags(WindowManagerFlags.HardwareAccelerated, WindowManagerFlags.HardwareAccelerated);
                 Window.SetFlags(WindowManagerFlags.LayoutNoLimits, WindowManagerFlags.LayoutNoLimits);
-                //
                 
-                activity.Window.SetStatusBarColor(Android.Graphics.Color.Transparent);
-                activity.Window.SetNavigationBarColor(Android.Graphics.Color.Transparent);
-
+                var windowInsetsController = WindowCompat.GetInsetsController(activity.Window, activity.Window.DecorView);
+                
                 var decorView = Window?.DecorView;
                 if (decorView != null)
                 {

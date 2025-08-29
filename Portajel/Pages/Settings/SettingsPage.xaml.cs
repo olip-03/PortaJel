@@ -51,4 +51,9 @@ public partial class SettingsPage : ContentPage
         await Shell.Current.GoToAsync(listItem.NavigationLocation);
         collectionView.SelectedItem = null;
     }
+
+    private async void FakeShellHeader_BackButtonClicked(object sender, EventArgs e)
+    {
+        await Navigation.PopModalAsync();
+    }
 }

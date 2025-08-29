@@ -12,6 +12,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Google.Android.Material.AppBar;
+using Portajel.Render;
 
 namespace Portajel.Droid.Render
 {
@@ -53,23 +54,7 @@ namespace Portajel.Droid.Render
             var container = toolbar.Parent;
             if (container is AppBarLayout appBarLayout)
             {
-                // 1) Try to grab a Color or SolidColorBrush from the merged dictionaries
-                var rd = Application.Current?.Resources;
-                Color mauiColor = Colors.Transparent;
-
-                if (rd != null && rd.TryGetValue("BackgroundColor", out var brushOrColor))
-                {
-                    if (brushOrColor is Color c)
-                        mauiColor = c;
-                    else if (brushOrColor is SolidColorBrush scb)
-                        mauiColor = scb.Color;
-                }
-
-                // 2) Convert to Android.Graphics.Color
-                var androidColor = mauiColor.ToPlatform();
-
-                // 3) Apply as a ColorDrawable
-                appBarLayout.Background = new ColorDrawable(androidColor);
+                appBarLayout.Background = BackgroundHelper.GetColor("BackgroundColor");
             }
         }
 

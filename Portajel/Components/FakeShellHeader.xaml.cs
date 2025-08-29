@@ -24,6 +24,7 @@ public partial class FakeShellHeader : ContentView
         get => (bool)GetValue(IgnoreSystemHeaderProperty);
         set => SetValue(IgnoreSystemHeaderProperty, value);
     }
+
     readonly double _defaultHeaderHeight;
     private FakeShellHeaderViewModel _viewModel;
     
@@ -52,6 +53,7 @@ public partial class FakeShellHeader : ContentView
     {
         BackButtonClicked?.Invoke(sender, e);
     }
+
     static void OnIgnoreSystemHeaderChanged(
         BindableObject bindable,
         object oldValue,

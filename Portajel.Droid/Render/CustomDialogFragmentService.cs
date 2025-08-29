@@ -23,10 +23,13 @@ namespace Portajel.Render
             if (dialogFragment?.Dialog?.Window is not { } window)
                 return;
 
+            var background = BackgroundHelper.GetColor("BackgroundColor");
             // Apply your edge-to-edge settings to the modal dialog
             window.SetFlags(WindowManagerFlags.LayoutNoLimits, WindowManagerFlags.LayoutNoLimits);
             window.ClearFlags(WindowManagerFlags.TranslucentStatus);
-            window.SetStatusBarColor(Android.Graphics.Color.Transparent);
+            window.SetNavigationBarColor(background.Color);
+            
+            //window.SetStatusBarColor(Android.Graphics.Color.Transparent);
 
             // For API 30+
             if (OperatingSystem.IsAndroidVersionAtLeast(30))

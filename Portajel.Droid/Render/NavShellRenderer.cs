@@ -23,8 +23,6 @@ namespace Portajel.Droid.Render
 
         }
 
-        
-
         protected override IShellBottomNavViewAppearanceTracker CreateBottomNavViewAppearanceTracker(ShellItem shellItem)
         {
             return new BottomNavViewAppearanceTracker(this, shellItem.CurrentItem);
