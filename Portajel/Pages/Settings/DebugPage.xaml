@@ -3,44 +3,51 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:vm="clr-namespace:Portajel.Structures.ViewModels.Settings"
              xmlns:models="clr-namespace:Portajel.Structures"
+             xmlns:comp="clr-namespace:Portajel.Components"
              x:Class="Portajel.Pages.Settings.DebugPage"
              x:DataType="vm:SettingsPageViewModel"
              Title="Debugging Tools">
     <ScrollView Orientation="Vertical">
-        <CollectionView 
-            ItemsSource="{Binding ListItems}" 
-            SelectionMode="Single"
-            SelectionChanged="CollectionView_SelectionChanged">
-            <CollectionView.ItemTemplate>
-                <DataTemplate x:DataType="models:ListItem">
-                    <Grid Padding="10">
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
-                        </Grid.RowDefinitions>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition Width="Auto" />
-                        </Grid.ColumnDefinitions>
-                        <Image 
-                            Grid.RowSpan="2"
-                            Source="{Binding Icon}"
-                            Margin="5, 0, 10, 0"
-                            Aspect="AspectFill"
-                            HeightRequest="32"
-                            WidthRequest="32" />
-                        <Label 
-                            Grid.Column="1"
-                            Text="{Binding Title}"
-                            FontAttributes="Bold" />
-                        <Label 
-                            Grid.Row="1"
-                            Grid.Column="1"
-                            Text="{Binding Description}"
-                            VerticalOptions="End" />
-                    </Grid>
-                </DataTemplate>
-            </CollectionView.ItemTemplate>
-        </CollectionView>
+        <VerticalStackLayout>
+            <comp:FakeShellHeader IgnoreSystemHeader="False" 
+                                  Text="Debug Settings"
+                                  BackButtonClicked="FakeShellHeader_BackButtonClicked"/>
+            <CollectionView 
+                ItemsSource="{Binding ListItems}" 
+                SelectionMode="Single"
+                SelectionChanged="CollectionView_SelectionChanged">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="models:ListItem">
+                        <Grid Padding="10">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <Image 
+                    Grid.RowSpan="2"
+                    Source="{Binding Icon}"
+                    Margin="5, 0, 10, 0"
+                    Aspect="AspectFill"
+                    HeightRequest="32"
+                    WidthRequest="32" />
+                            <Label 
+                    Grid.Column="1"
+                    Text="{Binding Title}"
+                    FontAttributes="Bold" />
+                            <Label 
+                    Grid.Row="1"
+                    Grid.Column="1"
+                    Text="{Binding Description}"
+                    VerticalOptions="End" />
+                        </Grid>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </VerticalStackLayout>
+        
     </ScrollView>
 </ContentPage>

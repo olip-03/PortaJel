@@ -4,11 +4,15 @@
              xmlns:vm="clr-namespace:Portajel.Structures.ViewModels.Settings"
              xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
              xmlns:interfaces="clr-namespace:Portajel.Connections.Interfaces;assembly=Portajel.Connections"
+             xmlns:comp="clr-namespace:Portajel.Components"
              xmlns:services="clr-namespace:Portajel.Connections.Services;assembly=Portajel.Connections"
              Title="Home Settings"
              x:DataType="vm:HomeSettingsViewModel"
              x:Class="Portajel.Pages.Settings.HomeSettings">
     <VerticalStackLayout>
+        <comp:FakeShellHeader IgnoreSystemHeader="False" 
+                              Text="Customise Home"
+                              BackButtonClicked="FakeShellHeader_BackButtonClicked"/>
         <Label Margin="16, 0, 16, 16" Text="Feed order" FontSize="20"/>
         <CollectionView ItemsSource="{Binding Feeds}" CanReorderItems="True">
             <CollectionView.ItemTemplate>

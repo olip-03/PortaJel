@@ -6,12 +6,18 @@ using Android.OS;
 using Android.Runtime;
 using Android.Views;
 using AndroidX.Core.View;
+using FFImageLoading;
+using FFImageLoading.Config;
+using FFImageLoading.Helpers;
 using Microsoft.Maui;
 using Microsoft.Maui.Controls;
 using Microsoft.Maui.Controls.Compatibility.Platform.Android;
 using Microsoft.Maui.Handlers;
 using Microsoft.Maui.Platform;
 using Portajel.Render;
+using System.Net.Http.Headers;
+using Xamarin.Android.Net;
+using Configuration = FFImageLoading.Config.Configuration;
 
 namespace Portajel.Droid
 {
@@ -36,6 +42,14 @@ namespace Portajel.Droid
                 {
                     ViewCompat.SetOnApplyWindowInsetsListener(decorView, new CustomInsetsListener());
                 }
+
+                var imageService = ServiceHelper.GetService<IImageService>();
+                var handler = new AndroidMessageHandler();
+                var httpClient = new HttpClient(handler);
+                imageService.Initialize(new Configuration
+                {
+                    HttpClient = httpClient
+                });
             }
             base.OnCreate(savedInstanceState);
         }

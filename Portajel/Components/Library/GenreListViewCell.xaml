@@ -17,7 +17,9 @@
 	x:DataType="music:GenreData">
 	<vlv:VirtualViewCell.Resources>
 		<cnv:SubtitleTextConverter x:Key="TextConverter" />
-	</vlv:VirtualViewCell.Resources>	
+        <cnv:ImageUrlConverter x:Key="ImageUrlConverter" />
+        <x:Int32 x:Key="ImageSize">64</x:Int32>
+    </vlv:VirtualViewCell.Resources>	
 	<vlv:VirtualViewCell.Content>
 	    <Grid ColumnDefinitions="84, *" 
 	          RowDefinitions="42, 42" 
@@ -49,7 +51,7 @@
 		        </Border.Shadow>
 		        <comp:MusicImage Grid.RowSpan="2"
 		                         BlurHash="{Binding ImgBlurhash}"
-		                         Source="{Binding ImgSource}"
+		                         Source="{Binding ImgSource, Converter={StaticResource ImageUrlConverter}, ConverterParameter={StaticResource ImageSize}}"
 		                         ZIndex="1"
 		                         HeightRequest="64"
 		                         WidthRequest="64"/>

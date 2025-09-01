@@ -1,4 +1,7 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Android.Net.Http;    // For AndroidMessageHandler (newer)
+using FFImageLoading;
+using FFImageLoading.Config;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Maui.Handlers;
 using Microsoft.Maui.Hosting;
 using Microsoft.Maui.LifecycleEvents;
@@ -16,6 +19,12 @@ using Portajel.Render;
 using Portajel.Services;
 using Portajel.Structures.Interfaces;
 using PortaJel.Droid.Services;
+using System.Net.Http.Headers;
+using Xamarin.Android.Net;
+
+/// Reference for Android Tracing 
+/// https://github.com/dotnet/android/blob/main/Documentation/guides/tracing.md
+/// 
 
 namespace Portajel.Droid
 {

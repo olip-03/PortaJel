@@ -26,11 +26,12 @@
             ImageSource="arrowback.png" 
             Margin="12" 
             Size="42" 
-            ImageSize="32" 
+            ImageSize="28" 
             ImageColor="{StaticResource PrimaryTextColor}"
             BackgroundColor="Transparent" 
             Clicked="CircleButton_OnClicked"
             Grid.Row="1" Grid.Column="0"/>
+        <Label Grid.Row="1" Grid.Column="1" VerticalTextAlignment="Center" FontAttributes="Bold" FontSize="18" Text="{Binding LabelText}"/>
         <!-- TODO: Edit button, for when the time comes to implement that -->
         <!-- <components:CircleButton  -->
         <!--     ImageSource="search.png"  -->

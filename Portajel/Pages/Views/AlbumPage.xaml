@@ -25,9 +25,9 @@
         <Grid>
             <!-- Sticky header that sits at the top -->
             <components:FakeShellHeader 
+                TranslationY="-1"
                 x:Name="Header" 
                 ZIndex="3" 
-                Opacity="0"
                 BackButtonClicked="Header_OnBackButtonClicked"
                 VerticalOptions="Start"/>
             

@@ -23,6 +23,7 @@ namespace Portajel.Pages.Views
             _server = server;
             InitializeComponent();
             // GetNewAlbumData();
+            Header.UpdateBackgroundOpacity(0);
         }
 
         public void ApplyQueryAttributes(IDictionary<string, object> query)
@@ -171,8 +172,8 @@ namespace Portajel.Pages.Views
 
         private void ScrollView_OnScrolled(object sender, ScrolledEventArgs e)
         {
-            const double minScroll = 280.0;
-            const double maxScroll = 460.0;
+            const double minScroll = 100.0;
+            const double maxScroll = 300.0;
             double scroll = e.ScrollY - minScroll;
             if (scroll > 0)
             {

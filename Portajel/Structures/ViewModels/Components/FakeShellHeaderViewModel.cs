@@ -16,6 +16,8 @@ public class FakeShellHeaderViewModel : INotifyPropertyChanged
             OnPropertyChanged();
         }
     }
+
+    public string LabelText { get; set; } 
     
     public event PropertyChangedEventHandler? PropertyChanged;
     void OnPropertyChanged([CallerMemberName] string? name = null) =>

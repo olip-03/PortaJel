@@ -31,7 +31,7 @@ namespace Portajel.Components
         private CancellationTokenSource _canTokenSource = new();
 
         private SKCanvasView _blurhashCanvas;
-        private CachedImage _sourceImage;
+        private CachedImage? _sourceImage;
         private Color _backgroundColor = Color.FromRgba(0, 0, 0, 255);
         
         public static readonly BindableProperty BlurHashProperty =
@@ -70,15 +70,15 @@ namespace Portajel.Components
                 ZIndex = 0
             };
             _blurhashCanvas.PaintSurface += OnPaintBlurhashSurface;
-            
+
             _sourceImage = new CachedImage()
             {
                 ZIndex = 1,
-                CacheType = FFImageLoading.Cache.CacheType.Memory,
+                CacheType = CacheType.Disk,
                 RetryCount = 0,
                 FadeAnimationForCachedImages = true,
                 LoadingDelay = 500,
-                LoadingPriority = FFImageLoading.Work.LoadingPriority.Lowest,
+                LoadingPriority = FFImageLoading.Work.LoadingPriority.Highest,
                 HeightRequest = HeightRequest,
                 WidthRequest = WidthRequest,
                 Aspect = Aspect.AspectFill,
@@ -86,11 +86,11 @@ namespace Portajel.Components
                 DownsampleToViewSize = true,
                 BackgroundColor = Colors.Transparent
             };
-            
+
             Children.Add(_blurhashCanvas);
             Children.Add(_sourceImage);
             
-            Microsoft.Maui.Controls.Application.Current.RequestedThemeChanged += (s, a) =>
+            Application.Current.RequestedThemeChanged += (s, a) =>
             {
                 UpdateColor();
             };
@@ -124,8 +124,11 @@ namespace Portajel.Components
         }
         private static async void OnSourceChanged(BindableObject bindable, object oldValue, object newValue)
         {
+
             if (bindable is MusicImage musicImage)
             {
+                if (musicImage._sourceImage == null)
+                    return;
                 musicImage._sourceImage.Source = null;
                 if (oldValue is string oldSource && !string.IsNullOrEmpty(oldSource))
                 {

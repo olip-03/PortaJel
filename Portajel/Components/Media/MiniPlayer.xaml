@@ -17,8 +17,11 @@
             <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="Auto"/>
         </Grid.ColumnDefinitions>
+        <Grid.GestureRecognizers>
+            <SwipeGestureRecognizer Direction="Up" Swiped="SwipeGestureRecognizer_Swiped"/>
+        </Grid.GestureRecognizers>
         
-        <ProgressBar Grid.Row="1" Grid.ColumnSpan="3" Margin="0" HeightRequest="4" Progress="0.2" VerticalOptions="End"></ProgressBar>
+        <ProgressBar x:Name="TimeTracker" Grid.Row="1" Grid.ColumnSpan="3" Margin="0" HeightRequest="4" Progress="0" VerticalOptions="End"></ProgressBar>
         
         <components:MusicImage 
             Grid.Row="0"

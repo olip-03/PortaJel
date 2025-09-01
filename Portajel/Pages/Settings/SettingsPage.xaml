@@ -13,6 +13,7 @@
     <ScrollView Orientation="Vertical">
         <VerticalStackLayout>
             <comp:FakeShellHeader IgnoreSystemHeader="False" 
+                                  Text="Settings"
                                   BackButtonClicked="FakeShellHeader_BackButtonClicked"/>
             
             <Label Margin="16, 16, 0, 0" Text="Connections" FontSize="20"/>

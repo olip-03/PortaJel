@@ -23,14 +23,14 @@ public partial class SettingsPage : ContentPage
                 Title = "Home Page",
                 Description = "Customise what's shown on the home page",
                 Icon = "home.png",
-                NavigationLocation = "settings/home"
+                NavigationPage = new HomeSettings(serverConnector, dbConnector)
             },
             new()
             {
                 Title = "Debug",
                 Description = "Debugging options and interfaces for the backend.",
                 Icon = "bug.png",
-                NavigationLocation = "settings/debug"
+                NavigationPage = new DebugPage(serverConnector, dbConnector)
             }
         };
         BindingContext = _viewModel;
@@ -48,7 +48,7 @@ public partial class SettingsPage : ContentPage
         if (!e.CurrentSelection.Any()) return;
         if(e.CurrentSelection.First() is not ListItem listItem) return;
         if (sender is not CollectionView collectionView) return;
-        await Shell.Current.GoToAsync(listItem.NavigationLocation);
+        await Navigation.PushModalAsync(listItem.NavigationPage);
         collectionView.SelectedItem = null;
     }
 

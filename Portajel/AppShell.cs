@@ -1,5 +1,7 @@
 ﻿using CommunityToolkit.Maui.Behaviors;
 using CommunityToolkit.Maui.Core;
+using FFImageLoading;
+using FFImageLoading.Config;
 using Microsoft.Maui.Controls;
 using Microsoft.Maui.Controls.PlatformConfiguration.AndroidSpecific;
 using Portajel.Components;
@@ -9,6 +11,7 @@ using Portajel.Pages.Settings.Debug;
 using Portajel.Pages.Views;
 using Portajel.Structures.Functional;
 using System.Diagnostics;
+using System.Net.Http.Headers;
 using ShellItem = Microsoft.Maui.Controls.ShellItem;
 
 namespace Portajel
@@ -20,6 +23,8 @@ namespace Portajel
 
         private BottomNavBar _bottomNavBar = null!;
         private StatusBarBehavior? statusBar = null;
+
+        private HttpClient httpClient = new();
 
         public AppShell()
         {
@@ -49,7 +54,15 @@ namespace Portajel
                 
             FlyoutBehavior = FlyoutBehavior.Disabled;
             Items.Add(_bottomNavBar);
+
+            CheckPermissions();
         }
+
+        private async void CheckPermissions()
+        {
+            PermissionStatus status = await Permissions.RequestAsync<Permissions.PostNotifications>();
+        }
+
 
         private void UpdateTheme()
         {

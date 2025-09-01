@@ -11,6 +11,6 @@ namespace Portajel.Structures
         public string Icon { get; set; } = "info.png";
         public string Title { get; set; } = "List Item";
         public string Description { get; set; } = "A list ItemData with sample data.";
-        public string NavigationLocation { get; set; } = "";
+        public Page? NavigationPage { get; set; }
     }
 }

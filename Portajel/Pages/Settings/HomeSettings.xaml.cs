@@ -52,14 +52,22 @@ public partial class HomeSettings : ContentPage
 
     private async void Button_OnClicked(object? sender, EventArgs e)
     {
+        Page? mainPage = Application.Current?.Windows[0].Page;
+        if (mainPage == null)
+            throw new Exception("Main Page does not exist!");
         string dataPath = FileSystem.AppDataDirectory;
         BaseMediaFeed feed = new BaseMediaFeed();
-        await Application.Current.MainPage.Navigation.PushModalAsync(
+        await mainPage.Navigation.PushModalAsync(
             new ModalAddFeed(_server, feed) 
             { 
                 OnLoginSuccess = ((e) => { UpdateList(); }) 
             }, 
             true
         );
+    }
+
+    private async void FakeShellHeader_BackButtonClicked(object sender, EventArgs e)
+    {
+        await Navigation.PopModalAsync();
     }
 }

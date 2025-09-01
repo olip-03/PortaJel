@@ -2,11 +2,12 @@
 using FFImageLoading.Config;
 using Microsoft.Maui.Controls.PlatformConfiguration;
 using Microsoft.Maui.Handlers;
+using Microsoft.Maui.Platform;
 using Portajel.Connections;
 using Portajel.Connections.Interfaces;
 using Portajel.Structures.Functional;
 using System.Diagnostics;
-using Microsoft.Maui.Platform;
+using System.Net.Http.Headers;
 
 namespace Portajel
 {
@@ -22,6 +23,7 @@ namespace Portajel
             // Fire & forget
             Sharpnado.Tabs.Initializer.Initialize(false, false);
             StartupAsync(serverConnector, dbConnector);
+            //CheckPermissions();
         }
 
         private void StartupAsync(IServerConnector serverConnector, IDbConnector dbConnector)
@@ -32,7 +34,6 @@ namespace Portajel
             //imgConfig.VerbosePerformanceLogging = false;
             //imgConfig.HttpHeadersTimeout = 15; 
             //imgConfig.HttpReadTimeout = 15;
-            IImageService imgSvc = FFImageLoading.ImageService.Instance;
 
             if (OperatingSystem.IsAndroid())
             {
@@ -47,6 +48,11 @@ namespace Portajel
                 await connector.StartSyncAsync();
                 await SaveHelper.SaveData(connector);
             });
+        }
+
+        private async void CheckPermissions()
+        {
+            PermissionStatus status = await Permissions.RequestAsync<Permissions.PostNotifications>();
         }
         
         protected override Window CreateWindow(IActivationState? activationState)

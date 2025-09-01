@@ -11,6 +11,8 @@
 		<EnableLLVM>true</EnableLLVM>
 		<RunAOTCompilation>true</RunAOTCompilation>
 		<AndroidEnableProfiledAot>false</AndroidEnableProfiledAot>
+		<EnableAOTCompilation>true</EnableAOTCompilation>
+		<AotAssemblies>true</AotAssemblies>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -101,6 +103,9 @@
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="Components\Library\AlbumListViewCell.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Components\Media\ModalPlayer.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="Components\Modal\ModalAddService.xaml">
