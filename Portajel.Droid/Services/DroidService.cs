@@ -24,6 +24,7 @@ using System.Transactions;
 using Microsoft.Maui.Storage;
 using Microsoft.Maui.ApplicationModel;
 using Microsoft.Maui.Platform;
+using Portajel.Droid.Playback;
 
 namespace Portajel.Droid.Services
 {
@@ -36,6 +37,7 @@ namespace Portajel.Droid.Services
         private const string CHANNEL_ID = "sync_channel";
         private bool isSyncRunning = false;
         public DroidServiceBinder Binder { get; set; } = default!;
+        public DroidMediaController MediaController { get; set; } = new();
         public DatabaseConnector database { get; private set; } = null!;
         public ServerConnector serverConnector { get; private set; } = null!;
         public DroidService()
@@ -69,13 +71,15 @@ namespace Portajel.Droid.Services
         [return: GeneratedEnum]
         public override StartCommandResult OnStartCommand(Intent? intent, [GeneratedEnum] StartCommandFlags flags, int startId)
         {
+            MediaController.Initialize();
+
             if (Build.VERSION.SdkInt >= BuildVersionCodes.O)
             {
                 var channel = new NotificationChannel(
                     CHANNEL_ID,
                     "PortaJel Data Sync Channel",
                     NotificationImportance.Low);
-
+                
                 _notificationManager = (NotificationManager?)GetSystemService(NotificationService);
                 _notificationManager?.CreateNotificationChannel(channel);
             }
@@ -95,8 +99,7 @@ namespace Portajel.Droid.Services
             var appDataDirectory = Path.Combine(FileSystem.AppDataDirectory, "MediaData");
             database = new DatabaseConnector(Path.Combine(mainDir, "portajeldb.sql"));
             var t = SaveHelper.LoadData(database, appDataDirectory);
-
-
+            
             try
             {
                 t.Wait();

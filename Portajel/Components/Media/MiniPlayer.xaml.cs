@@ -3,6 +3,7 @@ using CommunityToolkit.Maui.Core;
 using Microsoft.Maui.Controls;
 using System;
 using System.Timers;
+using Portajel.Structures.ViewModels.Components;
 using Timer = System.Timers.Timer;
 
 namespace Portajel.Components.Media
@@ -12,9 +13,12 @@ namespace Portajel.Components.Media
         private readonly Timer _timer;
         private TimeSpan _elapsed;
 
+        private readonly MediaPlayerViewModel _viewModel = new();
+
         public MiniPlayer()
         {
             InitializeComponent();
+            BindingContext = _viewModel;
 
             _elapsed = TimeSpan.Zero;
             _timer = new Timer(20); // 200ms interval
@@ -41,7 +45,24 @@ namespace Portajel.Components.Media
 
         private async void SwipeGestureRecognizer_Swiped(object sender, SwipedEventArgs e)
         {
-            await Navigation.PushModalAsync(new ModalPlayer());
+            CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
+
+            string text = "Showing Player";
+            ToastDuration duration = ToastDuration.Short;
+            double fontSize = 14;
+
+            var toast = Toast.Make(text, duration, fontSize);
+
+            await toast.Show(cancellationTokenSource.Token);
+            
+            var app = Microsoft.Maui.Controls.Application.Current;
+            var window = app?.Windows[0];
+            if (window == null)
+                return;
+            await window.Navigation.PushModalAsync(new ModalPlayer()
+            {
+                BindingContext = _viewModel
+            });
         }
 
         //// Optionally, stop the timer when disposing

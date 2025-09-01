@@ -13,6 +13,7 @@ namespace Portajel
 {
     public partial class App : Application
     {
+        public static INavigation MainNavigation { get; set; }
         public static IServiceProvider Services { get; set; }
         public App(IServerConnector serverConnector, IDbConnector dbConnector, IServiceProvider services)
         {
@@ -23,6 +24,7 @@ namespace Portajel
             // Fire & forget
             Sharpnado.Tabs.Initializer.Initialize(false, false);
             StartupAsync(serverConnector, dbConnector);
+            
             //CheckPermissions();
         }
 

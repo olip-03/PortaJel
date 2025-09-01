@@ -3,7 +3,10 @@
 <ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:components="clr-namespace:Portajel.Components"
+             xmlns:database="clr-namespace:Portajel.Connections.Database;assembly=Portajel.Connections"
+             xmlns:components1="clr-namespace:Portajel.Structures.ViewModels.Components"
              MaximumHeightRequest="64"
+             x:DataType="components1:MediaPlayerViewModel"
              x:Class="Portajel.Components.Media.MiniPlayer">
     <Grid 
         CascadeInputTransparent="False"
@@ -12,31 +15,40 @@
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="Auto"/>
-            <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="Auto"/>
-        </Grid.ColumnDefinitions>
-        <Grid.GestureRecognizers>
-            <SwipeGestureRecognizer Direction="Up" Swiped="SwipeGestureRecognizer_Swiped"/>
-        </Grid.GestureRecognizers>
         
         <ProgressBar x:Name="TimeTracker" Grid.Row="1" Grid.ColumnSpan="3" Margin="0" HeightRequest="4" Progress="0" VerticalOptions="End"></ProgressBar>
+
+        <CarouselView Grid.Row="0" ItemsSource="{Binding Queue}">
+            <CarouselView.GestureRecognizers>
+                <SwipeGestureRecognizer Direction="Up" Swiped="SwipeGestureRecognizer_Swiped"/>
+            </CarouselView.GestureRecognizers>
+            <CarouselView.ItemTemplate>
+                <DataTemplate x:DataType="database:SongData">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        
+                        <components:MusicImage 
+                            Grid.Row="0"
+                            Grid.Column="0"
+                            ZIndex="1"
+                            Margin="8"
+                            HeightRequest="48"
+                            WidthRequest="48"
+                            HorizontalOptions="Center"
+                            Source="https://media.oli.fm/Items/8163232cea4b5f8eff794499a1ede4fc/Images/Primary"
+                            BlurHash="egJ0A_%MbJX9R+~UxCs.s:oe0nWBV@t6ocElR-NKNHRkMxWCtQRjW;"/>
         
-        <components:MusicImage 
-            Grid.Row="0"
-            Grid.Column="0"
-            ZIndex="1"
-            Margin="8"
-            HeightRequest="48"
-            WidthRequest="48"
-            HorizontalOptions="Center"
-            Source="https://media.oli.fm/Items/8163232cea4b5f8eff794499a1ede4fc/Images/Primary"
-            BlurHash="egJ0A_%MbJX9R+~UxCs.s:oe0nWBV@t6ocElR-NKNHRkMxWCtQRjW;"/>
-        
-        <VerticalStackLayout Grid.Row="0" Grid.Column="1" VerticalOptions="Center" ZIndex="1">
-            <Label FontSize="16" FontAttributes="Bold" Text="Song Name"/>
-            <Label Text="Bitch"/>
-        </VerticalStackLayout>
+                        <VerticalStackLayout Grid.Row="0" Grid.Column="1" VerticalOptions="Center" ZIndex="1">
+                            <Label FontSize="16" FontAttributes="Bold" Text="Song Name"/>
+                            <Label Text="Bitch"/>
+                        </VerticalStackLayout>
+                    </Grid>
+                </DataTemplate>
+            </CarouselView.ItemTemplate>
+        </CarouselView>
     </Grid>
 </ContentView>

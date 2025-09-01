@@ -8,11 +8,17 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using AndroidX.Media3.Common;
+using AndroidX.Media3.ExoPlayer;
+using Portajel.Droid.Playback.Events;
 
 namespace Portajel.Droid.Playback
 {
-    public class QueueController : IQueueController
+    public class DroidQueueController(IExoPlayer player) : IQueueController, IQueueEventSource
     {
+        public event EventHandler<QueueChangingEventArgs>? QueueChanging;
+        public event EventHandler<QueueChangedEventArgs>? QueueChanged;
+        
         public List<SongData> PreviousQueue { get; set; }
         public KeyValuePair<MediaType, BaseData> CurrentSong => throw new NotImplementedException();
         public KeyValuePair<MediaType, BaseData> CurrentColleciton => throw new NotImplementedException();
@@ -57,5 +63,7 @@ namespace Portajel.Droid.Playback
         {
             throw new NotImplementedException();
         }
+
+
     }
 }

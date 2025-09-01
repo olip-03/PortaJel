@@ -14,11 +14,13 @@ using Portajel.Connections;
 using Microsoft.Maui.Controls;
 using PortaJel.Droid.Services;
 using Portajel.Services;
+using Portajel.Structures.Interfaces;
 
 namespace Portajel.Droid.Services
 {
     public class DroidServiceBinder : Binder, IDisposable
     {
+        public IMediaController MediaController { get; private set; } = null!;
         public DatabaseConnector Database { get; private set; } = null!;
         public ServerConnector Server { get; private set; } = null!;
         public DroidService Service { get; private set; } = null!;
@@ -27,6 +29,7 @@ namespace Portajel.Droid.Services
             Service = service;
             Server = Service.serverConnector;
             Database = Service.database;
+            MediaController = service.MediaController;
         }
         public void Destroy()
         {

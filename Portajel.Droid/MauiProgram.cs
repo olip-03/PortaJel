@@ -69,7 +69,7 @@ namespace Portajel.Droid
                 });
             });
 
-            builder.Services.AddSingleton<IMediaController, MediaController>();
+            builder.Services.AddSingleton<IMediaController, DroidMediaController>();
             builder.Services.AddSingleton<DroidServiceBinder>();
             builder.UseSharedMauiApp().ConfigureMauiHandlers((handlers) =>
             {

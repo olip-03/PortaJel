@@ -8,9 +8,10 @@ namespace Portajel.Structures.Interfaces
 {
     public interface IMediaController
     {
-        IPlaybackController Playback { get; }
-        IQueueController Queue { get; }
+        IPlaybackController DroidPlayback { get; }
+        IQueueController DroidQueue { get; }
         void Initialize();
+        void Update();
         void Destroy();
     }
 }
