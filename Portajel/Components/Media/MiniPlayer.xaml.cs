@@ -2,6 +2,7 @@ using CommunityToolkit.Maui.Alerts;
 using CommunityToolkit.Maui.Core;
 using Microsoft.Maui.Controls;
 using System;
+using System.Diagnostics;
 using System.Timers;
 using Portajel.Structures.ViewModels.Components;
 using Timer = System.Timers.Timer;
@@ -43,34 +44,33 @@ namespace Portajel.Components.Media
             });
         }
 
-        private async void SwipeGestureRecognizer_Swiped(object sender, SwipedEventArgs e)
+        private async void OpenPlayer()
         {
-            CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
-
-            string text = "Showing Player";
-            ToastDuration duration = ToastDuration.Short;
-            double fontSize = 14;
-
-            var toast = Toast.Make(text, duration, fontSize);
-
-            await toast.Show(cancellationTokenSource.Token);
-            
-            var app = Microsoft.Maui.Controls.Application.Current;
-            var window = app?.Windows[0];
-            if (window == null)
-                return;
-            await window.Navigation.PushModalAsync(new ModalPlayer()
+            try
             {
-                BindingContext = _viewModel
-            });
+                var app = Application.Current;
+                var window = app?.Windows[0];
+                if (window == null)
+                    return;
+                await window.Navigation.PushModalAsync(new ModalPlayer()
+                {
+                    BindingContext = _viewModel
+                });
+            }
+            catch (Exception e)
+            {
+                Trace.WriteLine($"Failed to open player {e.Message}");
+            }
         }
 
-        //// Optionally, stop the timer when disposing
-        //protected override void OnDisappearing()
-        //{
-        //    base.OnDisappearing();
-        //    _timer?.Stop();
-        //    _timer?.Dispose();
-        //}
+        private void SwipeGestureRecognizer_Swiped(object sender, SwipedEventArgs e)
+        {
+            OpenPlayer();
+        }
+
+        private void TapGestureRecognizer_OnTapped(object? sender, TappedEventArgs e)
+        {
+            OpenPlayer();
+        }
     }
 }

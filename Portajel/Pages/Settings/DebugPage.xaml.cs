@@ -18,7 +18,7 @@ public partial class DebugPage : ContentPage
                 Title = "Debug Radio",
                 Description = "Backend radio options for testing features.",
                 Icon = "radio.png",
-                NavigationPage = new DebugDatabase(serverConnector, dbConnector)
+                NavigationPage = new DebugRadio()
             },
             new()
             {
@@ -32,7 +32,7 @@ public partial class DebugPage : ContentPage
                 Title = "Debug Database",
                 Description = "Test and configure the database.",
                 Icon = "database.png",
-                NavigationPage = new DebugRadio()
+                NavigationPage =new DebugDatabase(serverConnector, dbConnector)
             }
         };
         BindingContext = _viewModel;

@@ -21,6 +21,7 @@
         <CarouselView Grid.Row="0" ItemsSource="{Binding Queue}">
             <CarouselView.GestureRecognizers>
                 <SwipeGestureRecognizer Direction="Up" Swiped="SwipeGestureRecognizer_Swiped"/>
+                <TapGestureRecognizer Tapped="TapGestureRecognizer_OnTapped"></TapGestureRecognizer>
             </CarouselView.GestureRecognizers>
             <CarouselView.ItemTemplate>
                 <DataTemplate x:DataType="database:SongData">

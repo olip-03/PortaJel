@@ -12,6 +12,10 @@
 			android:enabled="true"
 			android:foregroundServiceType="dataSync">
 		</service>
+		<activity
+				android:name=".MainActivity"
+				android:exported="true"
+				android:launchMode="singleTop" />
 	</application>
 	<uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 	<uses-permission android:name="android.permission.INTERNET" />

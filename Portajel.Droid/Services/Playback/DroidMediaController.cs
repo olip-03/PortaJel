@@ -76,11 +76,11 @@ namespace Portajel.Droid.Playback
             
             _player.SetAudioAttributes(audioAttributes, true);
             _player.RepeatMode = 0;
-            _player.Prepare(); // ok to prepare once; adding MediaItems later works
+            _player.Prepare(); 
             _droidQueueController = new(_player);
-
-            var listener = new PlaybackEventListener();
-            _player.AddListener(listener); // your existing listener
+            //
+            // var listener = new PlaybackEventListener();
+            // _player.AddListener(listener); 
         }
 
         private void CreateNotificationPlayer(Context context)
@@ -88,7 +88,7 @@ namespace Portajel.Droid.Playback
             _mediaSession = new MediaSession(context, NOTIFICATION_CHANNEL_ID);
             PlaybackState.Builder psBuilder = new PlaybackState.Builder();
             
-            _mediaSession.SetCallback();
+            // _mediaSession.SetCallback();
         }
         
         public void Update()

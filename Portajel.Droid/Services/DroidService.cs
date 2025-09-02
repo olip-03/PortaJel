@@ -25,12 +25,16 @@ using Microsoft.Maui.Storage;
 using Microsoft.Maui.ApplicationModel;
 using Microsoft.Maui.Platform;
 using Portajel.Droid.Playback;
+using Resource = Microsoft.Maui.Resource;
 
 namespace Portajel.Droid.Services
 {
     [Service(Name = "PortaJel.Droid.ServiceController", IsolatedProcess = true, ForegroundServiceType = ForegroundService.TypeMediaPlayback)]
     public class DroidService : Service
     {
+        const string ACTION_NOTIFICATION_TAPPED = "com.portajel.ACTION_NOTIFICATION_TAPPED";
+        const string ACTION_NOTIFICATION_DELETED = "com.portajel.ACTION_NOTIFICATION_DELETED";
+        
         // Add these fields to your class
         private NotificationManager? _notificationManager;
         private const int NOTIFICATION_ID = 517;
@@ -72,6 +76,13 @@ namespace Portajel.Droid.Services
         public override StartCommandResult OnStartCommand(Intent? intent, [GeneratedEnum] StartCommandFlags flags, int startId)
         {
             MediaController.Initialize();
+            
+            var action = intent?.Action;
+            if (action == "ACTION_NOTIFICATION_DISMISSED")
+            {
+                isSyncRunning = false;
+                return StartCommandResult.NotSticky;
+            }
 
             if (Build.VERSION.SdkInt >= BuildVersionCodes.O)
             {
@@ -122,6 +133,14 @@ namespace Portajel.Droid.Services
                 server.StartSyncActions.Add(StartSyncProgressAsync);
             });
         }
+
+        private PendingIntent CreateBroadcastPendingIntent(string action)
+        {
+            var intent = new Intent(Platform.AppContext, typeof(NotificationActionReceiver));
+            intent.SetAction(action);
+            var flags = PendingIntentFlags.UpdateCurrent | PendingIntentFlags.Immutable;
+            return PendingIntent.GetBroadcast(Platform.AppContext, action.GetHashCode(), intent, flags);
+        }
         
         private Notification CreateProgressNotification(int progress, int max, bool indeterminate = false)
         {
@@ -132,10 +151,16 @@ namespace Portajel.Droid.Services
                 percent = progress * 100 / max;
             }
             Context context = Platform.AppContext;
+            
+            var tapPending = CreateBroadcastPendingIntent(NotificationActions.ACTION_NOTIFICATION_TAPPED);
+            var deletePending = CreateBroadcastPendingIntent(NotificationActions.ACTION_NOTIFICATION_DELETED);
+            
             return new NotificationCompat.Builder(this, CHANNEL_ID)
                 .SetContentTitle("Syncing Data")
                 .SetContentText($"Progress: {(int)percent}%")
                 .SetSmallIcon(Resource.Drawable.abc_star_black_48dp)
+                .SetContentIntent(tapPending)
+                .SetDeleteIntent(deletePending)
                 .SetPriority(hide)
                 .SetVisibility(1)
                 .SetSmallIcon(Resource.Drawable.abc_star_half_black_48dp)
@@ -155,7 +180,7 @@ namespace Portajel.Droid.Services
         {
             if (isSyncRunning) return;
             isSyncRunning = true;
-            while (true)
+            while (isSyncRunning)
             {
                 int total = 0;
                 int count = 0;
