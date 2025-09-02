@@ -1,10 +1,12 @@
 using CommunityToolkit.Maui.Alerts;
 using CommunityToolkit.Maui.Core;
 using Microsoft.Maui.Controls;
+using Portajel.Connections.Structs;
+using Portajel.Structures.Interfaces;
+using Portajel.Structures.ViewModels.Components;
 using System;
 using System.Diagnostics;
 using System.Timers;
-using Portajel.Structures.ViewModels.Components;
 using Timer = System.Timers.Timer;
 
 namespace Portajel.Components.Media
@@ -15,9 +17,12 @@ namespace Portajel.Components.Media
         private TimeSpan _elapsed;
 
         private readonly MediaPlayerViewModel _viewModel = new();
+        private IMediaController _mediaController;
 
-        public MiniPlayer()
+        public MiniPlayer(IMediaController mediaController)
         {
+            _mediaController = mediaController;
+
             InitializeComponent();
             BindingContext = _viewModel;
 
@@ -26,6 +31,44 @@ namespace Portajel.Components.Media
             _timer.Elapsed += OnTimerElapsed;
             _timer.AutoReset = true;
             _timer.Start();
+            _ = InitializeEventsAsync();
+        }
+
+        private async Task InitializeEventsAsync()
+        {
+            bool success = false;
+            while (!success)
+            {
+                try
+                {
+                    if (_mediaController.Queue is IQueueEventSource events)
+                    {
+                        Trace.WriteLine("Miniplayer successfully registered events!!");
+                        events.QueueChanged += Events_QueueChanged;
+                        success = true; 
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Trace.WriteLine($"Error accessing DroidQueue: {ex.Message}");
+                }
+                if (!success)
+                {
+                    await Task.Delay(500);
+                }
+            }
+        }
+
+        private void Events_QueueChanged(object? sender, QueueChangedEventArgs e)
+        {
+            if(e.Kind == QueueChangeKind.Add)
+            {
+                foreach (var song in e.Songs)
+                {
+                    _viewModel.Queue.Add(song);
+                }
+            }
+            // Queue has changed update state 
         }
 
         private void OnTimerElapsed(object? sender, ElapsedEventArgs e)

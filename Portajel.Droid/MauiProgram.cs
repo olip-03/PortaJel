@@ -17,6 +17,7 @@ using Portajel.Pages.Settings;
 using Portajel.Pages.Settings.Debug;
 using Portajel.Render;
 using Portajel.Services;
+using Portajel.Services.Playback;
 using Portajel.Structures.Interfaces;
 using PortaJel.Droid.Services;
 using System.Net.Http.Headers;
@@ -69,7 +70,11 @@ namespace Portajel.Droid
                 });
             });
 
-            builder.Services.AddSingleton<IMediaController, DroidMediaController>();
+            builder.Services.AddSingleton<IMediaController>(serviceProvider => {
+                var service = serviceProvider.GetRequiredService<DroidServiceController>();
+                DroidMediaController droidMediaController = new DroidMediaController(service);
+                return droidMediaController;
+            });
             builder.Services.AddSingleton<DroidServiceBinder>();
             builder.UseSharedMauiApp().ConfigureMauiHandlers((handlers) =>
             {

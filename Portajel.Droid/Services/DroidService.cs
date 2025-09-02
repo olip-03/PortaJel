@@ -26,6 +26,7 @@ using Microsoft.Maui.ApplicationModel;
 using Microsoft.Maui.Platform;
 using Portajel.Droid.Playback;
 using Resource = Microsoft.Maui.Resource;
+using Jellyfin.Sdk.Generated.Users.AuthenticateByName;
 
 namespace Portajel.Droid.Services
 {
@@ -37,36 +38,24 @@ namespace Portajel.Droid.Services
         
         // Add these fields to your class
         private NotificationManager? _notificationManager;
-        private const int NOTIFICATION_ID = 517;
-        private const string CHANNEL_ID = "sync_channel";
+        private const int SyncNotificationId = 517;
+        private const string SyncChannelId = "sync_channel";
         private bool isSyncRunning = false;
+
         public DroidServiceBinder Binder { get; set; } = default!;
-        public DroidMediaController MediaController { get; set; } = new();
+        public DroidExoplayerController MediaController { get; set; } = new();
         public DatabaseConnector database { get; private set; } = null!;
         public ServerConnector serverConnector { get; private set; } = null!;
+
         public DroidService()
         {
             
         }
+
         public override IBinder? OnBind(Intent? intent)
         {
             Initialize();
-            try
-            {
-                _ = Task.Run(async () =>
-                {
-                    await serverConnector.AuthenticateAsync();
-                    await serverConnector.StartSyncAsync();
-                    if (serverConnector != null)
-                    {
-                        await SaveHelper.SaveData(serverConnector);
-                    }
-                });
-            }
-            catch (Exception ex)
-            {
-                throw;
-            };
+            Authenticate();
 
             Binder = new DroidServiceBinder(this);
             return Binder;
@@ -87,7 +76,7 @@ namespace Portajel.Droid.Services
             if (Build.VERSION.SdkInt >= BuildVersionCodes.O)
             {
                 var channel = new NotificationChannel(
-                    CHANNEL_ID,
+                    SyncChannelId,
                     "PortaJel Data Sync Channel",
                     NotificationImportance.Low);
                 
@@ -100,7 +89,7 @@ namespace Portajel.Droid.Services
             }
             var notification = CreateProgressNotification(0, 100, true);
 
-            StartForeground(NOTIFICATION_ID, notification, ForegroundService.TypeDataSync);
+            StartForeground(SyncNotificationId, notification, ForegroundService.TypeDataSync);
             return StartCommandResult.Sticky; // service restart if killed
         }
         
@@ -134,6 +123,26 @@ namespace Portajel.Droid.Services
             });
         }
 
+        private void Authenticate()
+        {
+            try
+            {
+                _ = Task.Run(async () =>
+                {
+                    await serverConnector.AuthenticateAsync();
+                    await serverConnector.StartSyncAsync();
+                    if (serverConnector != null)
+                    {
+                        await SaveHelper.SaveData(serverConnector);
+                    }
+                });
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
         private PendingIntent CreateBroadcastPendingIntent(string action)
         {
             var intent = new Intent(Platform.AppContext, typeof(NotificationActionReceiver));
@@ -155,7 +164,7 @@ namespace Portajel.Droid.Services
             var tapPending = CreateBroadcastPendingIntent(NotificationActions.ACTION_NOTIFICATION_TAPPED);
             var deletePending = CreateBroadcastPendingIntent(NotificationActions.ACTION_NOTIFICATION_DELETED);
             
-            return new NotificationCompat.Builder(this, CHANNEL_ID)
+            return new NotificationCompat.Builder(this, SyncChannelId)
                 .SetContentTitle("Syncing Data")
                 .SetContentText($"Progress: {(int)percent}%")
                 .SetSmallIcon(Resource.Drawable.abc_star_black_48dp)
@@ -173,7 +182,7 @@ namespace Portajel.Droid.Services
         public void UpdateNotification(int progress, int max)
         {
             var notification = CreateProgressNotification(progress, max);
-            _notificationManager?.Notify(NOTIFICATION_ID, notification);
+            _notificationManager?.Notify(SyncNotificationId, notification);
         }
         
         public async void StartSyncProgressAsync(CancellationToken cancellationToken)
@@ -218,7 +227,7 @@ namespace Portajel.Droid.Services
             }
             isSyncRunning = false;
             Context context = Platform.AppContext;
-            var completedNotification = new NotificationCompat.Builder(this, CHANNEL_ID)
+            var completedNotification = new NotificationCompat.Builder(this, SyncChannelId)
                 .SetContentTitle("Sync Complete")
                 .SetContentText("Data synchronization finished")
                 .SetSmallIcon(Resource.Drawable.abc_star_black_48dp)
@@ -227,7 +236,7 @@ namespace Portajel.Droid.Services
                 .SetColor(ContextCompat.GetColor(context, Resource.Color.primary_dark_material_dark))
                 .SetOngoing(false)
                 .Build();
-            _notificationManager?.Notify(NOTIFICATION_ID, completedNotification);
+            _notificationManager?.Notify(SyncNotificationId, completedNotification);
         }
     }
 }

@@ -13,6 +13,7 @@ using Microsoft.Maui.Controls.Platform.Compatibility;
 using Microsoft.Maui.Platform;
 using Portajel.Components.Media;
 using Portajel.Render;
+using Portajel.Structures.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,13 +26,16 @@ namespace Portajel.Droid.Render
     public class BottomNavViewAppearanceTracker : ShellBottomNavViewAppearanceTracker
     {
         private readonly IShellContext shellContext;
-        private readonly MiniPlayer miniPlayer = new();
+        private readonly MiniPlayer miniPlayer;
 
         public BottomNavViewAppearanceTracker(IShellContext shellContext, 
                                               ShellItem shellItem)
             : base(shellContext, shellItem)
         {
             this.shellContext = shellContext;
+
+            var mediaService = Application.Current?.Handler.GetServiceProvider().GetService<IMediaController>(); ;
+            miniPlayer = new(mediaService);
         }
         
         public override void SetAppearance(
@@ -39,8 +43,6 @@ namespace Portajel.Droid.Render
             IShellAppearanceElement appearance)
         {
             base.SetAppearance(bottomView, appearance);
-
-
 
             UpdateStyle(bottomView);
             UpdateBottomView(bottomView);

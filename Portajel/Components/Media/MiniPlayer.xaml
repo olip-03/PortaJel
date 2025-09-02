@@ -18,14 +18,14 @@
         
         <ProgressBar x:Name="TimeTracker" Grid.Row="1" Grid.ColumnSpan="3" Margin="0" HeightRequest="4" Progress="0" VerticalOptions="End"></ProgressBar>
 
-        <CarouselView Grid.Row="0" ItemsSource="{Binding Queue}">
-            <CarouselView.GestureRecognizers>
-                <SwipeGestureRecognizer Direction="Up" Swiped="SwipeGestureRecognizer_Swiped"/>
-                <TapGestureRecognizer Tapped="TapGestureRecognizer_OnTapped"></TapGestureRecognizer>
-            </CarouselView.GestureRecognizers>
+        <CarouselView Grid.Row="0" ItemsSource="{Binding Queue}" IsSwipeEnabled="True" IsBounceEnabled="True" Loop="False" VerticalScrollBarVisibility="Never" HorizontalScrollBarVisibility="Never">
             <CarouselView.ItemTemplate>
                 <DataTemplate x:DataType="database:SongData">
                     <Grid>
+                        <Grid.GestureRecognizers>
+                            <SwipeGestureRecognizer Direction="Up" Swiped="SwipeGestureRecognizer_Swiped"/>
+                            <TapGestureRecognizer Tapped="TapGestureRecognizer_OnTapped"></TapGestureRecognizer>
+                        </Grid.GestureRecognizers>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto"/>
                             <ColumnDefinition Width="*"/>
@@ -40,12 +40,12 @@
                             HeightRequest="48"
                             WidthRequest="48"
                             HorizontalOptions="Center"
-                            Source="https://media.oli.fm/Items/8163232cea4b5f8eff794499a1ede4fc/Images/Primary"
-                            BlurHash="egJ0A_%MbJX9R+~UxCs.s:oe0nWBV@t6ocElR-NKNHRkMxWCtQRjW;"/>
+                            Source="{Binding ImgSource}"
+                            BlurHash="{Binding ImgBlurhash}"/>
         
                         <VerticalStackLayout Grid.Row="0" Grid.Column="1" VerticalOptions="Center" ZIndex="1">
-                            <Label FontSize="16" FontAttributes="Bold" Text="Song Name"/>
-                            <Label Text="Bitch"/>
+                            <Label FontSize="16" FontAttributes="Bold" Text="{Binding Name}"/>
+                            <Label Text="{Binding ArtistNames}"/>
                         </VerticalStackLayout>
                     </Grid>
                 </DataTemplate>

@@ -1,11 +1,12 @@
 
-using System.Collections.ObjectModel;
-using Portajel.Connections.Database;
-using Portajel.Connections.Interfaces;
-using Portajel.Structures.ViewModels.Pages.Views;
-using System.Diagnostics;
 using CommunityToolkit.Maui.Alerts;
 using CommunityToolkit.Maui.Core.Extensions;
+using Portajel.Connections.Database;
+using Portajel.Connections.Interfaces;
+using Portajel.Structures.Interfaces;
+using Portajel.Structures.ViewModels.Pages.Views;
+using System.Collections.ObjectModel;
+using System.Diagnostics;
 
 namespace Portajel.Pages.Views
 {
@@ -13,14 +14,17 @@ namespace Portajel.Pages.Views
     {
         private readonly IDbConnector _database;
         private readonly IServerConnector _server;
-        
+        private readonly IMediaController _mediaController;
+
+
         private AlbumPageViewModel _viewModel = new();
 
         private bool _isPlaying;
-        public AlbumPage(IDbConnector database, IServerConnector server)
+        public AlbumPage(IDbConnector database, IServerConnector server, IMediaController mediaController)
     	{
             _database = database;
             _server = server;
+            _mediaController = mediaController;
             InitializeComponent();
             // GetNewAlbumData();
             Header.UpdateBackgroundOpacity(0);
@@ -156,11 +160,12 @@ namespace Portajel.Pages.Views
 
         private async void OnAddToQueueSwipeItemInvoked(object sender, EventArgs e)
         {
+            if (sender is not SwipeItem swipeItem) return;
+            if (swipeItem.BindingContext is not SongData song) return;
             try
             {
-                // TODO: Implementation
-                if (sender is not SwipeItem swipeItem) return;
-                if (swipeItem.BindingContext is not SongData song) return;
+                _mediaController.Queue.AddSong(song);
+
                 var toast = Toast.Make($"{song.Name} added to queue");
                 await toast.Show();
             }

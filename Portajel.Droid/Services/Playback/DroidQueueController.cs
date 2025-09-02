@@ -10,60 +10,92 @@ using System.Text;
 using System.Threading.Tasks;
 using AndroidX.Media3.Common;
 using AndroidX.Media3.ExoPlayer;
-using Portajel.Droid.Playback.Events;
 
 namespace Portajel.Droid.Playback
 {
     public class DroidQueueController(IExoPlayer player) : IQueueController, IQueueEventSource
     {
-        public event EventHandler<QueueChangingEventArgs>? QueueChanging;
         public event EventHandler<QueueChangedEventArgs>? QueueChanged;
-        
-        public List<SongData> PreviousQueue { get; set; }
-        public KeyValuePair<MediaType, BaseData> CurrentSong => throw new NotImplementedException();
-        public KeyValuePair<MediaType, BaseData> CurrentColleciton => throw new NotImplementedException();
-        public List<SongData> UpNextList { get; set; }
 
-        public void AddSong(SongData toAdd, int index)
+        public List<SongData> PreviousQueue { get; set; } = new();
+        public List<SongData> UpNextList { get; set; } = new();
+
+        public KeyValuePair<BaseData, SongData[]>? CurrentCollection { get; set; } = null;
+        public SongData CurrentSong => UpNextList[0];
+
+        public void AddSong(SongData toAdd, int? index = null)
         {
-            throw new NotImplementedException();
+            if (index == null)
+            {
+                UpNextList.Add(toAdd);
+            }
+            else
+            {
+                UpNextList.Insert(index.Value, toAdd);
+            }
+
+            var changedArgs = new QueueChangedEventArgs(
+                QueueChangeKind.Add,
+                new[] { toAdd },
+                index ?? -1
+            );
+            QueueChanged?.Invoke(this, changedArgs);
         }
 
-        public void AddSong(SongData[] toAdd, int index)
+        public void AddSong(SongData[] toAdd, int? index = null)
         {
-            throw new NotImplementedException();
+            if (index == null)
+            {
+                UpNextList.AddRange(toAdd);
+            }
+            else
+            {
+                UpNextList.InsertRange(index.Value, toAdd);
+            }
+
+            var changedArgs = new QueueChangedEventArgs(
+                QueueChangeKind.Add,
+                toAdd,
+                index ?? -1
+            );
+            QueueChanged?.Invoke(this, changedArgs);
         }
 
         public void ClearCollection(bool removeFromQueue)
         {
-            throw new NotImplementedException();
+
         }
 
         public void Previous()
         {
-            throw new NotImplementedException();
+            player.SeekToPrevious();
         }
 
         public void RemoveRange(int fromIndex, int toIndex)
         {
-            throw new NotImplementedException();
+
         }
 
         public void RemoveSong(int index)
         {
-            throw new NotImplementedException();
+
         }
 
         public void SetCollection(AlbumData collection, int fromIndex)
         {
-            throw new NotImplementedException();
+
         }
 
         public void Skip()
         {
-            throw new NotImplementedException();
+            player.SeekToNext();
         }
 
-
+        public void SetCollection(BaseData collection, SongData[] collectionData, int fromIndex)
+        {
+            CurrentCollection = new KeyValuePair<BaseData, SongData[]>(collection, collectionData);
+            player.SeekTo(fromIndex, 0);
+            // Todo: Tell the player where to start, and get it running from that point
+        }
     }
 }

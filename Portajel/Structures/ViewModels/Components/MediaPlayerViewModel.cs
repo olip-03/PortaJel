@@ -1,8 +1,9 @@
 using Portajel.Connections.Database;
+using System.Collections.ObjectModel;
 
 namespace Portajel.Structures.ViewModels.Components;
 
 public class MediaPlayerViewModel
 {
-    public List<SongData> Queue { get; set; } = new();
+    public ObservableCollection<SongData> Queue { get; set; } = new();
 }
