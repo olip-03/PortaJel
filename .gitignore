@@ -1,7 +1,4 @@
-﻿################################################################################
-# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
-################################################################################
-
+﻿
 **/bin/
 **/obj/
 **/.vscode/
@@ -9,15 +6,25 @@
 
 /.vs
 /Portajel.Droid/obj
-/Portajel.Mac/obj
-/Portajel.iOS/obj
-/Portajel.WinUI/obj
-/Portajel.Connections/obj
-/Portajel/obj
-
 /Portajel.Droid/bin
+
+
+/Portajel.Mac/obj
 /Portajel.Mac/bin
+
+/Portajel.iOS/obj
 /Portajel.iOS/bin
+
+/Portajel.WinUI/obj
 /Portajel.WinUI/bin
+
+/Portajel.Desktop/obj
+/Portajel.Desktop/bin
+
+/Portajel.Connections/obj
 /Portajel.Connections/bin
+
+/Portajel/obj
 /Portajel/bin
+
+/.idea/
