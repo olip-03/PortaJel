@@ -2,4 +2,12 @@
 	<style name="MainThemeEdgeToEdge" parent="Maui.MainTheme.NoActionBar">
 		<item name="maui_edgetoedge_optout">false</item>
 	</style>
+
+	<style name="Maui.SplashTheme" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+
+	</style>
+
+	<style name="MainTheme" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+		
+	</style>
 </resources>

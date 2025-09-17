@@ -15,10 +15,14 @@
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="Auto"/>
+        </Grid.ColumnDefinitions>
         
         <ProgressBar x:Name="TimeTracker" Grid.Row="1" Grid.ColumnSpan="3" Margin="0" HeightRequest="4" Progress="0" VerticalOptions="End"></ProgressBar>
 
-        <CarouselView Grid.Row="0" ItemsSource="{Binding Queue}" IsSwipeEnabled="True" IsBounceEnabled="True" Loop="False" VerticalScrollBarVisibility="Never" HorizontalScrollBarVisibility="Never">
+        <CarouselView Grid.Column="0" Grid.Row="0" ItemsSource="{Binding Queue}" IsSwipeEnabled="True" IsBounceEnabled="True" Loop="False" VerticalScrollBarVisibility="Never" HorizontalScrollBarVisibility="Never">
             <CarouselView.ItemTemplate>
                 <DataTemplate x:DataType="database:SongData">
                     <Grid>
@@ -51,5 +55,36 @@
                 </DataTemplate>
             </CarouselView.ItemTemplate>
         </CarouselView>
+        <HorizontalStackLayout Grid.Column="1" Grid.Row="0">
+            <HorizontalStackLayout.GestureRecognizers>
+                <SwipeGestureRecognizer Direction="Up" Swiped="SwipeGestureRecognizer_Swiped"/>
+            </HorizontalStackLayout.GestureRecognizers>
+            <Border WidthRequest="42" HeightRequest="42" StrokeThickness="0">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="56" />
+                </Border.StrokeShape>
+                <Grid>
+                    <Image Scale="0.8" Source="favourite_empty.png"></Image>
+                    <ImageButton>
+                        <ImageButton.GestureRecognizers>
+                            <SwipeGestureRecognizer Direction="Up" Swiped="SwipeGestureRecognizer_Swiped"/>
+                        </ImageButton.GestureRecognizers>
+                    </ImageButton>
+                </Grid>
+            </Border>
+            <Border WidthRequest="42" HeightRequest="42" StrokeThickness="0">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="56" />
+                </Border.StrokeShape>
+                <Grid>
+                    <Image Source="media_play.png"></Image>
+                    <ImageButton>
+                        <ImageButton.GestureRecognizers>
+                            <SwipeGestureRecognizer Direction="Up" Swiped="SwipeGestureRecognizer_Swiped"/>
+                        </ImageButton.GestureRecognizers>
+                    </ImageButton>
+                </Grid>
+            </Border>
+        </HorizontalStackLayout>
     </Grid>
 </ContentView>

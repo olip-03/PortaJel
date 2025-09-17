@@ -33,7 +33,7 @@ public partial class AlbumListPage : ContentPage
     protected override void OnNavigatedTo(NavigatedToEventArgs args)
     {
         CancellationTokenSource = new();
-        _ = Task.Run(() => listHelper.listPoller(scroll, CancellationTokenSource.Token));
+        
         base.OnNavigatedTo(args);
     }
 
