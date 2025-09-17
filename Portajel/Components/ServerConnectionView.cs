@@ -4,8 +4,10 @@ using Portajel.Components.Modal;
 using Portajel.Connections;
 using Portajel.Connections.Interfaces;
 using Portajel.Connections.Services.Jellyfin;
-using Color = Microsoft.Maui.Graphics.Color;
+using Portajel.Pages.Settings.Connections;
+using Portajel.Structures;
 using System.Diagnostics;
+using Color = Microsoft.Maui.Graphics.Color;
 
 namespace Portajel.Components;
 
@@ -110,13 +112,12 @@ public class ServerConnectionView : Grid
                 ZIndex = 5
             };
             button.Clicked += async (sender, e) => {
-                await Shell.Current.GoToAsync(
-                    "settings/viewConnection", 
-                    new Dictionary<string, object>
+                ViewConnectionPage connectionPage = new(_server, _database);
+                connectionPage.ApplyQueryAttributes(new Dictionary<string, object>
                     {
                         { "Properties", serverConnection.Properties }
-                    }
-                );
+                    });
+                await Navigation.PushModalAsync(connectionPage);
             };
         
             var view = new VerticalStackLayout
