@@ -1,12 +1,9 @@
 ﻿using CommunityToolkit.Maui.Behaviors;
 using Microsoft.Maui.Controls.Shapes;
 using Portajel.Components.Modal;
-using Portajel.Connections;
 using Portajel.Connections.Interfaces;
 using Portajel.Connections.Services.Jellyfin;
 using Portajel.Pages.Settings.Connections;
-using Portajel.Structures;
-using System.Diagnostics;
 using Color = Microsoft.Maui.Graphics.Color;
 
 namespace Portajel.Components;
@@ -27,7 +24,7 @@ public class ServerConnectionView : Grid
         _database = ServiceProvider.GetService<IDbConnector>();
         BuildUI();
         
-        Microsoft.Maui.Controls.Application.Current.RequestedThemeChanged += (s, a) =>
+        Application.Current.RequestedThemeChanged += (s, a) =>
         {
             BuildUI();
         };
@@ -39,7 +36,7 @@ public class ServerConnectionView : Grid
         _database = dbConnector;
         BuildUI();
         
-        Microsoft.Maui.Controls.Application.Current.RequestedThemeChanged += (s, a) =>
+        Application.Current.RequestedThemeChanged += (s, a) =>
         {
             BuildUI();
         };
