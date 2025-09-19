@@ -73,12 +73,7 @@ namespace Portajel.Connections.Services.Spotify
         {
             throw new NotImplementedException();
         }
-
-        public async Task<bool> SetIsFavourite(Guid id, bool isFavourite, string serverUrl)
-        {
-            throw new NotImplementedException();
-        }
-
+        
         public Task<BaseData[]> SearchAsync(string searchTerm = "", int? limit = null, int startIndex = 0,
             ItemSortBy setSortTypes = ItemSortBy.Name, SortOrder setSortOrder = SortOrder.Ascending,
             CancellationToken cancellationToken = default)

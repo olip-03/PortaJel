@@ -1,12 +1,90 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:components1="clr-namespace:Portajel.Structures.ViewModels.Components"
+             xmlns:components="clr-namespace:Portajel.Components"
+             xmlns:database="clr-namespace:Portajel.Connections.Database;assembly=Portajel.Connections"
              x:Class="Portajel.Components.Media.ModalPlayer"
+             x:DataType="components1:MediaPlayerViewModel"
              Title="ModalPlayer">
-    <VerticalStackLayout>
-        <Label 
-            Text="Welcome to .NET MAUI!"
-            VerticalOptions="Center" 
-            HorizontalOptions="Center" />
-    </VerticalStackLayout>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="470"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        
+        <components:FakeShellHeader Grid.Row="0" 
+                                    IgnoreSystemHeader="False" 
+                                    Text="Customise Home"/>
+        
+        <Grid Grid.Row="1" VerticalOptions="Fill">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            
+            <CarouselView x:Name="SongCarousel"
+                          Position="{Binding QueuePosition}"
+                          ItemsSource="{Binding Queue}" 
+                          IsSwipeEnabled="True" 
+                          IsBounceEnabled="True" 
+                          Loop="False" 
+                          HorizontalOptions="Start"
+                          VerticalOptions="Fill"
+                          VerticalScrollBarVisibility="Never" 
+                          HorizontalScrollBarVisibility="Never"
+                          CurrentItemChanged="CarouselView_OnCurrentItemChanged">
+                <CarouselView.ItemTemplate>
+                    <DataTemplate x:DataType="database:SongData">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                        
+                            <components:MusicImage 
+                                Grid.Row="0"
+                                Grid.Column="0"
+                                ZIndex="1"
+                                Margin="8"
+                                HeightRequest="340"
+                                WidthRequest="340"
+                                HorizontalOptions="Center"
+                                Source="{Binding ImgSource}"
+                                BlurHash="{Binding ImgBlurhash}"/>
+                        </Grid>
+                    </DataTemplate>
+                </CarouselView.ItemTemplate>
+            </CarouselView>
+            
+            <VerticalStackLayout Grid.Row="1" Margin="24, 16, 24, 48">
+                <Label FontSize="22" FontAttributes="Bold" Text="{Binding Current.Name}" HorizontalOptions="Start" HorizontalTextAlignment="Start"/>
+                <Label FontSize="16" Text="{Binding Current.ArtistNames}" HorizontalOptions="Start" HorizontalTextAlignment="Start"/>
+            </VerticalStackLayout>
+        </Grid>
+        
+        <VerticalStackLayout Grid.Row="2" VerticalOptions="Center">
+            <HorizontalStackLayout Margin="24, 0">
+                <components:CircleButton ImageSource="favourite_empty.png" Size="48" ImageSize="24"/>
+                <components:CircleButton ImageSource="download.png" Size="48" ImageSize="24"/>
+            </HorizontalStackLayout>
+                
+            <Slider Margin="8, 0" HorizontalOptions="Fill"></Slider>
+            
+            <Grid Margin="24, 0" HorizontalOptions="Fill">
+                <Label Text="00:00" HorizontalOptions="Start"></Label>
+                <Label Text="00:00" HorizontalOptions="End"></Label>
+            </Grid>
+                
+            <components:PlaybackControls Margin="24, 22, 24, 48" x:DataType="components1:PlaybackControlsViewModel"></components:PlaybackControls>
+        </VerticalStackLayout>
+        
+        <FlexLayout Grid.Row="3" Direction="Row" AlignItems="Center" VerticalOptions="Center" JustifyContent="SpaceAround">
+            <Button Text="Up Next" Background="Transparent"></Button>
+            <Button Text="Lyrics" Background="Transparent"></Button>
+            <Button Text="Similar" Background="Transparent"></Button>
+        </FlexLayout>
+    </Grid>
 </ContentPage>

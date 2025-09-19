@@ -92,8 +92,9 @@ public class AddConnectionViewModel: ReactiveObject
                 _server.AddServer(server);
                 NavigateBackCommand.Execute().Subscribe();
                 
-                var settings = new ServerConnectorSettings(_server, _server.Servers.ToArray());
-                var json = settings.ToJson();
+                // TODO: Repair this code 
+                // var settings = new ServerConnectorSettings(_server, _server.Servers.ToArray());
+                // var json = settings.ToJson();
     
                 var jsonFilePath = Path.Combine(Program.AppDataPath, "ServerConnector.json");
                 var directory = Path.GetDirectoryName(jsonFilePath);
@@ -101,7 +102,7 @@ public class AddConnectionViewModel: ReactiveObject
                 {
                     Directory.CreateDirectory(directory);
                 }
-                await File.WriteAllTextAsync(jsonFilePath, json);
+                // await File.WriteAllTextAsync(jsonFilePath, json);
             }
         }
         catch (Exception e)

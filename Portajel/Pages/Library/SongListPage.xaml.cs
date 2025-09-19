@@ -7,7 +7,7 @@ namespace Portajel.Pages.Library;
 
 public partial class SongListPage : ContentPage
 {
-    private ListHelper listHelper = new(ImageService.Instance);
+    // private ListHelper listHelper = new(ImageService.Instance);
     private DatabaseBindViewModel _vm;
     private CancellationTokenSource CancellationTokenSource = new();
     private double scroll = 0;
@@ -31,7 +31,7 @@ public partial class SongListPage : ContentPage
     protected override void OnNavigatedTo(NavigatedToEventArgs args)
     {
         CancellationTokenSource = new();
-        _ = Task.Run(() => listHelper.listPoller(scroll, CancellationTokenSource.Token));
+        // _ = Task.Run(() => listHelper.listPoller(scroll, CancellationTokenSource.Token));
         base.OnNavigatedTo(args);
     }
 

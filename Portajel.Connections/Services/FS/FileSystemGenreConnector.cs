@@ -33,6 +33,7 @@ public class FileSystemGenreConnector : IMediaDataConnector
         Guid? parentId = null,
         Guid?[]? includeIds = null,
         Guid?[]? excludeIds = null, 
+        string? searchTerm = null,
         string serverUrl = "", 
         CancellationToken cancellationToken = default
     )

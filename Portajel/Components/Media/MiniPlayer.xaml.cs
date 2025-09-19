@@ -7,16 +7,19 @@ using Portajel.Structures.ViewModels.Components;
 using System;
 using System.Diagnostics;
 using System.Timers;
+using Portajel.Connections.Database;
 using Timer = System.Timers.Timer;
 
 namespace Portajel.Components.Media
 {
     public partial class MiniPlayer : ContentView
     {
+        private readonly ModalPlayer modalPlayer;
+        
         private readonly Timer _timer;
         private TimeSpan _elapsed;
 
-        private readonly MediaPlayerViewModel _viewModel = new();
+        private MediaPlayerViewModel _viewModel = new();
         private IMediaController _mediaController;
 
         public MiniPlayer(IMediaController mediaController)
@@ -25,13 +28,21 @@ namespace Portajel.Components.Media
 
             InitializeComponent();
             BindingContext = _viewModel;
-
+            modalPlayer = new ModalPlayer(_viewModel);
+            modalPlayer.OnClose += OnModalClose;
+            
             _elapsed = TimeSpan.Zero;
             _timer = new Timer(20); // 200ms interval
             _timer.Elapsed += OnTimerElapsed;
             _timer.AutoReset = true;
             _timer.Start();
             _ = InitializeEventsAsync();
+        }
+
+        private void OnModalClose(object? sender, EventArgs e)
+        {
+            _viewModel.QueuePosition = modalPlayer.ViewModel.QueuePosition;
+            SongCarousel.Position = _viewModel.QueuePosition;
         }
 
         private async Task InitializeEventsAsync()
@@ -95,10 +106,7 @@ namespace Portajel.Components.Media
                 var window = app?.Windows[0];
                 if (window == null)
                     return;
-                await window.Navigation.PushModalAsync(new ModalPlayer()
-                {
-                    BindingContext = _viewModel
-                });
+                await window.Navigation.PushModalAsync(modalPlayer);
             }
             catch (Exception e)
             {
@@ -114,6 +122,19 @@ namespace Portajel.Components.Media
         private void TapGestureRecognizer_OnTapped(object? sender, TappedEventArgs e)
         {
             OpenPlayer();
+        }
+        
+        private void CarouselView_OnCurrentItemChanged(object? sender, CurrentItemChangedEventArgs e)
+        {
+            if (sender is CarouselView carouselView)
+            {
+                _viewModel.QueuePosition = carouselView.Position;
+            }
+            if (e.CurrentItem is SongData current)
+            {
+                _viewModel.Current.Name = current.Name;
+                _viewModel.Current.ArtistNames = current.ArtistNames;
+            }
         }
     }
 }

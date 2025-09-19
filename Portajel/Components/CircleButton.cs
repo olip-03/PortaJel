@@ -75,7 +75,7 @@ namespace Portajel.Components
         public event EventHandler Clicked;
 
         private Border _border;
-        private Button _button;
+        private ImageButton _button;
         private Image _image;
 
         public CircleButton()
@@ -86,7 +86,7 @@ namespace Portajel.Components
                 StrokeShape = new RoundRectangle()
             };
 
-            _button = new Button
+            _button = new ImageButton()
             {
                 ZIndex = 1
             };

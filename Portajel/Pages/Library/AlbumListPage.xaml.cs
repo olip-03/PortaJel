@@ -10,7 +10,7 @@ namespace Portajel.Pages.Library;
 
 public partial class AlbumListPage : ContentPage
 {
-    private ListHelper listHelper = new(ImageService.Instance);
+    // private ListHelper listHelper = new(ImageService.Instance);
     private DatabaseBindViewModel _vm;
     private CancellationTokenSource CancellationTokenSource = new();
     private double scroll = 0;

@@ -25,10 +25,6 @@ namespace Portajel.Connections.Interfaces
             CancellationToken cancellationToken = default);
         List<Action<CancellationToken>> AuthenticateActions { get; set; }
         List<Action<CancellationToken>> StartSyncActions { get; set; }
-        Task<bool> SetIsFavourite(
-            Guid id, 
-            bool isFavourite,
-            string serverUrl);
         public Task<BaseData[]> SearchAsync(
             string searchTerm = "", 
             int? limit = null, 
@@ -37,6 +33,5 @@ namespace Portajel.Connections.Interfaces
             SortOrder setSortOrder = SortOrder.Ascending,
             CancellationToken cancellationToken = default);
         string GetAddress();
-        string GetProfileImageUrl();
     }
 }

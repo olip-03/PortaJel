@@ -2,7 +2,7 @@ namespace Portajel.Connections.Services;
 
 public class ConnectorProperties: Dictionary<string, ConnectorPropertyValue>
 {
-    
+
 }
 
 public class ConnectorPropertyValue

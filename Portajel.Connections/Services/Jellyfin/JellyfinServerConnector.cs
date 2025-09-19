@@ -22,12 +22,15 @@ namespace Portajel.Connections.Services.Jellyfin
     // much here.
     public class JellyfinServerConnector : IMediaServerConnector
     {
-        private HttpClient _httpClient = new();
-        private IDbConnector _database;
-        public UserDto? _userDto;
-        private SessionInfoDto? _sessionInfo;
-        public JellyfinSdkSettings? _sdkClientSettings;
-        public JellyfinApiClient? _jellyfinApiClient; // TODO: Set to private, for testing
+        private readonly HttpClient _httpClient = new();
+        private readonly IDbConnector _database;
+
+        private JfAuthRootInfo _authInfo;
+        // public UserDto? _userDto;
+        // private SessionInfoDto? _sessionInfo;
+        // public JellyfinSdkSettings? _sdkClientSettings;
+        // public JellyfinApiClient? _jellyfinApiClient; // TODO: Set to private, for testing
+        
         public IMediaDataConnector AlbumData { get; set; } = null!;
         public IMediaDataConnector ArtistData { get; set; } = null!;
         public IMediaDataConnector SongData { get; set; } = null!;
@@ -59,7 +62,6 @@ namespace Portajel.Connections.Services.Jellyfin
         public SyncStatusInfo SyncStatus { get; set; } = new();
         public List<Action<CancellationToken>> AuthenticateActions { get; set; } = new();
         public List<Action<CancellationToken>> StartSyncActions { get; set; } = new();
-
         public JellyfinServerConnector()
         {
             
@@ -164,105 +166,66 @@ namespace Portajel.Connections.Services.Jellyfin
         public AuthStatusInfo AuthStatus { get; set; } = new AuthStatusInfo();
         public async Task<AuthStatusInfo> AuthenticateAsync(CancellationToken cancellationToken = default)
         {
-            if (Properties["AppName"].Value == null ||
-                Properties["AppVersion"].Value == null ||
-                Properties["DeviceName"].Value == null ||
-                Properties["DeviceID"].Value == null ||
-                Properties["URL"].Value == null ||
-                Properties["Username"].Value == null ||
-                Properties["Password"].Value == null)
-            {
-                AuthStatus = new AuthStatusInfo()
-                {
-                    State = AuthState.Failed,
-                    Message = "Missing required properties for authentication"
-                };
-                return AuthStatus;
-            }
-            
             AuthStatus = AuthStatusInfo.CreateInProgress();
+            string? baseUrl = Properties["URL"].Value.ToString();
+            Guid userId = new();
+            if (baseUrl == null)
+            {
+                return AuthStatusInfo.CreateFailed("No base url");
+            }
+
             try
             {
-                ServiceCollection serviceCollection = new ServiceCollection();
-                serviceCollection.AddHttpClient("Default", c =>
-                    {
-                        c.DefaultRequestHeaders.UserAgent.Add(
-                            new ProductInfoHeaderValue(
-                                (string)Properties["AppName"].Value.ToString(),
-                                (string)Properties["AppVersion"].Value.ToString()));
-                        c.DefaultRequestHeaders.Accept.Add(
-                            new MediaTypeWithQualityHeaderValue(MediaTypeNames.Application.Json, 1.0));
-                        c.DefaultRequestHeaders.Accept.Add(
-                            new MediaTypeWithQualityHeaderValue("*/*", 0.8));
-                    })
-                    .ConfigurePrimaryHttpMessageHandler(_ => new SocketsHttpHandler
-                    {
-                        AutomaticDecompression = DecompressionMethods.All,
-                        RequestHeaderEncodingSelector = (_, _) => Encoding.UTF8
-                    });
-
-                // Add Jellyfin SDK services.
-                // include support for session.SupportsRemoteControl
-                // See lines 326 for what Jellyfin-Web wants from clients, for remote functionality https://github.com/jellyfin/jellyfin-web/blob/e5df4dd56bc180dfa24a52a99c718459a4074d56/src/controllers/dashboard/dashboard.js#L324 
-                serviceCollection.AddSingleton<JellyfinSdkSettings>();
-                serviceCollection.AddSingleton<IAuthenticationProvider, JellyfinAuthenticationProvider>();
-                serviceCollection.AddScoped<IRequestAdapter, JellyfinRequestAdapter>(s => new JellyfinRequestAdapter(
-                    s.GetRequiredService<IAuthenticationProvider>(),
-                    s.GetRequiredService<JellyfinSdkSettings>(),
-                    s.GetRequiredService<IHttpClientFactory>().CreateClient("Default")));
-                serviceCollection.AddScoped<JellyfinApiClient>();
-
-                ServiceProvider serviceProvider = serviceCollection.BuildServiceProvider();
-
-                _jellyfinApiClient = serviceProvider.GetRequiredService<JellyfinApiClient>();
-                _sdkClientSettings = serviceProvider.GetRequiredService<JellyfinSdkSettings>();
-                _sdkClientSettings.SetServerUrl(Properties["URL"].Value.ToString());
-                _sdkClientSettings.Initialize(
-                    (string)Properties["AppName"].Value.ToString(),
-                    (string)Properties["AppVersion"].Value.ToString(),
-                    (string)Properties["DeviceName"].Value.ToString(),
-                    (string)Properties["DeviceID"].Value.ToString());
-
-                var authenticationResult = await _jellyfinApiClient.Users.AuthenticateByName.PostAsync(
-                    new AuthenticateUserByName
-                    {
-                        Username = Properties["Username"].Value.ToString(),
-                        Pw = Properties["Password"].Value.ToString()
-                    }, cancellationToken: cancellationToken).ConfigureAwait(false);
-
-                if (authenticationResult != null)
-                {
-                    _sdkClientSettings.SetAccessToken(authenticationResult.AccessToken);
-                    _userDto = authenticationResult.User;
-                    _sessionInfo = authenticationResult.SessionInfo;
-                    if (authenticationResult.AccessToken == null)
-                    {
-                        return new AuthStatusInfo()
-                        {
-                            State = AuthState.Failed,
-                            Message = $"API Error: Login Failure! Could not return Access Token. (Status: Failed)"
-                        };
-                    }
-                }
-
+                string authHeader =
+                    $"Client=\"Portajel\", " +
+                    $"Device=\"{Properties["DeviceName"].Value}\", " +
+                    $"DeviceId=\"{Properties["DeviceID"].Value}\", " +
+                    $"Version=\"{Properties["AppVersion"].Value}\"";
                 string appName = (string)Properties["AppName"].Value;
                 string appVersion = (string)Properties["AppVersion"].Value;
-                string accessToken = authenticationResult?.AccessToken;
 
-                Dictionary<string, string> _defaultHeaders = new Dictionary<string, string>
+                var defaultHeaders = new Dictionary<string, string>
                 {
-                    { "User-Agent", $"{appName}/{appVersion}" },
-                    { "Accept", "application/json" },
-                    {
-                        "Authorization",
-                        $"MediaBrowser Token=\"{accessToken}\", Client=\"Portajel\", Device=\"{Properties["DeviceName"].Value}\", DeviceId=\"{Properties["DeviceID"].Value}\", Version=\"{Properties["AppVersion"].Value}\""
-                    }
+                    { "Username", "local" },
+                    { "Pw", "test1234" }
                 };
-                _httpClient.BaseAddress = new Uri(_sdkClientSettings.ServerUrl);
-                foreach (var header in _defaultHeaders)
+                var httpRequestMessage = new HttpRequestMessage
                 {
-                    _httpClient.DefaultRequestHeaders.Add(header.Key, header.Value);
+                    Method = HttpMethod.Post,
+                    RequestUri = new Uri($"{baseUrl}/Users/authenticatebyname"),
+                    Headers = { 
+                        { "Accept", "application/json" },
+                        { "User-Agent", $"{appName}/{appVersion}" },
+                        { "Authorization", $"MediaBrowser {authHeader}" }
+                    },
+                    Content = new StringContent(JsonConvert.SerializeObject(defaultHeaders), Encoding.UTF8, "application/json")
+                };
+                var loginResponse = await _httpClient.SendAsync(httpRequestMessage, cancellationToken);
+                string jsonContent = await loginResponse.Content.ReadAsStringAsync(cancellationToken);
+                JfAuthRootInfo? result = JsonConvert.DeserializeObject<JfAuthRootInfo>(jsonContent);
+                if (result != null)
+                {
+                    _authInfo = result;
+                    
+                    var userView = await GetUserViewId(authHeader, baseUrl, _authInfo);
+                    if (userView != null)
+                    {
+                        AlbumData = new JellyfinItemConnectorTemplate(MediaType.Album, _httpClient,
+                            _authInfo, baseUrl, userView);
+                        ArtistData = new JellyfinItemConnectorTemplate(MediaType.Artist, _httpClient,
+                            _authInfo, baseUrl, userView);
+                        SongData = new JellyfinItemConnectorTemplate(MediaType.Song, _httpClient, _authInfo,
+                            baseUrl,userView);
+                        PlaylistData = new JellyfinItemConnectorTemplate(MediaType.Playlist, _httpClient,
+                            _authInfo,baseUrl, userView);
+                        Genre = new JellyfinItemConnectorTemplate(MediaType.Genre, _httpClient, _authInfo,
+                            baseUrl, userView);
+                        Feeds ??= new JellyfinConnectorFeeds(_database, baseUrl);
+                    }
+                    
+                    return AuthStatusInfo.Ok();
                 }
+                return AuthStatusInfo.Failed("Failed to deserialize server response.");
             }
             catch (ApiException apiEx)
             {
@@ -291,28 +254,12 @@ namespace Portajel.Connections.Services.Jellyfin
             }
             finally
             {
-                var userView = await GetUserViewId(_sdkClientSettings.ServerUrl, _userDto.Id.Value.ToString());
-                AlbumData = new JellyfinItemConnectorTemplate(MediaType.Album, _httpClient,
-                    _sdkClientSettings.ServerUrl, userView, _userDto.Id.Value);
-                ArtistData = new JellyfinItemConnectorTemplate(MediaType.Artist, _httpClient,
-                    _sdkClientSettings.ServerUrl, userView, _userDto.Id.Value);
-                SongData = new JellyfinItemConnectorTemplate(MediaType.Song, _httpClient, _sdkClientSettings.ServerUrl,
-                    userView, _userDto.Id.Value);
-                PlaylistData = new JellyfinItemConnectorTemplate(MediaType.Playlist, _httpClient,
-                    _sdkClientSettings.ServerUrl, userView, _userDto.Id.Value);
-                Genre = new JellyfinItemConnectorTemplate(MediaType.Genre, _httpClient, _sdkClientSettings.ServerUrl,
-                    userView, _userDto.Id.Value);
-                // Don't set if not null. Can be set via constructor
-                Feeds ??= new JellyfinConnectorFeeds(_database, Properties["URL"].Value.ToString());
-
                 var actions = AuthenticateActions.Select(a => Task.Run(() =>
                 {
                     a.Invoke(cancellationToken);
                 }));
                 _ = Task.WhenAll(actions);
-                AuthStatus =  AuthStatusInfo.Ok();
             }
-            return AuthStatus;
         }
         public async Task<bool> UpdateDb(CancellationToken cancellationToken = default)
         {
@@ -483,11 +430,6 @@ namespace Portajel.Connections.Services.Jellyfin
             }
             return true;
         }
-        public async Task<bool> SetIsFavourite(Guid id, bool isFavourite, string serverUrl)
-        {
-            await Task.Delay(10);
-            return false;
-        }
         public Task<BaseData[]> SearchAsync(string searchTerm = "", int? limit = null, int startIndex = 0,
             ItemSortBy setSortTypes = ItemSortBy.Name, SortOrder setSortOrder = SortOrder.Ascending,
             CancellationToken cancellationToken = default)
@@ -526,13 +468,21 @@ namespace Portajel.Connections.Services.Jellyfin
             }
             return true;
         }
-        private async Task<string?> GetUserViewId(string serverId, string userId)
+        private async Task<string?> GetUserViewId(string authHeader, string serverId, JfAuthRootInfo authInfo)
         {
-            var request = new HttpRequestMessage(HttpMethod.Get, $"{serverId}/Users/{userId}/Views");
-            
-            using var response = await _httpClient.SendAsync(request);
-            var content = await response.Content.ReadAsStringAsync();
-            var resultObject = JsonConvert.DeserializeObject<JfItemsDto>(content);
+            var httpRequestMessage = new HttpRequestMessage
+            {
+                Method = HttpMethod.Get,
+                RequestUri = new Uri($"{serverId}/Users/{authInfo.User.Id}/Views"),
+                Headers = { 
+                    { "Accept", "application/json" },
+                    { "User-Agent", $"{_authInfo.SessionInfo.Client}/{_authInfo.SessionInfo.ApplicationVersion}" },
+                    { "Authorization", $"MediaBrowser Token=\"{authInfo.AccessToken}\", {authHeader}" }
+                }
+            };
+            var response = await _httpClient.SendAsync(httpRequestMessage);
+            string jsonContent = await response.Content.ReadAsStringAsync();
+            var resultObject = JsonConvert.DeserializeObject<JfItemsDto>(jsonContent);
             return resultObject.Items.First(d => d.CollectionType == "music").Id.ToString();
         }
         private KeyValuePair<MediaCapabilities, IDbItemConnector> GetDb(IMediaDataConnector mediaDataConnector)

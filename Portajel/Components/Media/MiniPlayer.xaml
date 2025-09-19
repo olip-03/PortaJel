@@ -22,7 +22,17 @@
         
         <ProgressBar x:Name="TimeTracker" Grid.Row="1" Grid.ColumnSpan="3" Margin="0" HeightRequest="4" Progress="0" VerticalOptions="End"></ProgressBar>
 
-        <CarouselView Grid.Column="0" Grid.Row="0" ItemsSource="{Binding Queue}" IsSwipeEnabled="True" IsBounceEnabled="True" Loop="False" VerticalScrollBarVisibility="Never" HorizontalScrollBarVisibility="Never">
+        <CarouselView Grid.Column="0" Grid.Row="0" 
+                      x:Name="SongCarousel"
+                      Position="{Binding QueuePosition}"
+                      ItemsSource="{Binding Queue}" 
+                      IsSwipeEnabled="True" 
+                      IsBounceEnabled="True" 
+                      Loop="False" 
+                      HorizontalOptions="Start"
+                      VerticalScrollBarVisibility="Never" 
+                      HorizontalScrollBarVisibility="Never"
+                      CurrentItemChanged="CarouselView_OnCurrentItemChanged">
             <CarouselView.ItemTemplate>
                 <DataTemplate x:DataType="database:SongData">
                     <Grid>
@@ -55,6 +65,7 @@
                 </DataTemplate>
             </CarouselView.ItemTemplate>
         </CarouselView>
+        
         <HorizontalStackLayout Grid.Column="1" Grid.Row="0">
             <HorizontalStackLayout.GestureRecognizers>
                 <SwipeGestureRecognizer Direction="Up" Swiped="SwipeGestureRecognizer_Swiped"/>
@@ -64,7 +75,7 @@
                     <RoundRectangle CornerRadius="56" />
                 </Border.StrokeShape>
                 <Grid>
-                    <Image Scale="0.8" Source="favourite_empty.png"></Image>
+                    <Image Scale="0.6" Source="favourite_empty.png"></Image>
                     <ImageButton>
                         <ImageButton.GestureRecognizers>
                             <SwipeGestureRecognizer Direction="Up" Swiped="SwipeGestureRecognizer_Swiped"/>
@@ -77,7 +88,7 @@
                     <RoundRectangle CornerRadius="56" />
                 </Border.StrokeShape>
                 <Grid>
-                    <Image Source="media_play.png"></Image>
+                    <Image Scale="0.8" Source="media_play.png"></Image>
                     <ImageButton>
                         <ImageButton.GestureRecognizers>
                             <SwipeGestureRecognizer Direction="Up" Swiped="SwipeGestureRecognizer_Swiped"/>

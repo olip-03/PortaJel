@@ -7,6 +7,10 @@ using MediaType = Portajel.Connections.Enum.MediaType;
 
 namespace Portajel.Connections.Services.FS;
 
+
+// class that should be able to read file system m3u playlists 
+// Creating playlists here will not be possible, as disk playlists are stored 
+// directly in DB
 public class FileSystemPlaylistConnector : IMediaDataConnector, IMediaPlaylistInterface
 {
     private SQLiteAsyncConnection _database = null;
@@ -23,6 +27,7 @@ public class FileSystemPlaylistConnector : IMediaDataConnector, IMediaPlaylistIn
         throw new NotImplementedException();
     }
 
+    // Similar to Get however with more sorting and filtering options
     public Task<BaseData[]> GetAllAsync(
         int? limit = null, 
         int startIndex = 0, 
@@ -32,6 +37,7 @@ public class FileSystemPlaylistConnector : IMediaDataConnector, IMediaPlaylistIn
         Guid? parentId = null,
         Guid?[]? includeIds = null,
         Guid?[]? excludeIds = null, 
+        string? searchTerm = null,
         string serverUrl = "", 
         CancellationToken cancellationToken = default
     )
@@ -39,6 +45,8 @@ public class FileSystemPlaylistConnector : IMediaDataConnector, IMediaPlaylistIn
         throw new NotImplementedException();
     }
 
+    // optional serverUrl. Checks paths for m3u8 files, decodes, and compares entries to database to return full 
+    // result 
     public Task<BaseData> GetAsync(Guid id, string serverUrl = "",
         CancellationToken cancellationToken = default)
     {

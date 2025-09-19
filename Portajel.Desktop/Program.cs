@@ -52,28 +52,29 @@ class Program
                     DatabaseConnector db = new DatabaseConnector(DbDataPath);
                     return db;
                 })
-                .AddSingleton<IServerConnector>(serviceProvider =>
-                {
-                    try
-                    {
-                        var jsonFilePath = Path.Combine(AppDataPath, "ServerConnector.json");
-                        var json = "";
-    
-                        if (File.Exists(jsonFilePath))
-                        {
-                            json = File.ReadAllText(jsonFilePath);
-                        }
-    
-                        var db = serviceProvider.GetRequiredService<IDbConnector>();
-                        ServerConnectorSettings settings = new(json: json, db, AppDataPath);
-                        return settings.ServerConnector;
-                    }
-                    catch (Exception e)
-                    {
-                        Trace.WriteLine(e);
-                    }
-                    return new ServerConnector();
-                })
+                // Todo: Repair Service Provider
+                // .AddSingleton<IServerConnector>(serviceProvider =>
+                // {
+                //     try
+                //     {
+                //         var jsonFilePath = Path.Combine(AppDataPath, "ServerConnector.json");
+                //         var json = "";
+                //
+                //         if (File.Exists(jsonFilePath))
+                //         {
+                //             json = File.ReadAllText(jsonFilePath);
+                //         }
+                //
+                //         var db = serviceProvider.GetRequiredService<IDbConnector>();
+                //         ServerConnectorSettings settings = new(json: json, db, AppDataPath);
+                //         return settings.ServerConnector;
+                //     }
+                //     catch (Exception e)
+                //     {
+                //         Trace.WriteLine(e);
+                //     }
+                //     return new ServerConnector();
+                // })
                 .AddSingleton<LibraryViewCache>()
             .AddSingleton<MainWindowViewModel>()
             .AddSingleton<AddConnection>()

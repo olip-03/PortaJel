@@ -67,7 +67,7 @@
                                HorizontalTextAlignment="Center"/>
                     </Grid> 
                     
-                    <components:PlaybackControls Grid.Row="2"></components:PlaybackControls>
+                    <components:PlaybackControls Grid.Row="2" Margin="0, 32"></components:PlaybackControls>
                     
                     <Grid Grid.Column="0" Grid.Row="3"  Margin="0, 24,0 ,6">
                             <CollectionView x:Name="AlbumContainer" 

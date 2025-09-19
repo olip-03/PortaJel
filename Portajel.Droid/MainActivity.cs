@@ -43,13 +43,13 @@ namespace Portajel.Droid
                     ViewCompat.SetOnApplyWindowInsetsListener(decorView, new CustomInsetsListener());
                 }
 
-                var imageService = ServiceHelper.GetService<IImageService>();
-                var handler = new AndroidMessageHandler();
-                var httpClient = new HttpClient(handler);
-                imageService.Initialize(new Configuration
-                {
-                    HttpClient = httpClient
-                });
+                // var imageService = ServiceHelper.GetService<IImageService>();
+                // var handler = new AndroidMessageHandler();
+                // var httpClient = new HttpClient(handler);
+                // imageService.Initialize(new Configuration
+                // {
+                //     HttpClient = httpClient
+                // });
             }
             base.OnCreate(savedInstanceState);
         }

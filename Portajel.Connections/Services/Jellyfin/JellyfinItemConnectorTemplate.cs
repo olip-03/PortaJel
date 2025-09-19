@@ -17,21 +17,27 @@ public class JellyfinItemConnectorTemplate : IMediaDataConnector
 {
     private readonly HttpClient _httpClient;
     private readonly string _serverUrl;
-    private readonly Guid _userId;
+    private readonly JfAuthRootInfo _authInfo;
+    private string _authHeader;
     private readonly string _serverParentId;
     private ArrayPool<byte> _arrayPool = ArrayPool<byte>.Shared;
     public JellyfinItemConnectorTemplate(
         MediaType mediaType, 
         HttpClient httpClient,
+        JfAuthRootInfo authInfo,
         string serverUrl,
-        string serverParentId,
-        Guid userId)
+        string serverParentId)
     {
         MediaType = mediaType;
         _httpClient = httpClient;
-        _serverUrl = serverUrl;
+        _authInfo = authInfo;
         _serverParentId = serverParentId;
-        _userId = userId;
+        _authHeader = 
+            $"Client=\"{_authInfo.SessionInfo.Client}\", " +
+            $"Device=\"{_authInfo.SessionInfo.DeviceName}\", " +
+            $"DeviceId=\"{_authInfo.SessionInfo.DeviceId}\", " +
+            $"Version=\"{_authInfo.SessionInfo.ApplicationVersion}\"";
+        _serverUrl = serverUrl;
     }
 
     public MediaType MediaType { get; }
@@ -46,6 +52,7 @@ public class JellyfinItemConnectorTemplate : IMediaDataConnector
         Guid? parentId = null,
         Guid?[]? includeIds = null,
         Guid?[]? excludeIds = null, 
+        string? searchTerm = null,
         string serverUrl = "", 
         CancellationToken cancellationToken = default
     )
@@ -53,7 +60,7 @@ public class JellyfinItemConnectorTemplate : IMediaDataConnector
         var apiUrl = BuildApiString(
             _serverUrl, 
             GetIncludeItemType(), 
-            _userId.ToString(), 
+            _authInfo.User.Id, 
             startIndex, 
             limit: limit,
             parentId: parentId,
@@ -63,39 +70,35 @@ public class JellyfinItemConnectorTemplate : IMediaDataConnector
             includeIds: includeIds,
             excludeIds: excludeIds);
         
-        ReadOnlySpan<byte> resultByes = await _httpClient.GetByteArrayAsync(apiUrl, cancellationToken);
-        string jsonStr = Encoding.UTF8.GetString(resultByes);
-        var resultObject = JsonConvert.DeserializeObject<JfItemsDto>(jsonStr);
+        string jsonContent = await Call(apiUrl, cancellationToken);
+        var resultObject = JsonConvert.DeserializeObject<JfItemsDto>(jsonContent);
         
         return ReturnBuilder(resultObject, _serverUrl);
     }
 
     public async Task<BaseData> GetAsync(Guid id, string serverUrl = "", CancellationToken cancellationToken = default)
     {
-        // unavoidable. Maybe consider this on the stack, it's going to be called a fucking lot 
         var apiUrl = BuildApiString(
             _serverUrl,
             GetIncludeItemType(),
-            _userId.ToString(),
+            _authInfo.User.Id,
             0,
             1,
             includeIds: [id]);
 
-        ReadOnlySpan<byte> resultByes = await _httpClient.GetByteArrayAsync(apiUrl, cancellationToken);
-        string jsonStr = Encoding.UTF8.GetString(resultByes);
-        var resultObject = JsonConvert.DeserializeObject<JfItemsDto>(jsonStr);
+        string jsonContent = await Call(apiUrl, cancellationToken);
+        var resultObject = JsonConvert.DeserializeObject<JfItemsDto>(jsonContent);
         
         return ReturnBuilder(resultObject, _serverUrl).First();
     }
 
     public async Task<BaseData[]> GetSimilarAsync(Guid id, int setLimit, string serverUrl = "", CancellationToken cancellationToken = default)
     {
-        var apiUrl = BuildSimilarApiString(_serverUrl, id, _userId, setLimit);
+        Guid userId = Guid.Parse(_authInfo.User.Id);
+        var apiUrl = BuildSimilarApiString(_serverUrl, id, userId, setLimit);
         
-        using var request = CreateRequest(HttpMethod.Get, apiUrl);
-        using var response = await _httpClient.SendAsync(request, cancellationToken);
-        var content = await response.Content.ReadAsStringAsync();
-        var resultObject = JsonConvert.DeserializeObject<JfItemsDto>(content);
+        string jsonContent = await Call(apiUrl, cancellationToken);
+        var resultObject = JsonConvert.DeserializeObject<JfItemsDto>(jsonContent);
         
         return ReturnBuilder(resultObject, _serverUrl);
     }
@@ -105,17 +108,15 @@ public class JellyfinItemConnectorTemplate : IMediaDataConnector
         var apiUrl = BuildApiString(
             _serverUrl,
             GetIncludeItemType(),
-            _userId.ToString(),
+            _authInfo.User.Id,
             0,
             1,
             getFavourite: getFavourite,
             enableTotalRecordCount: true);
-
-        using var request = CreateRequest(HttpMethod.Get, apiUrl);
-        using var response = await _httpClient.SendAsync(request, cancellationToken);
-        var content = await response.Content.ReadAsStringAsync(cancellationToken);
-        var resultObject = JsonConvert.DeserializeObject<JfItemsDto>(content);
         
+        string jsonContent = await Call(apiUrl, cancellationToken);
+        var resultObject = JsonConvert.DeserializeObject<JfItemsDto>(jsonContent);
+
         return resultObject?.TotalRecordCount ?? 0;
     }
 
@@ -138,6 +139,22 @@ public class JellyfinItemConnectorTemplate : IMediaDataConnector
     {
         var request = new HttpRequestMessage(method, url);
         return request;
+    }
+
+    private async Task<string> Call(string url, CancellationToken cancellationToken)
+    {
+        var httpRequestMessage = new HttpRequestMessage
+        {
+            Method = HttpMethod.Get,
+            RequestUri = new Uri(url),
+            Headers = { 
+                { "Accept", "application/json" },
+                { "User-Agent", $"{_authInfo.SessionInfo.Client}/{_authInfo.SessionInfo.ApplicationVersion}" },
+                { "Authorization", $"MediaBrowser Token=\"{_authInfo.AccessToken}\", {_authHeader}" }
+            }
+        };
+        var response = await _httpClient.SendAsync(httpRequestMessage, cancellationToken);
+        return await response.Content.ReadAsStringAsync(cancellationToken);
     }
 
     private string BuildApiString(
@@ -307,7 +324,7 @@ public class JellyfinItemConnectorTemplate : IMediaDataConnector
             _ => throw new ArgumentOutOfRangeException()
         };
     }
-
+ 
     private BaseData[] ReturnBuilder(JfItemsDto result, string serverUrl)
     {
         return MediaType switch

@@ -23,7 +23,6 @@ namespace Portajel.Connections.Database
         public string ArtistIdsJson { get; set; } = string.Empty;
         public string FileLocation { get; set; } = string.Empty;
         public string StreamUrl { get; set; } = string.Empty;
-        
         public override MediaType MediaType { get; set; } = MediaType.Song;
         public static SongData Empty { get; set; } = new();
     }

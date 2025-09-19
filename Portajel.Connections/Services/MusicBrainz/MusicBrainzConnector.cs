@@ -8,16 +8,27 @@ namespace Portajel.Connections.Services.MusicBrainz;
 
 public class MusicBrainzConnector: IMediaServerConnector
 {
-    public Dictionary<MediaCapabilities, bool> SupportedReturnTypes { get; set; }
-    public ConnectorFeeds? Feeds { get; set; }
-    public Dictionary<string, IMediaDataConnector> DataConnectors { get; }
-    public string Id { get; } = "MusicBrainzConnector";
-    public string Name { get; } = "MusicBrainz";
-    public string Description { get; } = "Connection to MusicBrainz";
+    public string Id { get; }
+    public string Name { get; }
+    public string Description { get; }
     public string Image { get; }
     public ConnectorProperties Properties { get; set; }
     public SyncStatusInfo SyncStatus { get; set; }
     public AuthStatusInfo AuthStatus { get; set; }
+    public Dictionary<MediaCapabilities, bool> SupportedReturnTypes { get; set; }
+    public ConnectorFeeds? Feeds { get; set; }
+    public Dictionary<string, IMediaDataConnector> DataConnectors { get; }
+    public MusicBrainzConnector()
+    {
+        Id = "MusicBrainzConnector";
+        Name = "MusicBrainz";
+        Description = "Connection to MusicBrainz";
+        Image = "";
+        Properties = new ConnectorProperties();
+        SyncStatus = new SyncStatusInfo();
+        AuthStatus = new AuthStatusInfo();
+    }
+    
     public async Task<AuthStatusInfo> AuthenticateAsync(CancellationToken cancellationToken = default)
     {
         return AuthStatusInfo.Ok();
@@ -35,10 +46,6 @@ public class MusicBrainzConnector: IMediaServerConnector
 
     public List<Action<CancellationToken>> AuthenticateActions { get; set; }
     public List<Action<CancellationToken>> StartSyncActions { get; set; }
-    public Task<bool> SetIsFavourite(Guid id, bool isFavourite, string serverUrl)
-    {
-        throw new NotImplementedException();
-    }
 
     public Task<BaseData[]> SearchAsync(string searchTerm = "", int? limit = null, int startIndex = 0,
         ItemSortBy setSortTypes = ItemSortBy.Name, SortOrder setSortOrder = SortOrder.Ascending,

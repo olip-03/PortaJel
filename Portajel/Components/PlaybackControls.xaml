@@ -7,7 +7,10 @@
              x:DataType="components1:PlaybackControlsViewModel"
              x:Class="Portajel.Components.PlaybackControls">
     <!-- Controls -->
-    <HorizontalStackLayout HorizontalOptions="Center" Spacing="16" Margin="0, 24,0 ,6">
+    <FlexLayout Height="64"
+                Direction="Row"
+                AlignItems="Center"
+                JustifyContent="SpaceBetween">
         <components:CircleButton
             Clicked="DownloadButton_OnClicked"
             ImageSource="download.png"
@@ -47,5 +50,5 @@
             ImageSize="24"
             ImageColor="{StaticResource PrimaryTextColor}"
             BackgroundColor="{StaticResource SecondaryTextColor}" />
-    </HorizontalStackLayout>
+    </FlexLayout>
 </ContentView>
