@@ -22,7 +22,7 @@ public partial class AlbumListPage : ContentPage
 
         Vlv.OnScrolled += Vlv_OnScrolled;
 
-        ImageService.Instance.SetPauseWork(true);
+        // ImageService.Instance.SetPauseWork(true);
     }
 
     private void Vlv_OnScrolled(object? sender, ScrolledEventArgs e)

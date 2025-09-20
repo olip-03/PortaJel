@@ -21,6 +21,7 @@ namespace Portajel.Connections.Interfaces
         BaseData Get(
             Guid id,
             CancellationToken cancellationToken = default);
+        BaseData[] Search(string query, int limit = 50, CancellationToken cancellationToken = default);
         bool Contains(
             Guid id,
             CancellationToken cancellationToken = default);

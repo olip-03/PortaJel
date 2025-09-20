@@ -493,7 +493,7 @@ namespace Portajel.Connections.Services.Jellyfin
             }
             try
             {
-                var returnVal = _database.Connectors.GetDataConnectors().First(d => d.Value.MediaType == mediaDataConnector.MediaType);
+                var returnVal = _database.Connectors.First(d => d.Value.MediaType == mediaDataConnector.MediaType);
                 return returnVal;
             }
             catch (Exception)

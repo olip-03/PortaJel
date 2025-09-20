@@ -124,7 +124,6 @@ namespace Portajel.Components
         }
         private static async void OnSourceChanged(BindableObject bindable, object oldValue, object newValue)
         {
-
             if (bindable is MusicImage musicImage)
             {
                 if (musicImage._sourceImage == null)
@@ -134,7 +133,6 @@ namespace Portajel.Components
                 {
                     await FFImageLoading.ImageService.Instance.InvalidateCacheEntryAsync(oldSource, CacheType.Memory);
                 }
-
                 if (newValue is string source && !string.IsNullOrEmpty(source))
                 {
                     musicImage._sourceImage.Source = source;

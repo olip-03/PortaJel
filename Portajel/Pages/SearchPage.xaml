@@ -4,26 +4,59 @@
              xmlns:music="clr-namespace:Portajel.Connections.Database;assembly=Portajel.Connections"
              xmlns:components="clr-namespace:Portajel.Components"
              xmlns:local="clr-namespace:Portajel.Pages"
+             xmlns:adaptor="clr-namespace:Portajel.Structures.Adaptor"
+             xmlns:converters="clr-namespace:Portajel.Structures.Converters"
+             xmlns:controls="clr-namespace:Microsoft.Maui.Controls;assembly=VirtualListView"
              x:DataType="local:SearchPageViewModel"
              x:Class="Portajel.Pages.SearchPage"
              Title="Search">
-    <Grid RowDefinitions="Auto,*" 
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <adaptor:ListTemplateSelector x:Key="ItemTemplateSelector" />
+            <converters:ImageUrlConverter x:Key="ImageUrlConverter" />
+        </ResourceDictionary>
+    </ContentPage.Resources>
+    
+    <Grid RowDefinitions="Auto,Auto,*" 
           RowSpacing="0">
         <SearchBar Grid.Row="0"
+                   ZIndex="5"
+                   Background="{StaticResource BackgroundColor}"
                   x:Name="SearchBar"
+                  SearchButtonPressed="SearchBar_OnSearchButtonPressed"
                   TextChanged="SearchBar_TextChanged" />
-        <CollectionView Grid.Row="1"
-                       x:Name="SearchResults" 
-                       ItemsSource="{Binding Albums}">
-            <CollectionView.ItemTemplate>
-                <DataTemplate x:DataType="music:AlbumData">
-                    <components:MusicListItem 
-                        Title="{Binding Name}" 
-                        ImgBlurhashSource="{Binding ImgBlurhashSource}"
-                        Subtitle="{Binding ArtistNames}" 
-                        ImgSource="{Binding ImgSource}"/>
-                </DataTemplate>
-            </CollectionView.ItemTemplate>
-        </CollectionView>
+        
+
+        
+        <controls:VirtualListView
+            Grid.Row="2"
+            x:Name="Vlv"
+            HorizontalOptions="Fill"
+            VerticalOptions="Fill"
+            IsRefreshEnabled="True"
+            SelectionMode="None"
+            OnRefresh="Vlv_OnOnRefresh"
+            ItemTemplateSelector="{StaticResource ItemTemplateSelector}">
+            <!-- <controls:VirtualListView.GlobalHeader> -->
+            <!--     <HorizontalStackLayout Grid.Row="1" Margin="6"> -->
+            <!--         <components:CircleButton ImageSource="favourite_empty.png" Size="48" ImageSize="24"/> -->
+            <!--         <components:CircleButton ImageSource="download.png" Size="48" ImageSize="24"/> -->
+            <!--     </HorizontalStackLayout> -->
+            <!-- </controls:VirtualListView.GlobalHeader> -->
+        </controls:VirtualListView>
+
+        <!-- <CollectionView Grid.Row="1" -->
+        <!--                x:Name="SearchResults"  -->
+        <!--                ItemsSource="{Binding Albums}"> -->
+        <!--     <CollectionView.ItemTemplate> -->
+        <!--         <DataTemplate x:DataType="music:AlbumData"> -->
+        <!--             <components:MusicListItem  -->
+        <!--                 Title="{Binding Name}"  -->
+        <!--                 ImgBlurhashSource="{Binding ImgBlurhashSource}" -->
+        <!--                 Subtitle="{Binding ArtistNames}"  -->
+        <!--                 ImgSource="{Binding ImgSource}"/> -->
+        <!--         </DataTemplate> -->
+        <!--     </CollectionView.ItemTemplate> -->
+        <!-- </CollectionView> -->
     </Grid>
 </ContentPage>

@@ -22,7 +22,7 @@
         <Grid RowDefinitions="Auto, 42, 42"
               Margin="16, 8,0,0"
               HorizontalOptions="Fill">
-	        <Button
+	        <ImageButton
 		        Clicked="Button_Clicked"
 		        Grid.Row="0"
 		        Grid.Column="0"
@@ -30,7 +30,7 @@
 		        BackgroundColor="Transparent"
 		        HorizontalOptions="Fill"
 		        ZIndex="0">
-	        </Button>
+	        </ImageButton>
 	        
 	        <Border
 		        Grid.Column="0"

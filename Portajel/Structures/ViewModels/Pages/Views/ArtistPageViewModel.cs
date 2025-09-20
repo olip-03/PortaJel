@@ -32,7 +32,7 @@ public class ArtistPageViewModel: ArtistData, INotifyPropertyChanged
 
     }
     
-    public void Update(BaseData[] albums, ArtistData? data)
+    public void Update(AlbumData[] albums, ArtistData? data)
     {
         if (data != null)
         {

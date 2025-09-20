@@ -34,11 +34,11 @@ namespace Portajel.Connections.Services.Database
             Database.CreateTable<GenreData>();
 
             Connectors = new(
-                album: new DatabaseItemTemplate(Database, MediaType.Album),
-                artist: new DatabaseItemTemplate(Database, MediaType.Artist),
-                genre: new DatabaseItemTemplate(Database, MediaType.Genre),
-                playlist: new DatabaseItemTemplate(Database, MediaType.Playlist),
-                song: new DatabaseItemTemplate(Database, MediaType.Song)
+                album: DatabaseItemTemplate<AlbumData>.Create<AlbumData>(Database, MediaType.Album),
+                artist: DatabaseItemTemplate<ArtistData>.Create<ArtistData>(Database, MediaType.Artist),
+                genre: DatabaseItemTemplate<GenreData>.Create<GenreData>(Database, MediaType.Genre),
+                playlist: DatabaseItemTemplate<PlaylistData>.Create<PlaylistData>(Database, MediaType.Playlist),
+                song: DatabaseItemTemplate<SongData>.Create<SongData>(Database, MediaType.Song)
             );
         }
 
@@ -61,7 +61,7 @@ namespace Portajel.Connections.Services.Database
             var resultList = new List<BaseData>();
 
             // Iterate over each data connector
-            foreach (var connectorPair in Connectors.GetDataConnectors())
+            foreach (var connectorPair in Connectors)
             {
                 try
                 {

@@ -19,7 +19,7 @@ public partial class GenreListPage : ContentPage
 
         vlv.OnScrolled += Vlv_OnScrolled;
 
-        ImageService.Instance.SetPauseWork(true);
+        // ImageService.Instance.SetPauseWork(true);
     }
     private void Vlv_OnScrolled(object? sender, ScrolledEventArgs e)
     {

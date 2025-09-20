@@ -5,6 +5,7 @@ using CommunityToolkit.Maui.Core.Extensions;
 using Portajel.Connections.Database;
 using Portajel.Connections.Interfaces;
 using Portajel.Structures.ViewModels.Pages.Views;
+using SQLite;
 
 namespace Portajel.Pages.Views;
 
@@ -14,7 +15,7 @@ public partial class ArtistPage : ContentPage, IQueryAttributable
 	private readonly IServerConnector _server;
 	
 	private double _screenWidth;
-	ArtistPageViewModel _viewModel = new();
+	private ArtistPageViewModel _viewModel = new();
 	public ArtistPage(IDbConnector database, IServerConnector server)
 	{
 		_database = database;
@@ -90,18 +91,15 @@ public partial class ArtistPage : ContentPage, IQueryAttributable
 	{
 		try
 		{
-			var server = _server.Servers[_viewModel.ServerAddress];
-			var id = _viewModel.ServerId;
-
-			var artistTask = server.DataConnectors["Artist"].GetAsync(id);
-			var albumTask = server.DataConnectors["Album"].GetAllAsync(parentId: id);
-
-			await Task.WhenAll(artistTask, albumTask);
-
-			var artist = artistTask.Result.ToArtist();
-			var albums = albumTask.Result.OrderBy(s => s.DatePlayed).ToArray();
+			if (_database.Connectors.Album is TableQuery<AlbumData> albumTable)
+			{
+				var albums = albumTable.Where(a => a.ParentId == _viewModel.Id).ToArray();
+				_viewModel.Update(albums, null);
+			}
 			
-			_viewModel.Update(albums, artist);
+		    var upatedData = await Download();
+			
+			_viewModel.Update(upatedData.Item2, upatedData.Item1);
 			BindingContext = _viewModel;
 
 			// Todo: create insert or replace functions for database
@@ -123,7 +121,7 @@ public partial class ArtistPage : ContentPage, IQueryAttributable
 		}
 	}
 
-	private async Task<ObservableCollection<AlbumData>> Download()
+	private async Task<(ArtistData?, AlbumData[])> Download()
 	{
 		var server = _server.Servers[_viewModel.ServerAddress];
 		if (server != null)
@@ -133,10 +131,10 @@ public partial class ArtistPage : ContentPage, IQueryAttributable
 			var artistTask = server.DataConnectors["Artist"].GetAsync(id);
 			var albumTask = server.DataConnectors["Album"].GetAllAsync(parentId: id);
 			await Task.WhenAll(artistTask, albumTask);
-			
-			
+
+			return (artistTask.Result.ToArtist(), albumTask.Result.Cast<AlbumData>().ToArray());
 		}
-		return null;
+		return (null, []);
 	}
 
 	private async void AlbumButton_OnClicked(object? sender, EventArgs e)

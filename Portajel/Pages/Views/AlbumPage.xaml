@@ -170,7 +170,7 @@
                                                 <ColumnDefinition Width="Auto"/>
                                             </Grid.ColumnDefinitions>
                                             
-                                            <Button ZIndex="0" BackgroundColor="Transparent" Grid.ColumnSpan="3"></Button>
+                                            <ImageButton ZIndex="0" BackgroundColor="Transparent" Grid.ColumnSpan="3"></ImageButton>
                                             
                                             <Label Grid.Column="0" 
                                                    Margin="16, 0, 0, 0"

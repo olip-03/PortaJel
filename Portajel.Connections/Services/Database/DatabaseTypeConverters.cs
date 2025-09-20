@@ -30,6 +30,11 @@ public static class DatabaseTypeConverters
         }
         return query.Count();
     }
+
+    public static BaseData[] SearchTyped<T>(SQLiteConnection database, string query, int limit = 50) where T : BaseData, new()
+    {
+        return database.Table<T>().Where(d => d.Name.ToLower().Contains(query.ToLower())).Take(50).Cast<BaseData>().ToArray();
+    }
     
     public static bool DeleteTyped<T>(SQLiteConnection database, Guid id) where T : BaseData, new()
     {

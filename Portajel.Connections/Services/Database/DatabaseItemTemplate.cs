@@ -10,7 +10,8 @@ using MediaType = Portajel.Connections.Enum.MediaType;
 
 namespace Portajel.Connections.Services.Database;
 
-public class DatabaseItemTemplate: IDbItemConnector
+public class DatabaseItemTemplate<T> : TableQuery<T>, IDbItemConnector 
+    where T : BaseData, new()
 {
     private readonly SQLiteConnection _database;
     private readonly Type _dataType;
@@ -23,15 +24,28 @@ public class DatabaseItemTemplate: IDbItemConnector
         { MediaType.Playlist, typeof(PlaylistData) },
         { MediaType.Genre, typeof(GenreData) }
     };
+
+    public DatabaseItemTemplate(SQLiteConnection conn, MediaType mediaType) : base(conn)
+    {
+        _database = conn;
+        _dataType = typeof(T);
+        MediaType = mediaType;
+    }
     
+    public static DatabaseItemTemplate<TData> Create<TData>(SQLiteConnection conn, MediaType mediaType) 
+        where TData : BaseData, new()
+    {
+        return new DatabaseItemTemplate<TData>(conn, mediaType);
+    }
+
     public MediaType MediaType { get; set; }
 
-    public DatabaseItemTemplate(SQLiteConnection database, MediaType mediaType)
-    {
-        _database = database;
-        MediaType = mediaType;
-        _dataType = MediaTypeToDataType[mediaType];
-    }
+    // public DatabaseItemTemplate(SQLiteConnection database, MediaType mediaType)
+    // {
+    //     _database = database;
+    //     MediaType = mediaType;
+    //     _dataType = MediaTypeToDataType[mediaType];
+    // }
     
     public BaseData[] GetAll(
         int? limit = null, 
@@ -57,6 +71,14 @@ public class DatabaseItemTemplate: IDbItemConnector
             .GetMethod(nameof(DatabaseTypeConverters.GetTyped), BindingFlags.Public | BindingFlags.Static)!
             .MakeGenericMethod(_dataType)
             .Invoke(null, new object[] { _database, id })!;
+    }
+
+    public BaseData[] Search(string query, int limit = 50, CancellationToken cancellationToken = default)
+    {
+        return (BaseData[])typeof(DatabaseTypeConverters)
+            .GetMethod(nameof(DatabaseTypeConverters.SearchTyped), BindingFlags.Public | BindingFlags.Static)!
+            .MakeGenericMethod(_dataType)
+            .Invoke(null, new object[] { _database, query, limit })!;
     }
 
     public bool Contains(Guid id, CancellationToken cancellationToken = default)
