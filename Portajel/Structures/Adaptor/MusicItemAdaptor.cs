@@ -5,20 +5,22 @@ using Portajel.Connections.Structs;
 
 namespace Portajel.Structures.Adaptor
 { 
-    public class MusicItemAdaptor(IDbItemConnector database) : VirtualListViewAdapterBase<object, BaseData>
+    public class MusicItemAdaptor(IDbItemConnector database, bool favs, bool descendingOrder) : VirtualListViewAdapterBase<object, BaseData>
     {
         public override BaseData GetItem(int sectionIndex, int itemIndex)
         {
+            SortOrder sortOrder = descendingOrder ? SortOrder.Descending : SortOrder.Ascending;
             var result = database.GetAll(
                 limit: 1, 
+                getFavourite: favs,
                 startIndex: itemIndex, 
-                setSortOrder: SortOrder.Descending, 
+                setSortOrder: sortOrder, 
                 setSortTypes: ItemSortBy.Name).First();
             return result;
         }
         public override int GetNumberOfItemsInSection(int sectionIndex)
         {
-            return database.GetTotalCount();
+            return database.GetTotalCount(favs);
         }
     }
 

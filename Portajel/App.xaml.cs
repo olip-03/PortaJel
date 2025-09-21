@@ -15,8 +15,13 @@ namespace Portajel
     {
         public static INavigation MainNavigation { get; set; }
         public static IServiceProvider Services { get; set; }
+        
+        private IDbConnector _dbConnector;
+        
         public App(IServerConnector serverConnector, IDbConnector dbConnector, IServiceProvider services)
         {
+            _dbConnector = dbConnector;
+            
             Services = services;
             InitializeComponent();
             string mainDir = FileSystem.Current.AppDataDirectory;
@@ -59,7 +64,7 @@ namespace Portajel
         
         protected override Window CreateWindow(IActivationState? activationState)
         {
-            Window window = new Window(new AppShell());
+            Window window = new Window(new AppShell(_dbConnector));
             if (DeviceInfo.Platform == DevicePlatform.WinUI)
             {
                 window.TitleBar = new TitleBar

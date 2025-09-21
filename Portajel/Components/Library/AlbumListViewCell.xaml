@@ -13,6 +13,7 @@
 	SemanticProperties.Description="{Binding Name}"
 	SemanticProperties.HeadingLevel="Level3"
 	x:DataType="music:AlbumData">
+	
 	<vlv:VirtualViewCell.Resources>
 		<cnv:SubtitleTextConverter x:Key="TextConverter" />
         <cnv:ImageUrlConverter x:Key="ImageUrlConverter" />

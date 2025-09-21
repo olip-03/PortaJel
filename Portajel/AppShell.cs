@@ -12,6 +12,9 @@ using Portajel.Pages.Views;
 using Portajel.Structures.Functional;
 using System.Diagnostics;
 using System.Net.Http.Headers;
+using Portajel.Connections.Enum;
+using Portajel.Connections.Interfaces;
+using Portajel.Pages.Library;
 using ShellItem = Microsoft.Maui.Controls.ShellItem;
 
 namespace Portajel
@@ -25,8 +28,14 @@ namespace Portajel
         private StatusBarBehavior? statusBar = null;
 
         private HttpClient httpClient = new();
-
-        public AppShell()
+        
+        private readonly LibraryTemplate _playlistListPage;
+        private readonly LibraryTemplate _albumPage;
+        private readonly LibraryTemplate _artistPage;
+        private readonly LibraryTemplate _songPage;
+        private readonly LibraryTemplate _genrePage;
+        
+        public AppShell(IDbConnector database)
         {
             var app = Microsoft.Maui.Controls.Application.Current;
             if (app == null)
@@ -44,6 +53,12 @@ namespace Portajel
             Routing.RegisterRoute("album", typeof(AlbumPage));
             Routing.RegisterRoute("artist", typeof(ArtistPage));
 
+            _playlistListPage = new(database, MediaType.Playlist);
+            _albumPage = new(database, MediaType.Album);
+            _artistPage = new(database, MediaType.Artist);
+            _songPage = new(database, MediaType.Song);
+            _genrePage = new(database, MediaType.Genre);
+            
             app.RequestedThemeChanged += (s, a) =>
             {
                 UpdateTheme();
@@ -57,12 +72,11 @@ namespace Portajel
 
             CheckPermissions();
         }
-
+        
         private async void CheckPermissions()
         {
             PermissionStatus status = await Permissions.RequestAsync<Permissions.PostNotifications>();
         }
-
 
         private void UpdateTheme()
         {
@@ -131,6 +145,10 @@ namespace Portajel
             {
                 ContentTemplate = new DataTemplate(typeof(Pages.SearchPage))
             });
+            searchTab.Appearing += (sender, args) =>
+            {
+                Trace.WriteLine("Search page open");
+            };
 
             var libraryTab = new Tab
             {
@@ -140,33 +158,33 @@ namespace Portajel
             libraryTab.Items.Add(new ShellContent
             {
                 Title = "Playlists",
-                ContentTemplate = new DataTemplate(typeof(Pages.Library.PlaylistListPage))
+                Content = _playlistListPage
             });
             libraryTab.Items.Add(new ShellContent
             {
                 Title = "Albums",
-                ContentTemplate = new DataTemplate(typeof(Pages.Library.AlbumListPage))
+                Content = _albumPage
             });
             libraryTab.Items.Add(new ShellContent
             {
                 Title = "Artists",
-                ContentTemplate = new DataTemplate(typeof(Pages.Library.ArtistListPage))
+                Content = _artistPage
             });
             libraryTab.Items.Add(new ShellContent
             {
                 Title = "Songs",
-                ContentTemplate = new DataTemplate(typeof(Pages.Library.SongListPage))
+                Content = _songPage
             });
             libraryTab.Items.Add(new ShellContent
             {
                 Title = "Genres",
-                ContentTemplate = new DataTemplate(typeof(Pages.Library.GenreListPage))
+                Content = _genrePage
             });
 
             tabBar.Items.Add(homeTab);
             tabBar.Items.Add(searchTab);
             tabBar.Items.Add(libraryTab);
-            
+
             return tabBar;
         }
     }

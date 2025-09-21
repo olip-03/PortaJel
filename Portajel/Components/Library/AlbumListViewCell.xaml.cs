@@ -25,8 +25,12 @@ namespace Portajel.Components.Library
         public AlbumListViewCell()
         {
             InitializeComponent();
+            if (BindingContext == null)
+            {
+                // Start async function to GET data -> then populate cell 
+            }
         }
-
+        
         protected override void OnBindingContextChanged()
         {
             // you can also put cachedImage.Source = null; here to prevent showing old images occasionally

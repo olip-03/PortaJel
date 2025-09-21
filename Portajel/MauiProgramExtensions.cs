@@ -64,12 +64,6 @@ namespace Portajel
             mauiAppBuilder.Services.AddSingleton<ConnectionsPage>();
             mauiAppBuilder.Services.AddSingleton<DebugDatabase>();
             
-            mauiAppBuilder.Services.AddTransient<AlbumListPage>();
-            mauiAppBuilder.Services.AddTransient<ArtistListPage>();
-            mauiAppBuilder.Services.AddTransient<GenreListPage>();
-            mauiAppBuilder.Services.AddTransient<PlaylistListPage>();
-            mauiAppBuilder.Services.AddTransient<SongListPage>();
-            
             mauiAppBuilder.Services.AddSingleton<ServerConnectionView>();
             mauiAppBuilder.Services.AddSingleton<HomeSettings>();
             mauiAppBuilder.Services.AddTransient<AlbumPage>();
