@@ -7,12 +7,14 @@ public partial class ModalPlayer : ContentPage
 {
 	public EventHandler OnClose;
 	public MediaPlayerViewModel ViewModel = new();
+	
 	public ModalPlayer(MediaPlayerViewModel viewModel)
 	{
 		ViewModel = viewModel;
 		InitializeComponent();
 		BindingContext = ViewModel;
 	}
+	
 	private void CarouselView_OnCurrentItemChanged(object? sender, CurrentItemChangedEventArgs e)
 	{
 		if (sender is CarouselView carouselView)

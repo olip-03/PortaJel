@@ -38,7 +38,7 @@ namespace Portajel.Terminal
             bool completeSync = await Server.StartSyncAsync();
             
 #else
-            var summary = BenchmarkRunner.Run<DbBenchmark>();
+            var summary = BenchmarkRunner.Run<DbSpeedBenchmark>();
 #endif
         }
 
