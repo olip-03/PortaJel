@@ -12,8 +12,8 @@ namespace Portajel.Connections.Database
     public class AlbumData : BaseData
     {
         [PrimaryKey, AutoIncrement] public override Guid? Id { get; set; }
-        public string ArtistIdsJson { get; set; }
-        public string GenresJson { get; set; }
+        public string ArtistIdsJson { get; set; } = "[]";
+        public string GenresJson { get; set; } = "[]";
         public string ArtistNames { get; set; } = string.Empty;
         public override MediaType MediaType { get; set; } = MediaType.Album;
         public static AlbumData Empty { get; } = new();
@@ -22,11 +22,11 @@ namespace Portajel.Connections.Database
 
         public Guid[] GetArtistIds()
         {
-            return JsonConvert.DeserializeObject<Guid[]>(ArtistIdsJson);
+            return JsonConvert.DeserializeObject<Guid[]>(ArtistIdsJson) ?? [];
         }
         public Dictionary<string, string> GetGenres()
         {
-            return JsonConvert.DeserializeObject<Dictionary<string, string>>(GenresJson);
+            return JsonConvert.DeserializeObject<Dictionary<string, string>>(GenresJson) ?? [];
         }
     }
 }

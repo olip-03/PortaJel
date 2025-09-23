@@ -7,8 +7,8 @@ namespace Portajel.Structures.ViewModels.Pages.Library
 {
     public partial class DatabaseBindViewModel : ObservableObject
     {
-        public EventHandler OnDataRefresh;    
-        private IDbItemConnector _database;
+        public EventHandler? OnDataRefresh;    
+        private readonly IDbItemConnector _database;
         
         public DatabaseBindViewModel(IDbItemConnector database)
         {
@@ -16,13 +16,13 @@ namespace Portajel.Structures.ViewModels.Pages.Library
             Adapter = new MusicItemAdaptor(_database, false, false);
         }
         
-        public MusicItemAdaptor? Adapter { get; set; }
+        public MusicItemAdaptor? Adapter { get; private set; }
 
         [ObservableProperty]
-        private bool _filterFavourites = false;
+        private bool _filterFavourites;
         
         [ObservableProperty]
-        private bool _orderDescending = false;
+        private bool _orderDescending;
 
         [ObservableProperty]
         private string _favouriteIcon = "favourite_empty.png";
@@ -41,11 +41,11 @@ namespace Portajel.Structures.ViewModels.Pages.Library
             OrderIcon = value ? "arrow_downward.png" : "arrow_upward.png";
             ResetAdapter();
         }
-        
-        void ResetAdapter()
+
+        private void ResetAdapter()
         {
             Adapter = new MusicItemAdaptor(_database, FilterFavourites, OrderDescending);
-            OnDataRefresh.Invoke(null, EventArgs.Empty);
+            OnDataRefresh?.Invoke(null, EventArgs.Empty);
         }
 
         [RelayCommand]

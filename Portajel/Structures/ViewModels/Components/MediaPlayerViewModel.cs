@@ -1,11 +1,25 @@
 using Portajel.Connections.Database;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace Portajel.Structures.ViewModels.Components;
 
 public class MediaPlayerViewModel
 {
+    private ImageSource _playPauseIcon = "media_play.png";
+    public ImageSource PlayPauseIcon
+    {
+        get => _playPauseIcon;
+        set
+        {
+            if (_playPauseIcon != value)
+            {
+                _playPauseIcon = value;
+            }
+        }
+    }
+    
     public int QueuePosition { get; set; } = 0;
     public ObservableCollection<SongData> Queue { get; set; } = new();
     public ObservableSongData Current { get; set; } = new ObservableSongData(SongData.Empty);

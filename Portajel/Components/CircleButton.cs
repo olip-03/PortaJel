@@ -1,6 +1,4 @@
-using System.Windows.Input;
 using CommunityToolkit.Maui.Behaviors;
-using Microsoft.Maui.Controls;
 using Microsoft.Maui.Controls.Shapes;
 
 namespace Portajel.Components
@@ -38,7 +36,6 @@ namespace Portajel.Components
                 nameof(ImageSource),
                 typeof(ImageSource),
                 typeof(CircleButton),
-                default(ImageSource),
                 propertyChanged: OnImageSourceChanged);
         public ImageSource ImageSource
         {
@@ -46,37 +43,47 @@ namespace Portajel.Components
             set => SetValue(ImageSourceProperty, value);
         }
 
-        public static readonly BindableProperty BackgroundColorProperty =
+        public new static readonly BindableProperty BackgroundColorProperty =
             BindableProperty.Create(
                 nameof(BackgroundColor),
                 typeof(Color),
                 typeof(CircleButton),
-                Colors.Transparent,
-                propertyChanged: OnButtonBackgroundColorChanged);
-        public Color BackgroundColor
+                Colors.Transparent);
+        public new Color BackgroundColor
         {
             get => (Color)GetValue(BackgroundColorProperty);
             set => SetValue(BackgroundColorProperty, value);
         }
+        
         public static readonly BindableProperty ImageColorProperty =
             BindableProperty.Create(
                 nameof(ImageColor),
                 typeof(Color),
                 typeof(CircleButton),
-                Colors.White,
-                propertyChanged: OnImageColorChanged);
-
+                Colors.White);
         public Color ImageColor
         {
             get => (Color)GetValue(ImageColorProperty);
             set => SetValue(ImageColorProperty, value);
         }
         
-        public event EventHandler Clicked;
+        public static readonly BindableProperty TextProperty = 
+            BindableProperty.Create(
+                nameof(Text),
+                typeof(string),
+                typeof(CircleButton), propertyChanged: TextPropertyChanged);
 
-        private Border _border;
-        private ImageButton _button;
-        private Image _image;
+        public string Text
+        {
+            get => (string)GetValue(TextProperty);
+            set => SetValue(TextProperty, value);
+        }
+        
+        public event EventHandler? Clicked;
+
+        private readonly Border _border;
+        private readonly ImageButton _button;
+        private readonly Image _image;
 
         public CircleButton()
         {
@@ -106,20 +113,45 @@ namespace Portajel.Components
 
             var tintBehavior = (IconTintColorBehavior)_image.Behaviors[0];
             tintBehavior.SetBinding(IconTintColorBehavior.TintColorProperty, new Binding(nameof(ImageColor), source: this));
-
-            var grid = new Grid();
-            grid.Children.Add(_button);
-            grid.Children.Add(_image);
-
-            _border.Content = grid;
-            Content = _border;
-
+            Render();
+            
             // Bind the Button's BackgroundColor to the property
             _button.SetBinding(Button.BackgroundColorProperty, new Binding(nameof(BackgroundColor), source: this));
             _button.Clicked += OnButtonClicked;
             
             UpdateSize();
         }
+
+        public void Render()
+        {
+            var grid = new Grid();
+            grid.Children.Add(_button);
+
+            if (string.IsNullOrWhiteSpace(Text))
+            {
+                grid.Children.Add(_image);
+            }
+            else
+            {
+                var margin = 12;
+                HorizontalStackLayout stack = new();
+                Label text = new()
+                {
+                    VerticalTextAlignment = TextAlignment.Center,
+                    Margin = new Thickness(margin * 0.7, 0, margin, 0),
+                };
+                _image.Margin = new Thickness(margin, 0, 0, 0);
+                text.SetBinding(Label.TextProperty, new Binding(nameof(Text), source: this));
+                
+                stack.Children.Add(_image);
+                stack.Children.Add(text);
+                
+                grid.Children.Add(stack);
+            }
+            _border.Content = grid;    
+            Content = _border;
+        }
+        
         private static void OnSizeChanged(BindableObject bindable, object oldValue, object newValue)
         {
             if (bindable is CircleButton circleButton)
@@ -128,6 +160,15 @@ namespace Portajel.Components
                 circleButton.UpdateSize();
             }
         }
+        
+        private static void TextPropertyChanged(BindableObject bindable, object oldValue, object newValue)
+        {
+            if (bindable is CircleButton circleButton)
+            {
+                circleButton.Render();
+            }
+        }
+        
         private static void OnImageSourceChanged(BindableObject bindable, object oldValue, object newValue)
         {
             if (bindable is CircleButton circleButton && newValue is ImageSource newSource)
@@ -135,32 +176,21 @@ namespace Portajel.Components
                 circleButton._image.Source = newSource;
             }
         }
-        private static void OnButtonBackgroundColorChanged(BindableObject bindable, object oldValue, object newValue)
-        {
-            
-        }
-        private static void OnImageColorChanged(BindableObject bindable, object oldValue, object newValue)
-        {
-            if (bindable is CircleButton circleButton && newValue is string newSource)
-            {
-                
-            }
-        }
-        private void OnButtonClicked(object sender, EventArgs e)
+
+        private void OnButtonClicked(object? sender, EventArgs e)
         {
             Clicked?.Invoke(this, e);
         }
+        
         private void UpdateSize()
         {
-            WidthRequest = Size;
-            HeightRequest = Size;
+            _border.MinimumWidthRequest = Size;
+            _border.MinimumHeightRequest = Size;
             _image.WidthRequest = ImageSize;
             _image.HeightRequest = ImageSize;
-            if (_border?.StrokeShape is RoundRectangle roundRect)
-            {
-                roundRect.CornerRadius = new CornerRadius(Size / 2.0);
-                _border.InvalidateMeasure();
-            }
+            if (_border.StrokeShape is not RoundRectangle roundRect) return;
+            roundRect.CornerRadius = new CornerRadius(Size);
+            _border.InvalidateMeasure();
         }
     }
 }
