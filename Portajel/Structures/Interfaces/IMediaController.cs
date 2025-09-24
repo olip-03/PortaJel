@@ -14,4 +14,18 @@ namespace Portajel.Structures.Interfaces
         void Update();
         void Destroy();
     }
+
+    public interface IMediaEventSource
+    {
+        event EventHandler<InitializedEventArgs> Initialized;
+    }
+    
+    public class InitializedEventArgs(
+        IPlaybackController playback,
+        IQueueController queueController)
+        : EventArgs
+    {
+        public IPlaybackController playback { get; } = playback;
+        public IQueueController QueueController { get; } = queueController;
+    }
 }

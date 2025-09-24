@@ -15,16 +15,17 @@ namespace Portajel.Pages.Views
         private readonly IDbConnector _database;
         private readonly IServerConnector _server;
         private readonly IMediaController _mediaController;
-
+        private readonly IQueueController _queueController;
 
         private AlbumPageViewModel _viewModel = new();
 
         private bool _isPlaying;
-        public AlbumPage(IDbConnector database, IServerConnector server, IMediaController mediaController)
+        public AlbumPage(IDbConnector database, IServerConnector server, IMediaController mediaController, IQueueController queueController)
     	{
             _database = database;
             _server = server;
             _mediaController = mediaController;
+            _queueController = queueController;
             InitializeComponent();
             // GetNewAlbumData();
             Header.UpdateBackgroundOpacity(0);
@@ -164,8 +165,7 @@ namespace Portajel.Pages.Views
             if (swipeItem.BindingContext is not SongData song) return;
             try
             {
-                _mediaController.Queue.AddSong(song);
-
+                _queueController.AddSong(song);
                 var toast = Toast.Make($"{song.Name} added to queue");
                 await toast.Show();
             }

@@ -18,16 +18,21 @@ using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.Maui.ApplicationModel;
+using Portajel.Structures.Interfaces;
 using static Android.Graphics.ColorSpace;
 
 namespace PortaJel.Droid.Services
 {
     public class DroidServiceController: Java.Lang.Object
     {
-        public Portajel.Droid.Services.ServiceCollection AppServiceConnection { get; set; } = new();
+        public Portajel.Droid.Services.ServiceConnection AppServiceConnection { get; set; } = new();
         
+        public IPlaybackController PlaybackController => AppServiceConnection.Binder?.MediaController.Playback ?? throw new Exception("Binder is not set!");
+        public IQueueController QueueController => AppServiceConnection.Binder?.MediaController.Queue ?? throw new Exception("Binder is not set!");
+        public IMediaController MediaController => AppServiceConnection.Binder?.MediaController ?? throw new Exception("Binder is not set!");
         public DatabaseConnector Database => AppServiceConnection.Binder?.Database ?? throw new Exception("Binder is not set!");
         public ServerConnector Server => AppServiceConnection.Binder?.Server ?? throw new Exception("Binder is not set!");
+        
         public DroidServiceController()
         {
             Intent mediaServiceIntent = new Intent(Platform.AppContext, typeof(DroidService));

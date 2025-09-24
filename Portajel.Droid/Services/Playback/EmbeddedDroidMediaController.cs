@@ -16,12 +16,14 @@ using AndroidX.Media3.ExoPlayer.Source;
 using AndroidX.Media3.Extractor;
 using AndroidX.Media3.Extractor.Mp3;
 using FFImageLoading;
+using Portajel.Connections.Structs;
 using AudioAttributes = AndroidX.Media3.Common.AudioAttributes;
 
 namespace Portajel.Droid.Playback
 {
-    public class DroidExoplayerController : IMediaController
+    public class EmbeddedDroidMediaController : IMediaController, IMediaEventSource
     {
+        public event EventHandler<InitializedEventArgs>? Initialized;
         public IPlaybackController Playback => _droidPlaybackController ?? throw new NullReferenceException("Initialize must be called before services can be used.");
         public IQueueController Queue => _droidQueueController ?? throw new NullReferenceException("Initialize must be called before services can be used.");
         
@@ -32,8 +34,8 @@ namespace Portajel.Droid.Playback
         private IExoPlayer? _player;
         private IPlayerListener? _playerListener;
 
-        private DroidPlaybackController? _droidPlaybackController = new();
-        private DroidQueueController? _droidQueueController;
+        private EmbededDroidPlaybackController? _droidPlaybackController = new();
+        private EmbeddedDroidQueueController? _droidQueueController;
         
         public void Initialize()
         {
@@ -56,6 +58,8 @@ namespace Portajel.Droid.Playback
                     _notificationManager.CreateNotificationChannel(channel);
                 }
             }
+            
+            Initialized?.Invoke(this, new(Playback, Queue));
         }
 
         private void CreatePlayer(Context context)
@@ -100,5 +104,6 @@ namespace Portajel.Droid.Playback
         {
             _player.Stop();
         }
+
     }
 }

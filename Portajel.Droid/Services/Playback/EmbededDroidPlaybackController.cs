@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Portajel.Droid.Playback
 {
-    public class DroidPlaybackController : IPlaybackController
+    public class EmbededDroidPlaybackController : IPlaybackController
     {
         public bool IsPlaying => _isPlaying;
         public bool IsShuffle => _isShuffle;

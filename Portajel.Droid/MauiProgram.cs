@@ -25,7 +25,6 @@ using Xamarin.Android.Net;
 
 /// Reference for Android Tracing 
 /// https://github.com/dotnet/android/blob/main/Documentation/guides/tracing.md
-/// 
 
 namespace Portajel.Droid
 {
@@ -38,7 +37,8 @@ namespace Portajel.Droid
             var builder = MauiApp.CreateBuilder();
 
             builder.Services.AddSingleton<DroidServiceController>();
-
+            builder.Services.AddSingleton<DroidServiceBinder>();
+            
             builder.Services.AddSingleton<IDbConnector, DroidDbConnector>(serviceProvider => {
                 var service = serviceProvider.GetRequiredService<DroidServiceController>();
                 DroidDbConnector droidServer = new DroidDbConnector(service);
@@ -51,6 +51,24 @@ namespace Portajel.Droid
                 return droidServer;
             });
 
+            builder.Services.AddSingleton<IMediaController, DroidMediaController>(serviceProvider => {
+                var service = serviceProvider.GetRequiredService<DroidServiceController>();
+
+                DroidMediaController droidMediaController = new DroidMediaController(service);
+                return droidMediaController;
+            });
+            
+            builder.Services.AddSingleton<IQueueController, DroidQueueController>(serviceProvider => {
+                var service = serviceProvider.GetRequiredService<DroidServiceController>();
+                DroidQueueController droidQueueController = new DroidQueueController(service);
+                return droidQueueController;
+            });
+            
+            builder.UseSharedMauiApp().ConfigureMauiHandlers((handlers) =>
+            {
+                handlers.AddHandler(typeof(AppShell), typeof(NavShellRenderer));
+            });
+            
             // Enables modal edge-to-edge
             builder.ConfigureLifecycleEvents(lifecycleBuilder =>
             {
@@ -68,17 +86,6 @@ namespace Portajel.Droid
                         }
                     });
                 });
-            });
-
-            builder.Services.AddSingleton<IMediaController>(serviceProvider => {
-                var service = serviceProvider.GetRequiredService<DroidServiceController>();
-                DroidMediaController droidMediaController = new DroidMediaController(service);
-                return droidMediaController;
-            });
-            builder.Services.AddSingleton<DroidServiceBinder>();
-            builder.UseSharedMauiApp().ConfigureMauiHandlers((handlers) =>
-            {
-                handlers.AddHandler(typeof(AppShell), typeof(NavShellRenderer));
             });
 
             return builder.Build();

@@ -20,11 +20,19 @@ namespace Portajel.Components.Media
         private TimeSpan _elapsed;
 
         private MediaPlayerViewModel _viewModel = new();
-        private IMediaController _mediaController;
+        private IQueueController _queueController;
 
-        public MiniPlayer(IMediaController mediaController)
+        public MiniPlayer(IQueueController queueController, IEnumerable<SongData>? songs = null)
         {
-            _mediaController = mediaController;
+            _queueController = queueController;
+
+            if (songs != null)
+            {
+                foreach (var song in songs)
+                {
+                    _viewModel.Queue.Add(song);
+                }
+            }
 
             InitializeComponent();
             BindingContext = _viewModel;
@@ -36,38 +44,22 @@ namespace Portajel.Components.Media
             _timer.Elapsed += OnTimerElapsed;
             _timer.AutoReset = true;
             _timer.Start();
-            _ = InitializeEventsAsync();
+            _queueController.QueueChanged += Events_QueueChanged;
+
+            TranslationY += 64;
+            Animate();
+        }
+        
+        private async void Animate()
+        {
+            await Task.Delay(100);
+            await this.TranslateTo(0, 0, 700, Easing.CubicOut);
         }
 
         private void OnModalClose(object? sender, EventArgs e)
         {
             _viewModel.QueuePosition = modalPlayer.ViewModel.QueuePosition;
             SongCarousel.Position = _viewModel.QueuePosition;
-        }
-
-        private async Task InitializeEventsAsync()
-        {
-            bool success = false;
-            while (!success)
-            {
-                try
-                {
-                    if (_mediaController.Queue is IQueueEventSource events)
-                    {
-                        Trace.WriteLine("Miniplayer successfully registered events!!");
-                        events.QueueChanged += Events_QueueChanged;
-                        success = true; 
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Trace.WriteLine($"Error accessing DroidQueue: {ex.Message}");
-                }
-                if (!success)
-                {
-                    await Task.Delay(500);
-                }
-            }
         }
 
         private void Events_QueueChanged(object? sender, QueueChangedEventArgs e)

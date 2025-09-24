@@ -10,92 +10,80 @@ using System.Text;
 using System.Threading.Tasks;
 using AndroidX.Media3.Common;
 using AndroidX.Media3.ExoPlayer;
+using PortaJel.Droid.Services;
 
 namespace Portajel.Droid.Playback
 {
-    public class DroidQueueController(IExoPlayer player) : IQueueController, IQueueEventSource
+    public class DroidQueueController(DroidServiceController serviceController) : IQueueController
     {
-        public event EventHandler<QueueChangedEventArgs>? QueueChanged;
-
         public List<SongData> PreviousQueue { get; set; } = new();
         public List<SongData> UpNextList { get; set; } = new();
-
         public KeyValuePair<BaseData, SongData[]>? CurrentCollection { get; set; } = null;
-        public SongData CurrentSong => UpNextList[0];
-
+        public event EventHandler<QueueChangedEventArgs>? QueueChanged;
+        public new SongData CurrentSong => UpNextList[0];
         public void AddSong(SongData toAdd, int? index = null)
         {
-            if (index == null)
-            {
-                UpNextList.Add(toAdd);
-            }
-            else
-            {
-                UpNextList.Insert(index.Value, toAdd);
-            }
-
-            var changedArgs = new QueueChangedEventArgs(
-                QueueChangeKind.Add,
-                new[] { toAdd },
-                index ?? -1
-            );
-            QueueChanged?.Invoke(this, changedArgs);
+            if (serviceController.AppServiceConnection.Binder == null)
+                throw GetNullReferenceException();
+            serviceController.AppServiceConnection.Binder.MediaController.Queue.AddSong(toAdd, index);
+            QueueChangedEventArgs args = new(QueueChangeKind.Add, [toAdd]);
+            QueueChanged?.Invoke(this, args);
         }
 
         public void AddSong(SongData[] toAdd, int? index = null)
         {
-            if (index == null)
-            {
-                UpNextList.AddRange(toAdd);
-            }
-            else
-            {
-                UpNextList.InsertRange(index.Value, toAdd);
-            }
-
-            var changedArgs = new QueueChangedEventArgs(
-                QueueChangeKind.Add,
-                toAdd,
-                index ?? -1
-            );
-            QueueChanged?.Invoke(this, changedArgs);
+            if (serviceController.AppServiceConnection.Binder == null)
+                throw GetNullReferenceException();
+            serviceController.AppServiceConnection.Binder.MediaController.Queue.AddSong(toAdd, index);
+            QueueChangedEventArgs args = new(QueueChangeKind.Add, toAdd);
+            QueueChanged?.Invoke(this, args);
         }
 
         public void ClearCollection(bool removeFromQueue)
         {
-
+            if (serviceController.AppServiceConnection.Binder == null)
+                throw GetNullReferenceException();
+            serviceController.AppServiceConnection.Binder.MediaController.Queue.ClearCollection(removeFromQueue);
         }
 
         public void Previous()
         {
-            player.SeekToPrevious();
+            if (serviceController.AppServiceConnection.Binder == null)
+                throw GetNullReferenceException();
+            serviceController.AppServiceConnection.Binder.MediaController.Queue.Previous();
         }
 
         public void RemoveRange(int fromIndex, int toIndex)
         {
-
+            if (serviceController.AppServiceConnection.Binder == null)
+                throw GetNullReferenceException();
+            serviceController.AppServiceConnection.Binder.MediaController.Queue.RemoveRange(fromIndex, toIndex);
         }
 
         public void RemoveSong(int index)
         {
-
-        }
-
-        public void SetCollection(AlbumData collection, int fromIndex)
-        {
-
+            if (serviceController.AppServiceConnection.Binder == null)
+                throw GetNullReferenceException();
+            serviceController.AppServiceConnection.Binder.MediaController.Queue.RemoveSong(index);
         }
 
         public void Skip()
         {
-            player.SeekToNext();
+            if (serviceController.AppServiceConnection.Binder == null)
+                throw GetNullReferenceException();
+            serviceController.AppServiceConnection.Binder.MediaController.Queue.Skip();
         }
 
         public void SetCollection(BaseData collection, SongData[] collectionData, int fromIndex)
         {
-            CurrentCollection = new KeyValuePair<BaseData, SongData[]>(collection, collectionData);
-            player.SeekTo(fromIndex, 0);
-            // Todo: Tell the player where to start, and get it running from that point
+            if (serviceController.AppServiceConnection.Binder == null)
+                throw GetNullReferenceException();
+            serviceController.AppServiceConnection.Binder.MediaController.Queue.SetCollection(collection, collectionData, fromIndex);
+        }
+        
+        private NullReferenceException GetNullReferenceException()
+        {
+            return new NullReferenceException("Service not initalized! Check back later.");
         }
     }
 }

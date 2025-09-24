@@ -14,7 +14,9 @@ using System.Diagnostics;
 using System.Net.Http.Headers;
 using Portajel.Connections.Enum;
 using Portajel.Connections.Interfaces;
+using Portajel.Connections.Structs;
 using Portajel.Pages.Library;
+using Portajel.Structures.Interfaces;
 using ShellItem = Microsoft.Maui.Controls.ShellItem;
 
 namespace Portajel
@@ -34,9 +36,12 @@ namespace Portajel
         private readonly LibraryTemplate _artistPage;
         private readonly LibraryTemplate _songPage;
         private readonly LibraryTemplate _genrePage;
+
+        private readonly IMediaController _mediaController;
         
-        public AppShell(IDbConnector database)
+        public AppShell(IDbConnector database, IMediaController mediaController)
         {
+            _mediaController = mediaController;
             var app = Microsoft.Maui.Controls.Application.Current;
             if (app == null)
                 throw new Exception("App cannot be null");
@@ -71,6 +76,32 @@ namespace Portajel
             Items.Add(_bottomNavBar);
 
             CheckPermissions();
+            _ = Initialize();
+        }
+
+        private async Task Initialize()
+        {
+            bool success = false;
+            while (!success)
+            {
+                try
+                {
+                    _mediaController.Initialize();
+                    if (_mediaController.Queue is IQueueEventSource events)
+                    {
+                        Trace.WriteLine("Miniplayer successfully registered events!!");
+                        success = true; 
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Trace.WriteLine($"Error accessing DroidQueue: {ex.Message}");
+                }
+                if (!success)
+                {
+                    await Task.Delay(500);
+                }
+            }
         }
         
         private async void CheckPermissions()

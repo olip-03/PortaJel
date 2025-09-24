@@ -43,7 +43,7 @@ namespace Portajel.Droid.Services
         private bool isSyncRunning = false;
 
         public DroidServiceBinder Binder { get; set; } = default!;
-        public DroidExoplayerController MediaController { get; set; } = new();
+        public EmbeddedDroidMediaController MediaController { get; set; } = new();
         public DatabaseConnector database { get; private set; } = null!;
         public ServerConnector serverConnector { get; private set; } = null!;
 
@@ -64,8 +64,6 @@ namespace Portajel.Droid.Services
         [return: GeneratedEnum]
         public override StartCommandResult OnStartCommand(Intent? intent, [GeneratedEnum] StartCommandFlags flags, int startId)
         {
-            MediaController.Initialize();
-            
             var action = intent?.Action;
             if (action == "ACTION_NOTIFICATION_DISMISSED")
             {

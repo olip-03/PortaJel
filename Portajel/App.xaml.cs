@@ -8,6 +8,7 @@ using Portajel.Connections.Interfaces;
 using Portajel.Structures.Functional;
 using System.Diagnostics;
 using System.Net.Http.Headers;
+using Portajel.Structures.Interfaces;
 
 namespace Portajel
 {
@@ -17,10 +18,12 @@ namespace Portajel
         public static IServiceProvider Services { get; set; }
         
         private IDbConnector _dbConnector;
+        private IMediaController _mediaController;
         
-        public App(IServerConnector serverConnector, IDbConnector dbConnector, IServiceProvider services)
+        public App(IServerConnector serverConnector, IDbConnector dbConnector, IServiceProvider services, IMediaController mediaController)
         {
             _dbConnector = dbConnector;
+            _mediaController = mediaController;
             
             Services = services;
             InitializeComponent();
@@ -64,7 +67,7 @@ namespace Portajel
         
         protected override Window CreateWindow(IActivationState? activationState)
         {
-            Window window = new Window(new AppShell(_dbConnector));
+            Window window = new Window(new AppShell(_dbConnector, _mediaController));
             if (DeviceInfo.Platform == DevicePlatform.WinUI)
             {
                 window.TitleBar = new TitleBar

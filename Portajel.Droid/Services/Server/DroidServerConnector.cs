@@ -8,10 +8,10 @@ namespace Portajel.Services
 {
     public class DroidServerConnector : IServerConnector
     {
-        private Droid.Services.ServiceCollection _serviceConnection = null!;
-        public DroidServerConnector(DroidServiceController serverConnectior)
+        private Droid.Services.ServiceConnection _serviceConnection = null!;
+        public DroidServerConnector(DroidServiceController serverConnection)
         {
-            _serviceConnection = serverConnectior.AppServiceConnection;
+            _serviceConnection = serverConnection.AppServiceConnection;
         }
         public MediaServerList Servers
         {

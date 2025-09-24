@@ -185,7 +185,7 @@ namespace Portajel.Components
         private void UpdateSize()
         {
             _border.MinimumWidthRequest = Size;
-            _border.MinimumHeightRequest = Size;
+            _border.HeightRequest = Size;
             _image.WidthRequest = ImageSize;
             _image.HeightRequest = ImageSize;
             if (_border.StrokeShape is not RoundRectangle roundRect) return;

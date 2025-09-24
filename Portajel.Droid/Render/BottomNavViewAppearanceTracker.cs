@@ -19,29 +19,71 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Portajel.Droid.Playback;
+using Portajel.Droid.Playback.Events;
+using Portajel.Services.Playback;
 using View = Android.Views.View;
 
 namespace Portajel.Droid.Render
 {
     public class BottomNavViewAppearanceTracker : ShellBottomNavViewAppearanceTracker
     {
+        private readonly IMediaController mediaController;
+        private readonly IQueueController queueController;
         private readonly IShellContext shellContext;
-        private readonly MiniPlayer miniPlayer;
+        private MiniPlayer miniPlayer;
+        private BottomNavigationView bottomNavView;
+        private IQueueEventSource queueEvents;
 
+        private bool initialized = false;
+        
         public BottomNavViewAppearanceTracker(IShellContext shellContext, 
                                               ShellItem shellItem)
             : base(shellContext, shellItem)
         {
+            // todo: this method gets called a lot!! Try and clean it up a bit 
             this.shellContext = shellContext;
+            
+            queueController = Application.Current?.Handler.GetServiceProvider().GetService<IQueueController>(); ;
+            mediaController = Application.Current?.Handler.GetServiceProvider().GetService<IMediaController>(); ;
 
-            var mediaService = Application.Current?.Handler.GetServiceProvider().GetService<IMediaController>(); ;
-            miniPlayer = new(mediaService);
+            if (mediaController is DroidMediaController droidController)
+            {
+                if (droidController is IMediaEventSource droidMediaEvents)
+                {
+                    droidMediaEvents.Initialized += MediaEventsOnInitialized;
+                }
+            }
         }
-        
+
+        private void MediaEventsOnInitialized(object? sender, InitializedEventArgs e)
+        {
+            queueController.QueueChanged += QueueControllerOnQueueChanged ;
+        }
+
+        private void QueueControllerOnQueueChanged(object? sender, Connections.Structs.QueueChangedEventArgs e)
+        {
+            if (e.Songs.Any())
+            {
+                if (initialized)
+                {
+                    return;
+                }
+                InsertPlayer(bottomNavView);
+                miniPlayer = new(queueController, e.Songs.ToArray());
+                initialized = true;
+            }
+            else
+            {
+                // TODO: Remove child :3
+            }
+        }
+
         public override void SetAppearance(
             BottomNavigationView bottomView, 
             IShellAppearanceElement appearance)
         {
+            bottomNavView = bottomView;
             base.SetAppearance(bottomView, appearance);
 
             UpdateStyle(bottomView);
@@ -73,13 +115,13 @@ namespace Portajel.Droid.Render
             var appHandler = Application.Current?.Handler;
             string exception = "Can't get MiniPlayer without Application.Current.Handler.MauiContext";
             return miniPlayer.ToPlatformEmbedded(appHandler?.MauiContext ?? throw new Exception(exception));
-        } 
+        }
 
         private void UpdateBottomView(BottomNavigationView bottomView)
         {
             if (bottomView.Resources == null)
                 return;
-            var nbId = bottomView.Resources.GetIdentifier("navigation_bar_height", 
+            var nbId = bottomView.Resources.GetIdentifier("navigation_bar_height",
                 "dimen", "android");
             var navBar = bottomView.Resources.GetDimensionPixelSize(nbId);
             var layoutParams = bottomView.LayoutParameters;
@@ -90,25 +132,29 @@ namespace Portajel.Droid.Render
                 marginLayoutParams.RightMargin = 0;
                 bottomView.LayoutParameters = layoutParams;
             }
-            
+        }
+
+        private void InsertPlayer(BottomNavigationView bottomView)
+        {
             bottomView.Post(() =>
             {
                 if (!(bottomView.Parent is ViewGroup parent))
                     return;
-                
+
                 for (int i = 0; i < parent.ChildCount; i++)
                 {
                     var child = parent.GetChildAt(i);
                     if (child?.Tag != null && child.Tag.ToString() == "MiniPlayer")
-                        return; 
+                        return;
                 }
-                
+
                 var native = RefreshMiniplayer();
                 native.Tag = "MiniPlayer";
                 native.Background = bottomView.Background;
                 
                 int bottomViewIndex = parent.IndexOfChild(bottomView);
                 parent.AddView(native, bottomViewIndex);
+                    
             });
         }
     }

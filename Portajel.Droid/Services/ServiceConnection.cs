@@ -15,12 +15,12 @@ using System.Threading.Tasks;
 
 namespace Portajel.Droid.Services
 {
-    public class ServiceCollection : Java.Lang.Object, IServiceConnection
+    public class ServiceConnection : Java.Lang.Object, IServiceConnection
     {
-        static readonly string? TAG = typeof(ServiceCollection).FullName;
+        static readonly string? TAG = typeof(ServiceConnection).FullName;
         public bool IsConnected { get; private set; } = false;
         public DroidServiceBinder? Binder { get; private set; }
-        public ServiceCollection()
+        public ServiceConnection()
         {
             IsConnected = false;
             Binder = null;

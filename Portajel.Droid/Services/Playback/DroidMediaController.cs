@@ -8,37 +8,30 @@ using System.Threading.Tasks;
 
 namespace Portajel.Services.Playback
 {
-    public class DroidMediaController : IMediaController
+    public class DroidMediaController(DroidServiceController serviceController) : IMediaController, IMediaEventSource
     {
-        private Droid.Services.ServiceCollection _serviceConnection = null!;
-        public DroidMediaController(DroidServiceController serverConnectior)
-        {
-            _serviceConnection = serverConnectior.AppServiceConnection;
-        }
-
-        public IPlaybackController Playback => _serviceConnection?.Binder?.MediaController.Playback ?? throw GetNullReferenceException();
-        public IQueueController Queue => _serviceConnection?.Binder?.MediaController.Queue ?? throw GetNullReferenceException();
-
+        private readonly Droid.Services.ServiceConnection _serviceController = serviceController.AppServiceConnection;
+        public event EventHandler<InitializedEventArgs>? Initialized;
+        public IPlaybackController Playback => _serviceController?.Binder?.MediaController.Playback ?? throw GetNullReferenceException();
+        public IQueueController Queue => _serviceController?.Binder?.MediaController.Queue ?? throw GetNullReferenceException();
         public void Destroy()
         {
-            if (_serviceConnection.Binder == null)
+            if (_serviceController.Binder == null)
                 throw GetNullReferenceException();
         }
-
         public void Initialize()
         {
-            if (_serviceConnection.Binder == null)
+            if (_serviceController.Binder == null)
                 throw GetNullReferenceException();
-            _serviceConnection.Binder.MediaController.Initialize();
+            _serviceController.Binder.MediaController.Initialize();
+            Initialized?.Invoke(this, new(Playback, Queue));
         }
-
         public void Update()
         {
-            if (_serviceConnection.Binder == null)
+            if (_serviceController.Binder == null)
                 throw GetNullReferenceException();
-            _serviceConnection.Binder.MediaController.Update();
+            _serviceController.Binder.MediaController.Update();
         }
-
         private NullReferenceException GetNullReferenceException()
         {
             return new NullReferenceException("Service not initalized! Check back later.");

@@ -12,6 +12,7 @@ namespace Portajel.Structures.Interfaces
 {
     public interface IQueueController
     {
+        public event EventHandler<QueueChangedEventArgs>? QueueChanged;
         // Get Current Song
         public SongData CurrentSong { get; }
 
@@ -21,30 +22,30 @@ namespace Portajel.Structures.Interfaces
         /// <summary>
         /// Function to skip the song, to the next
         /// </summary>
-        void Skip();
+        public abstract void Skip();
 
         // Function to skip back to the prior song
-        void Previous();
+        public abstract void Previous();
 
         // Function that allows you to add a song to the queue
-        void AddSong(SongData toAdd, int? index = null);
+        public abstract void AddSong(SongData toAdd, int? index = null);
 
         // Function that allows you to add several songs to the queue
-        void AddSong(SongData[] toAdd, int? index = null);
+        public abstract void AddSong(SongData[] toAdd, int? index = null);
 
         // Function to remove songs
-        void RemoveSong(int index);
+        public abstract void RemoveSong(int index);
 
         // Function to remove several songs
-        void RemoveRange(int fromIndex, int toIndex);
+        public abstract void RemoveRange(int fromIndex, int toIndex);
 
         // Function to set the playing collection. Accepts BaseData as a playlist or 
         // an Album
-        void SetCollection(BaseData collection, SongData[] collectionData, int fromIndex);
+        public abstract void SetCollection(BaseData collection, SongData[] collectionData, int fromIndex);
 
         // Removes the current playing collection. If removeFromQueue is true
         // songs from collection are removed. If false, tracks up next in the playing 
         // collection are first up in queue.
-        void ClearCollection(bool removeFromQueue);
+        public abstract void ClearCollection(bool removeFromQueue);
     }
 }
