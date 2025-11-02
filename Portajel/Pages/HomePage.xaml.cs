@@ -7,15 +7,15 @@ using Portajel.Components.FeedView;
 using Portajel.Connections.Interfaces;
 using Portajel.Pages.Settings;
 using Portajel.Structures.ViewModels.Pages;
-
+using Portajel.Connections;
 namespace Portajel.Pages
 {
     public partial class HomePage : ContentPage
     {
-        readonly IServerConnector _server;
+        readonly ServerConnector _server;
         readonly IDbConnector _database;
 
-        public HomePage(IServerConnector server, IDbConnector database)
+        public HomePage(ServerConnector server, IDbConnector database)
         {
             InitializeComponent();
 

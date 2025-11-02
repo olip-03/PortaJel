@@ -3,6 +3,7 @@ using Portajel.Connections.Enum;
 using Portajel.Connections.Interfaces;
 using Portajel.Connections.Structs;
 using MetaBrainz.MusicBrainz;
+using Portajel.Connections.Services.Sync;
 
 namespace Portajel.Connections.Services.MusicBrainz;
 

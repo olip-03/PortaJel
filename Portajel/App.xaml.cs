@@ -20,7 +20,7 @@ namespace Portajel
         private IDbConnector _dbConnector;
         private IMediaController _mediaController;
         
-        public App(IServerConnector serverConnector, IDbConnector dbConnector, IServiceProvider services, IMediaController mediaController)
+        public App(ServerConnector serverConnector, IDbConnector dbConnector, IServiceProvider services, IMediaController mediaController)
         {
             _dbConnector = dbConnector;
             _mediaController = mediaController;
@@ -36,7 +36,7 @@ namespace Portajel
             //CheckPermissions();
         }
 
-        private void StartupAsync(IServerConnector serverConnector, IDbConnector dbConnector)
+        private void StartupAsync(ServerConnector serverConnector, IDbConnector dbConnector)
         {
             //IConfiguration imgConfig = new Configuration();
             //imgConfig.DecodingMaxParallelTasks = 4; 

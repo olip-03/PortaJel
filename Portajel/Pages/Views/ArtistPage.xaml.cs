@@ -6,17 +6,17 @@ using Portajel.Connections.Database;
 using Portajel.Connections.Interfaces;
 using Portajel.Structures.ViewModels.Pages.Views;
 using SQLite;
-
+using Portajel.Connections;
 namespace Portajel.Pages.Views;
 
 public partial class ArtistPage : ContentPage, IQueryAttributable
 {
 	private readonly IDbConnector _database;
-	private readonly IServerConnector _server;
+	private readonly ServerConnector _server;
 	
 	private double _screenWidth;
 	private ArtistPageViewModel _viewModel = new();
-	public ArtistPage(IDbConnector database, IServerConnector server)
+	public ArtistPage(IDbConnector database, ServerConnector server)
 	{
 		_database = database;
 		_server = server;
@@ -108,7 +108,7 @@ public partial class ArtistPage : ContentPage, IQueryAttributable
 		}
 		catch (HttpRequestException authEx)
 		{
-			var server = _server.Servers[_viewModel.ServerAddress];
+			var server = _server[_viewModel.ServerAddress];
 			if (authEx.StatusCode == HttpStatusCode.Unauthorized && retry && server != null)
 			{
 				await server.AuthenticateAsync();
@@ -123,7 +123,7 @@ public partial class ArtistPage : ContentPage, IQueryAttributable
 
 	private async Task<(ArtistData?, AlbumData[])> Download()
 	{
-		var server = _server.Servers[_viewModel.ServerAddress];
+		var server = _server[_viewModel.ServerAddress];
 		if (server != null)
 		{
 			var id = _viewModel.ServerId;

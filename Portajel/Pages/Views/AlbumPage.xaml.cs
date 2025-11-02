@@ -7,20 +7,20 @@ using Portajel.Structures.Interfaces;
 using Portajel.Structures.ViewModels.Pages.Views;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
-
+using Portajel.Connections;
 namespace Portajel.Pages.Views
 {
     public partial class AlbumPage : ContentPage, IQueryAttributable
     {
         private readonly IDbConnector _database;
-        private readonly IServerConnector _server;
+        private readonly ServerConnector _server;
         private readonly IMediaController _mediaController;
         private readonly IQueueController _queueController;
 
         private AlbumPageViewModel _viewModel = new();
 
         private bool _isPlaying;
-        public AlbumPage(IDbConnector database, IServerConnector server, IMediaController mediaController, IQueueController queueController)
+        public AlbumPage(IDbConnector database, ServerConnector server, IMediaController mediaController, IQueueController queueController)
     	{
             _database = database;
             _server = server;
@@ -65,7 +65,7 @@ namespace Portajel.Pages.Views
                 _viewModel.Update(localSongs, null);
                 Animate();
                 
-                var server = _server.Servers[_viewModel.ServerAddress];
+                var server = _server[_viewModel.ServerAddress];
                 if (server != null)
                 {
                     var id = _viewModel.ServerId;

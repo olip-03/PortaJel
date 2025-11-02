@@ -13,7 +13,7 @@ public sealed class ServerConnectorFeeds: ConnectorFeeds
     public override void Refresh()
     {
         Clear();
-        foreach (var server in _serverConnector.Servers)
+        foreach (var server in _serverConnector)
         {
             if(server.Feeds == null) continue;
             foreach (var feed in server.Feeds)

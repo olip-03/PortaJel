@@ -13,6 +13,7 @@ using Portajel.Connections.Services.Database;
 using Portajel.Connections.Services.Jellyfin.Dto;
 using Portajel.Terminal.Benchmark;
 using Portajel.Terminal.Struct;
+using Portajel.Connections.Services.Sync;
 
 namespace Portajel.Terminal
 {
@@ -22,7 +23,8 @@ namespace Portajel.Terminal
         public static string DbDataPath;
 
         public static DatabaseConnector Database;
-        public static ServerConnector Server = new();
+        public static ServerConnector Servers = new();
+        public static SyncController syncController;
 
         private static CancellationTokenSource _refreshCancelToken = new();
         private static Stack<IView> _view = new();
@@ -31,14 +33,16 @@ namespace Portajel.Terminal
 
         static async Task Main(string[] args)
         {
-            #if DEBUG
+#if DEBUG
+
             DbBenchmark benchmark = new();
             benchmark.Setup();
+            syncController = new(Database);
 
-            bool completeSync = await Server.StartSyncAsync();
+            await syncController.Start(Servers);
             
 #else
-            var summary = BenchmarkRunner.Run<DbSpeedBenchmark>();
+            var summary = BenchmarkRunner.Run<DbBenchmark>();
 #endif
         }
 
@@ -54,7 +58,7 @@ namespace Portajel.Terminal
             
             Database = new(DbDataPath);
             
-            _view.Push(new MainView(Server));
+            _view.Push(new MainView(Servers));
 
             StartRefreshCoroutine(200);
             while (true)

@@ -45,7 +45,7 @@ namespace Portajel.Droid
                 return droidServer;
             });
 
-            builder.Services.AddSingleton<IServerConnector, DroidServerConnector>(serviceProvider => {
+            builder.Services.AddSingleton<ServerConnector, DroidServerConnector>(serviceProvider => {
                 var service = serviceProvider.GetRequiredService<DroidServiceController>();
                 DroidServerConnector droidServer = new DroidServerConnector(service);
                 return droidServer;

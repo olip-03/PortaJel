@@ -1,6 +1,7 @@
 using Jellyfin.Sdk.Generated.Models;
 using Portajel.Connections.Enum;
 using Portajel.Connections.Interfaces;
+using Portajel.Connections.Services.Sync;
 using Portajel.Connections.Structs;
 using SQLite;
 using MediaType = Portajel.Connections.Enum.MediaType;

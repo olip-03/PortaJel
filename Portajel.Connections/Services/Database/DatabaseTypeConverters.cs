@@ -1,6 +1,7 @@
 using Jellyfin.Sdk.Generated.Models;
 using Portajel.Connections.Structs;
 using SQLite;
+using System.Linq;
 
 namespace Portajel.Connections.Database;
 
@@ -27,6 +28,10 @@ public static class DatabaseTypeConverters
         if (getFavourite.HasValue)
         {
             query = query.Where(item => item.IsFavourite == getFavourite.Value);
+        }
+        if(query.TryGetNonEnumeratedCount(out int count))
+        {
+            return count;
         }
         return query.Count();
     }

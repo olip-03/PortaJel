@@ -1,12 +1,12 @@
 using Portajel.Connections.Interfaces;
 using Portajel.Connections.Services;
-
+using Portajel.Connections;
 namespace Portajel.Components;
 
 public class MusicFeedView : Grid
 {
-    private IServerConnector _server;
-    public MusicFeedView(IServerConnector server)
+    private ServerConnector _server;
+    public MusicFeedView(ServerConnector server)
     {
         _server = server;
         BuildUI();

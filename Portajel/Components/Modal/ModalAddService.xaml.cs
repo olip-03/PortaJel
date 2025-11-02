@@ -13,11 +13,11 @@ namespace Portajel.Components.Modal;
 
 public partial class ModalAddServer : ContentPage
 {
-    private IServerConnector _serverConnector;
+    private ServerConnector _serverConnector;
     private IMediaServerConnector _server;
     private ObservableCollection<ConnectorPropertyValue> ConnectionItems { get; set; } = new();
     public Action<IMediaServerConnector> OnLoginSuccess { get; set; }
-    public ModalAddServer(IServerConnector primaryConnector, IMediaServerConnector server)
+    public ModalAddServer(ServerConnector primaryConnector, IMediaServerConnector server)
     {
         _serverConnector  = primaryConnector;
         _server = server;
@@ -52,7 +52,7 @@ public partial class ModalAddServer : ContentPage
         AuthStatusInfo statusInfo = await _server.AuthenticateAsync();
         if (statusInfo.State == AuthState.Success )
         {
-            _serverConnector.AddServer(_server);
+            _serverConnector.Add(_server);
             _serverConnector.Feeds.Refresh();
             await SaveHelper.SaveData(_serverConnector);
             await Navigation.PopModalAsync();

@@ -7,11 +7,11 @@ namespace Portajel.Pages.Settings;
 
 public partial class SettingsPage : ContentPage
 {
-    private IServerConnector _serverConnector;
+    private ServerConnector _serverConnector;
     private IDbConnector _dbConnector;
     
     private SettingsPageViewModel _viewModel = new();
-    public SettingsPage(IServerConnector serverConnector, IDbConnector dbConnector)
+    public SettingsPage(ServerConnector serverConnector, IDbConnector dbConnector)
 	{
         _serverConnector = serverConnector;
         _dbConnector = dbConnector;

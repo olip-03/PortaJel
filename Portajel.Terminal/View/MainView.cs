@@ -55,8 +55,8 @@ namespace Portajel.Terminal.View
         {
             Task.Run(async () =>
             {
-                await Program.Server.AuthenticateAsync();
-                await Program.Server.StartSyncAsync();
+                await Program.Servers.AuthenticateAsync();
+                await Program.Servers.StartSyncAsync();
             });
         }
         
@@ -64,9 +64,9 @@ namespace Portajel.Terminal.View
         {
             List<string> status = new();
 
-            if (_server.Servers.Any())
+            if (_server.Any())
             {
-                foreach (var srv in _server.Servers)
+                foreach (var srv in _server)
                 {
                     switch (srv.AuthStatus.State)
                     {

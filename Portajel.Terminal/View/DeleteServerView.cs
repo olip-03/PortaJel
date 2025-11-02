@@ -24,7 +24,7 @@ public class DeleteServerView: IView
         get
         {
             Dictionary<string, Action> toReturn = new ();
-            foreach (var item in Program.Server.Servers)
+            foreach (var item in Program.Servers)
             {
                 toReturn.Add(item.Name, () => RemoveServer(item));
             }
@@ -35,6 +35,6 @@ public class DeleteServerView: IView
     public int Selected { get; set; } = 0;
     private void RemoveServer(IMediaServerConnector srvAddr)
     {
-        Program.Server.RemoveServer(srvAddr);
+        Program.Servers.Remove(srvAddr);
     }
 }

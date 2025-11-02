@@ -1,15 +1,15 @@
 using System.Diagnostics;
 using Portajel.Connections.Interfaces;
-
+using Portajel.Connections;
 namespace Portajel.Pages.Settings.Debug;
 
 public partial class DebugDatabase : ContentPage, IDisposable
 {
     private PeriodicTimer _timer;
     private CancellationTokenSource _cancellationTokenSource;
-    private IServerConnector _server = default!;
+    private ServerConnector _server = default!;
     private IDbConnector _database = default!;
-    public DebugDatabase(IServerConnector serverConnector, IDbConnector dbConnector)
+    public DebugDatabase(ServerConnector serverConnector, IDbConnector dbConnector)
     {
         _server = serverConnector;
         _database = dbConnector;
@@ -63,7 +63,7 @@ public partial class DebugDatabase : ContentPage, IDisposable
         {
             string combination = "";
 
-            foreach (var server in _server.Servers)
+            foreach (var server in _server)
             {
                 foreach (var item in server.Properties)
                 {

@@ -8,17 +8,18 @@ using Portajel.Connections.Interfaces;
 using Portajel.Connections.Structs;
 using Portajel.Structures.Functional;
 using Portajel.Structures.ViewModels.Settings;
-
+using Portajel.Connections;
+using Portajel.Connections;
 namespace Portajel.Pages.Settings;
 
 public partial class HomeSettings : ContentPage
 {
-    private IServerConnector _server;
+    private ServerConnector _server;
     private IDbConnector _database;
 
     private HomeSettingsViewModel _viewModel = new();
     
-    public HomeSettings(IServerConnector server, IDbConnector database)
+    public HomeSettings(ServerConnector server, IDbConnector database)
     {
         _server = server;
         _database = database;
@@ -41,7 +42,7 @@ public partial class HomeSettings : ContentPage
     private void UpdateList()
     {
         _viewModel.Feeds.Clear();
-        foreach (var srv in _server.Servers)
+        foreach (var srv in _server)
         {
             foreach (var feed in srv.Feeds)
             {

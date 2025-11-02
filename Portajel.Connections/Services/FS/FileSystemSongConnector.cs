@@ -6,6 +6,7 @@ using SQLite;
 using Portajel.Connections.Structs;
 using Portajel.Connections.Database;
 using MediaType = Portajel.Connections.Enum.MediaType;
+using Portajel.Connections.Services.Sync;
 
 namespace Portajel.Connections.Services.FS;
 

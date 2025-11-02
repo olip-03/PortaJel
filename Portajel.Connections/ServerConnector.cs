@@ -7,20 +7,36 @@ using Portajel.Connections.Structs;
 namespace Portajel.Connections;
 
 //  https://media.olisshittyserver.xyz/api-docs/swagger/index.html
-public class ServerConnector : IServerConnector
+public class ServerConnector : List<IMediaServerConnector>
 {
-    public MediaServerList Servers { get; set; } = [];
     public ConnectorFeeds? Feeds { get; }
     public ConnectorProperties Properties { get; set; } = [];
-    public List<Action<IMediaServerConnector>> AddServerActions { get; set; } = new();
+    public EventHandler<IMediaServerConnector>? OnAdd { get; set; }
+    public IMediaServerConnector? this[string name] => this.FirstOrDefault(s => s.GetAddress() == name);
+
     public ServerConnector()
     {
         Feeds  = new ServerConnectorFeeds(this);
     }
+
+    public new void Add(IMediaServerConnector server)
+    {
+        base.Add(server);
+        OnAdd?.Invoke(this, server);
+    }
+
+    public void Remove(string address)
+    {
+        var srv = this.FirstOrDefault(s => s.GetAddress() == address);
+        if (srv != null)
+        {
+            this.Remove(srv);
+        }
+    }
     public async Task<AuthStatusInfo> AuthenticateAsync(CancellationToken cancellationToken = default)
     {
         int failed = 0;
-        var tasks = Servers.Select(server => Task.Run(() =>
+        var tasks = this.Select(server => Task.Run(() =>
             {
                 try
                 {
@@ -62,7 +78,7 @@ public class ServerConnector : IServerConnector
     {
         int failed = 0;
         List<Task> syncJobs = new();
-        var tasks = Servers.Select(server => Task.Run(() =>
+        var tasks = this.Select(server => Task.Run(() =>
         {
             try
             {
@@ -108,25 +124,5 @@ public class ServerConnector : IServerConnector
     public ServerConnectorSettings GetSettings()
     {
         throw new NotImplementedException();
-    }
-    public void AddServer(IMediaServerConnector server)
-    {
-        Servers.Add(server);
-        _ = Task.Run(() =>
-        {
-            AddServerActions.ForEach(a => a.Invoke(server));
-        });
-    }
-    public void RemoveServer(IMediaServerConnector server)
-    {
-        Servers.Remove(server);
-    }
-    public void RemoveServer(string address)
-    {
-        Servers.Remove(Servers.First(s => s.GetAddress() == address));
-    }
-    public IMediaServerConnector[] GetServers()
-    {
-        return Servers.ToArray();
     }
 }

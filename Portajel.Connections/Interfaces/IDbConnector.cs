@@ -12,7 +12,7 @@ namespace Portajel.Connections.Interfaces
     public interface IDbConnector
     {
         public SQLiteConnection Database { get; }
-        DbConnectors Connectors { get; }
+        public DbConnectors Connectors { get; }
         public BaseData[] Search(
             string searchTerm = "",
             int limit = 50,
@@ -21,6 +21,7 @@ namespace Portajel.Connections.Interfaces
             SortOrder setSortOrder = SortOrder.Ascending,
             CancellationToken cancellationToken = default);
     }
+
     public class DbConnectors : Dictionary<MediaCapabilities, IDbItemConnector>
     {
         public IDbItemConnector Album { get; } 

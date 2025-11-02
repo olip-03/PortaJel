@@ -18,10 +18,10 @@ public partial class ViewConnectionPage : ContentPage, IQueryAttributable
     private Dictionary<string, ConnectorPropertyValue> _connectionProperties = new();
     private ViewConnectionViewModel _viewModel = new();
 
-    private IServerConnector _server = default!;
+    private ServerConnector _server = default!;
     private IDbConnector _database = default!;
 
-    public ViewConnectionPage(IServerConnector serverConnector, IDbConnector dbConnector)
+    public ViewConnectionPage(ServerConnector serverConnector, IDbConnector dbConnector)
     {
         _server =  serverConnector;
         _database = dbConnector;
@@ -75,8 +75,8 @@ public partial class ViewConnectionPage : ContentPage, IQueryAttributable
 
     private async void Button_Clicked(object sender, EventArgs e)
     {
-        var srv = _server.Servers.First(s => s.GetAddress() == url);
-        _server.Servers.Remove(srv);
+        var srv = _server.First(s => s.GetAddress() == url);
+        _server.Remove(srv);
         
         SQLiteConnection db = _database.Database;
         // delete here
@@ -95,7 +95,7 @@ public partial class ViewConnectionPage : ContentPage, IQueryAttributable
     private async void ToolbarItem_Clicked(object sender, EventArgs e)
     {
         var toast = Toast.Make("Saving...", ToastDuration.Short, 14);
-        var server = _server.Servers.First(s => s.GetAddress() == url);
+        var server = _server.First(s => s.GetAddress() == url);
 
         AuthStatusInfo checkSrv = await server.AuthenticateAsync();
 

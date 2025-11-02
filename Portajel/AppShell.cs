@@ -70,10 +70,21 @@ namespace Portajel
             };
             UpdateTheme();
 
-            _bottomNavBar = BuildTabBar();
-                
-            FlyoutBehavior = FlyoutBehavior.Disabled;
-            Items.Add(_bottomNavBar);
+            if (DeviceInfo.Platform == DevicePlatform.WinUI)
+            {
+                FlyoutBehavior = FlyoutBehavior.Locked;
+                FlyoutBackgroundColor = BackgroundColor;
+                foreach (var item in DesktopTargetUI())
+                {
+                    Items.Add(item);
+                }
+            }
+            else
+            {
+                _bottomNavBar = BuildTabBar();
+                FlyoutBehavior = FlyoutBehavior.Disabled;
+                Items.Add(_bottomNavBar);
+            }
 
             CheckPermissions();
             _ = Initialize();
@@ -154,6 +165,129 @@ namespace Portajel
             this.Behaviors.Add(statusBar);
         }
 
+        private ShellItem[] DesktopTargetUI()
+        {
+            var homeItem = new FlyoutItem
+            {
+                Title = "Home",
+                Icon = "home.png",
+                Items =
+                {
+                    new Tab
+                    {
+                        Items =
+                        {
+                            new ShellContent
+                            {
+                                ContentTemplate = new DataTemplate(typeof(Pages.HomePage))
+                            }
+                        }
+                    }
+                }
+            };
+
+            var playlistItem = new FlyoutItem
+            {
+                Title = "Playlists",
+                Icon = "playlist.png",
+                Items =
+                {
+                    new Tab
+                    {
+                        Items =
+                        {
+                            new ShellContent
+                            {
+                                Title = "Playlists",
+                                Content = _playlistListPage
+                            }
+                        }
+                    }
+                }
+            };
+
+            var albumItem = new FlyoutItem
+            {
+                Title = "Albums",
+                Icon = "album.png",
+                Items =
+                {
+                    new Tab
+                    {
+                        Items =
+                        {
+                            new ShellContent
+                            {
+                                Title = "Albums",
+                                Content = _albumPage
+                            }
+                        }
+                    }
+                }
+            };
+
+            var artistItems = new FlyoutItem
+            {
+                Title = "Artists",
+                Icon = "artist.png",
+                Items =
+                {
+                    new Tab
+                    {
+                        Items =
+                        {
+                            new ShellContent
+                            {
+                                Title = "Artists",
+                                Content = _artistPage
+                            }
+                        }
+                    }
+                }
+            };
+
+            var songsItems = new FlyoutItem
+            {
+                Title = "Songs",
+                Icon = "song.png",
+                Items =
+                {
+                    new Tab
+                    {
+                        Items =
+                        {
+                            new ShellContent
+                            {
+                                Title = "Songs",
+                                Content = _songPage
+                            }
+                        }
+                    }
+                }
+            };
+
+            var genreItems = new FlyoutItem
+            {
+                Title = "Genres",
+                Icon = "genre.png",
+                Items =
+                {
+                    new Tab
+                    {
+                        Items =
+                        {
+                            new ShellContent
+                            {
+                                Title = "Genres",
+                                Content = _genrePage
+                            }
+                        }
+                    }
+                }
+            };
+
+            return [homeItem, playlistItem, albumItem, artistItems, songsItems, genreItems];
+        }
         private BottomNavBar BuildTabBar(Color? background = null)
         {
             var tabBar = new BottomNavBar();

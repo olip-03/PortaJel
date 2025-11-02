@@ -6,7 +6,7 @@ using PortaJel.Droid.Services;
 
 namespace Portajel.Services
 {
-    public class DroidServerConnector : IServerConnector
+    public class DroidServerConnector : ServerConnector
     {
         private Droid.Services.ServiceConnection _serviceConnection = null!;
         public DroidServerConnector(DroidServiceController serverConnection)
@@ -45,13 +45,13 @@ namespace Portajel.Services
             {
                 if (_serviceConnection.Binder == null)
                     throw GetNullReferenceException();
-                return _serviceConnection.Binder.Server.AddServerActions;
+                return _serviceConnection.Binder.Server.OnAdd;
             }
             set
             {
                 if (_serviceConnection.Binder == null)
                     throw GetNullReferenceException();
-                _serviceConnection.Binder.Server.AddServerActions = value;
+                _serviceConnection.Binder.Server.OnAdd = value;
             }
         }
         private NullReferenceException GetNullReferenceException()

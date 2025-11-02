@@ -1,7 +1,3 @@
-using System.Buffers;
-using System.Collections.Concurrent;
-using System.Diagnostics;
-using System.Text;
 using BenchmarkDotNet.Attributes;
 using CommandLine;
 using MessagePack;
@@ -16,8 +12,13 @@ using Portajel.Connections.Services;
 using Portajel.Connections.Services.Database;
 using Portajel.Connections.Services.Jellyfin;
 using Portajel.Connections.Services.Jellyfin.Dto;
+using Portajel.Connections.Services.Sync;
 using Portajel.Connections.Structs;
 using Portajel.Terminal.Struct.MessagePack;
+using System.Buffers;
+using System.Collections.Concurrent;
+using System.Diagnostics;
+using System.Text;
 using ZLinq;
 
 namespace Portajel.Terminal.Benchmark;
@@ -26,8 +27,11 @@ namespace Portajel.Terminal.Benchmark;
 public class DbBenchmark
 {
     private DatabaseConnector _database = Program.Database;
-    private ServerConnector _server = Program.Server;
+    private ServerConnector _server = Program.Servers;
     private HttpClient httpClient = new HttpClient();
+    private SyncController syncController;
+
+
     private readonly Dictionary<string, string> _defaultHeaders = new()
     {
         { "accept", "application/json" },
@@ -57,107 +61,115 @@ public class DbBenchmark
             "Benchy",
             "Benchy",
             Program.AppDataPath);
-        _server.AddServer(jf);
+        _server.Add(jf);
+
+        syncController = new(_database);
         var authTask = _server.AuthenticateAsync();
         authTask.Wait();
     }
-    
-    [Benchmark]
-    [Arguments(1)]
-    [Arguments(10)]
-    [Arguments(50)]
-    public async Task ByteAllocationTest(int limit)
-    {
-        const int itemCount = 2;
-        // pick an initial buffer size you know will handle most payloads
-        int initialSize = 16 * 1024; 
-        byte[] buffer = _pool.Rent(initialSize);
-
-        try
-        {
-            for (int i = 0; i < limit; i++)
-            {
-                string url = BuildApiString(
-                    "https://media.oli.fm",
-                    "MusicAlbum",
-                    "920896d5-d21b-4488-8f47-292603d7ecd3",
-                    i,
-                    itemCount
-                );
-
-                // stream the content so we never allocate a new array
-                using var resp = await httpClient
-                    .GetAsync(url, HttpCompletionOption.ResponseHeadersRead)
-                    .ConfigureAwait(false);
-                resp.EnsureSuccessStatusCode();
-
-                await using var stream = await resp.Content
-                    .ReadAsStreamAsync()
-                    .ConfigureAwait(false);
-
-                // read fully into 'buffer', growing only as needed
-                int bytesRead = ReadToBufferAsync(stream, ref buffer);
-                
-                // now decode only the bytes we actually read
-                string json = Encoding.UTF8.GetString(buffer, 0, bytesRead);
-            }
-        }
-        finally
-        {
-            // return the last buffer we were using
-            _pool.Return(buffer, clearArray: false);
-        }
-    }
-    
-    private static int ReadToBufferAsync(Stream stream, ref byte[] buffer)
-    {
-        const int chunk = 8 * 1024;
-        int pos = 0;
-
-        while (true)
-        {
-            // if we've filled the buffer, grow by a fixed chunk
-            if (pos == buffer.Length)
-            {
-                int newSize = buffer.Length + chunk;
-                byte[] bigger = _pool.Rent(newSize);
-                Buffer.BlockCopy(buffer, 0, bigger, 0, pos);
-                _pool.Return(buffer, clearArray: false);
-                buffer = bigger;
-            }
-
-            int read = stream
-                .Read(buffer, pos, buffer.Length - pos);
-            if (read == 0) break;
-            pos += read;
-        }
-
-        return pos;
-    }
 
     [Benchmark]
-    public async Task PoolAllocationTest()
+    public async Task RunSync()
     {
-        var stringData = StringPool.Rent(1);
-        for (int i = 0; i < 50; i++)
-        {
-            try
-            {
-                stringData[0] = BuildApiString(
-                    "https://media.oli.fm",
-                    "MusicAlbum",
-                    "920896d5-d21b-4488-8f47-292603d7ecd3",
-                    i,
-                    1
-                );
-            }
-            finally
-            {
-                StringPool.Return(stringData);
-            }
-        }
+        await syncController.Start(_server);
     }
-    
+
+    //[Benchmark]
+    //[Arguments(1)]
+    //[Arguments(10)]
+    //[Arguments(50)]
+    //public async Task ByteAllocationTest(int limit)
+    //{
+    //    const int itemCount = 2;
+    //    // pick an initial buffer size you know will handle most payloads
+    //    int initialSize = 16 * 1024; 
+    //    byte[] buffer = _pool.Rent(initialSize);
+
+    //    try
+    //    {
+    //        for (int i = 0; i < limit; i++)
+    //        {
+    //            string url = BuildApiString(
+    //                "https://media.oli.fm",
+    //                "MusicAlbum",
+    //                "920896d5-d21b-4488-8f47-292603d7ecd3",
+    //                i,
+    //                itemCount
+    //            );
+
+    //            // stream the content so we never allocate a new array
+    //            using var resp = await httpClient
+    //                .GetAsync(url, HttpCompletionOption.ResponseHeadersRead)
+    //                .ConfigureAwait(false);
+    //            resp.EnsureSuccessStatusCode();
+
+    //            await using var stream = await resp.Content
+    //                .ReadAsStreamAsync()
+    //                .ConfigureAwait(false);
+
+    //            // read fully into 'buffer', growing only as needed
+    //            int bytesRead = ReadToBufferAsync(stream, ref buffer);
+
+    //            // now decode only the bytes we actually read
+    //            string json = Encoding.UTF8.GetString(buffer, 0, bytesRead);
+    //        }
+    //    }
+    //    finally
+    //    {
+    //        // return the last buffer we were using
+    //        _pool.Return(buffer, clearArray: false);
+    //    }
+    //}
+
+    //private static int ReadToBufferAsync(Stream stream, ref byte[] buffer)
+    //{
+    //    const int chunk = 8 * 1024;
+    //    int pos = 0;
+
+    //    while (true)
+    //    {
+    //        // if we've filled the buffer, grow by a fixed chunk
+    //        if (pos == buffer.Length)
+    //        {
+    //            int newSize = buffer.Length + chunk;
+    //            byte[] bigger = _pool.Rent(newSize);
+    //            Buffer.BlockCopy(buffer, 0, bigger, 0, pos);
+    //            _pool.Return(buffer, clearArray: false);
+    //            buffer = bigger;
+    //        }
+
+    //        int read = stream
+    //            .Read(buffer, pos, buffer.Length - pos);
+    //        if (read == 0) break;
+    //        pos += read;
+    //    }
+
+    //    return pos;
+    //}
+
+    //[Benchmark]
+    //public async Task PoolAllocationTest()
+    //{
+    //    var stringData = StringPool.Rent(1);
+    //    for (int i = 0; i < 50; i++)
+    //    {
+    //        try
+    //        {
+    //            stringData[0] = BuildApiString(
+    //                "https://media.oli.fm",
+    //                "MusicAlbum",
+    //                "920896d5-d21b-4488-8f47-292603d7ecd3",
+    //                i,
+    //                1
+    //            );
+    //        }
+    //        finally
+    //        {
+    //            StringPool.Return(stringData);
+    //        }
+    //    }
+    //}
+
     private async Task<string> GetUserView()
     {
         var request = new HttpRequestMessage(HttpMethod.Get, "https://media.oli.fm/Users/920896d5-d21b-4488-8f47-292603d7ecd3/Views");

@@ -14,7 +14,7 @@ namespace Portajel.Structures.Functional
         private static string manufacturer = DeviceInfo.Current.Manufacturer;
         private static string deviceName = DeviceInfo.Current.Name;
 
-        public static async Task<IServerConnector> LoadData(IDbConnector database, string appDataDirectory)
+        public static async Task<ServerConnector> LoadData(IDbConnector database, string appDataDirectory)
         {
             Task<string?> r = SecureStorage.Default.GetAsync(GuidHelper.GetDeviceHash(model, manufacturer, deviceName));
             r.Wait();
@@ -55,10 +55,9 @@ namespace Portajel.Structures.Functional
                     }
                 }
 
-                return new ServerConnector()
-                {
-                    Servers = servers,
-                };
+                var toReturn = new ServerConnector();
+                toReturn.AddRange(servers);
+                return toReturn;
             }
             catch (Exception e)
             {
@@ -67,7 +66,7 @@ namespace Portajel.Structures.Functional
             }
         }
 
-        public static async Task<bool> SaveData(IServerConnector server)
+        public static async Task<bool> SaveData(ServerConnector server)
         {
             try
             {
@@ -83,11 +82,11 @@ namespace Portajel.Structures.Functional
             return true;
         }
 
-        private static string ServerToJson(IServerConnector server)
+        private static string ServerToJson(ServerConnector server)
         {
             var settings = new ServerConnectorSettings()
             {
-                Servers = server.Servers.Select(s => new ServerSettings(s)).ToList(),
+                Servers = server.Select(s => new ServerSettings(s)).ToList(),
             };
             var json = JsonConvert.SerializeObject(settings, Formatting.Indented);
             return json;

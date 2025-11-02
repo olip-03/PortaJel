@@ -115,7 +115,7 @@ namespace Portajel.Droid.Services
             {
                 server.StartSyncActions.Add(StartSyncProgressAsync);
             }
-            serverConnector.AddServerActions.Add((IMediaServerConnector server) =>
+            serverConnector.OnAdd.Add((IMediaServerConnector server) =>
             {
                 server.StartSyncActions.Add(StartSyncProgressAsync);
             });

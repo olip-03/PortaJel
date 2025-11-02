@@ -18,9 +18,9 @@ public class ConnectionsPage : ContentPage
 {
     private Color _primaryDark = Color.FromRgba(0, 0, 0, 255);
 
-    private IServerConnector _server = default!;
+    private ServerConnector _server = default!;
     private IDbConnector _database = default!;
-    public ConnectionsPage(IServerConnector server, IDbConnector dbConnector)
+    public ConnectionsPage(ServerConnector server, IDbConnector dbConnector)
     {
         if (Application.Current is null) return;
         _server = server;
@@ -45,7 +45,7 @@ public class ConnectionsPage : ContentPage
         Title = "Connections";
 
         var mainLayout = new VerticalStackLayout();
-        mainLayout.Children.Add(GetConnectionsGrid(_server.Servers.ToArray()));
+        mainLayout.Children.Add(GetConnectionsGrid(_server.ToArray()));
 
         mainLayout.Children.Add(new Button
         {

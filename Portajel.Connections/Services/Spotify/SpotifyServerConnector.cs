@@ -2,6 +2,7 @@
 using Portajel.Connections.Interfaces;
 using Portajel.Connections.Enum;
 using Portajel.Connections.Structs;
+using Portajel.Connections.Services.Sync;
 
 namespace Portajel.Connections.Services.Spotify
 {

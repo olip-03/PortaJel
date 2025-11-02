@@ -1,5 +1,5 @@
 ﻿using Portajel.Connections.Interfaces;
-using Portajel.Connections.Services;
+using Portajel.Connections.Services.Sync;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;

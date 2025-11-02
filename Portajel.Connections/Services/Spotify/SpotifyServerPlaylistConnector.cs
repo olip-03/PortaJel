@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Jellyfin.Sdk.Generated.Models;
 using Portajel.Connections.Structs;
 using MediaType = Portajel.Connections.Enum.MediaType;
+using Portajel.Connections.Services.Sync;
 
 namespace Portajel.Connections.Services.Spotify
 {

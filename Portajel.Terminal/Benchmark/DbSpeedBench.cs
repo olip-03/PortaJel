@@ -28,7 +28,7 @@ namespace Portajel.Terminal.Benchmark;
 public class DbSpeedBenchmark
 {
     private DatabaseConnector _database = Program.Database;
-    private ServerConnector _server = Program.Server;
+    private ServerConnector _server = Program.Servers;
     private IMediaServerConnector _jfServer;
 
     [GlobalSetup]
@@ -47,10 +47,10 @@ public class DbSpeedBenchmark
             "Benchy",
             "Benchy",
             Program.AppDataPath);
-        _server.AddServer(jf);
+        _server.Add(jf);
         var authTask = _server.AuthenticateAsync();
         authTask.Wait();
-        _jfServer = _server.Servers.First();
+        _jfServer = _server.First();
     }
     
     [Benchmark]

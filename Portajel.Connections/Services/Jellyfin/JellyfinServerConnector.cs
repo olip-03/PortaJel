@@ -15,6 +15,7 @@ using Newtonsoft.Json;
 using Portajel.Connections.Services.Jellyfin.Dto;
 using Portajel.Connections.Structs;
 using MediaType = Portajel.Connections.Enum.MediaType;
+using Portajel.Connections.Services.Sync;
 
 namespace Portajel.Connections.Services.Jellyfin
 {

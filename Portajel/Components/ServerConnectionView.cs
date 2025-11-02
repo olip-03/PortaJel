@@ -5,7 +5,7 @@ using Portajel.Connections.Interfaces;
 using Portajel.Connections.Services.Jellyfin;
 using Portajel.Pages.Settings.Connections;
 using Color = Microsoft.Maui.Graphics.Color;
-
+using Portajel.Connections;
 namespace Portajel.Components;
 
 public class ServerConnectionView : Grid
@@ -14,13 +14,13 @@ public class ServerConnectionView : Grid
     
     private Color _primaryDark = Color.FromRgba(0, 0, 0, 255);
 
-    private IServerConnector _server = default!;
+    private ServerConnector _server = default!;
     private IDbConnector _database = default!;
     
     public ServerConnectionView()
     {
         // Its not DI but it works 
-        _server = ServiceProvider.GetService<IServerConnector>();
+        _server = ServiceProvider.GetService<ServerConnector>();
         _database = ServiceProvider.GetService<IDbConnector>();
         BuildUI();
         
@@ -30,7 +30,7 @@ public class ServerConnectionView : Grid
         };
     }
     
-    public ServerConnectionView(IServerConnector server, IDbConnector dbConnector)
+    public ServerConnectionView(ServerConnector server, IDbConnector dbConnector)
     {
         _server = server;
         _database = dbConnector;
@@ -65,7 +65,7 @@ public class ServerConnectionView : Grid
         RowDefinitions.Add(new RowDefinition { Height = GridLength.Star });
         RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
 
-        var connectionsGrid = GetConnectionsGrid(_server.Servers.ToArray());
+        var connectionsGrid = GetConnectionsGrid(_server.ToArray());
         Grid.SetRow(connectionsGrid, 0);  // Use Grid.SetRow instead of SetRow
         Children.Add(connectionsGrid);
 

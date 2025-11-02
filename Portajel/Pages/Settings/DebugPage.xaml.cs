@@ -2,13 +2,13 @@ using Portajel.Connections.Interfaces;
 using Portajel.Pages.Settings.Debug;
 using Portajel.Structures;
 using Portajel.Structures.ViewModels.Settings;
-
+using Portajel.Connections;
 namespace Portajel.Pages.Settings;
 
 public partial class DebugPage : ContentPage
 {
     private SettingsPageViewModel _viewModel = new();
-    public DebugPage(IServerConnector serverConnector, IDbConnector dbConnector)
+    public DebugPage(ServerConnector serverConnector, IDbConnector dbConnector)
 	{
 		InitializeComponent();
         _viewModel.ListItems = new()

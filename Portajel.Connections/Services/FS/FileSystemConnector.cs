@@ -4,6 +4,7 @@ using Jellyfin.Sdk;
 using Jellyfin.Sdk.Generated.Models;
 using SQLite;
 using Portajel.Connections.Structs;
+using Portajel.Connections.Services.Sync;
 
 namespace Portajel.Connections.Services.FS;
 

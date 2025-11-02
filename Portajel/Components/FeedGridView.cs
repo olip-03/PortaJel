@@ -4,7 +4,8 @@ using System.Threading.Tasks;
 using Microsoft.Maui.Controls;
 using Microsoft.Maui.Controls.Embedding;
 using Portajel.Components.FeedView;      // your HorizontalFeedView
-using Portajel.Connections.Interfaces;   // IServerConnector, IDbConnector
+using Portajel.Connections;
+using Portajel.Connections.Interfaces;   // ServerConnector, IDbConnector
 
 namespace Portajel.Components
 {
@@ -14,18 +15,10 @@ namespace Portajel.Components
         internal static IServiceProvider? ServiceProvider { get; set; }
             = IPlatformApplication.Current?.Services;
 
-        readonly IServerConnector _server;
+        readonly ServerConnector _server;
         readonly IDbConnector     _database;
 
-        public FeedGridView()
-            : this(
-                ServiceProvider?.GetService<IServerConnector>()!,
-                ServiceProvider?.GetService<IDbConnector>()!
-            )
-        {
-        }
-
-        public FeedGridView(IServerConnector server, IDbConnector database)
+        public FeedGridView(ServerConnector server, IDbConnector database)
         {
             _server   = server;
             _database = database;
@@ -36,6 +29,15 @@ namespace Portajel.Components
             // rebuild on theme change
             Application.Current.RequestedThemeChanged += (s, a) =>
                 _ = BuildUIAsync();
+        }
+
+        // Expecting DI but if it isnt provided use the ServiceProvider instead
+        public FeedGridView()
+            : this(
+                ServiceProvider?.GetService<ServerConnector>()!,
+                ServiceProvider?.GetService<IDbConnector>()!
+            )
+        {
         }
 
         /// <summary>

@@ -15,7 +15,7 @@ namespace Portajel.Terminal.Benchmark;
 public class UIBenchmark
 {
     private DatabaseConnector _database = Program.Database;
-    private ServerConnector _server = Program.Server;
+    private ServerConnector _server = Program.Servers;
     private HttpClient httpClient = new HttpClient();
 
     private AlbumData _albumData;
@@ -41,7 +41,7 @@ public class UIBenchmark
             "Benchy",
             "Benchy",
             Program.AppDataPath);
-        _server.AddServer(jf);
+        _server.Add(jf);
         var authTask = _server.AuthenticateAsync();
         authTask.Wait();
         
@@ -49,7 +49,7 @@ public class UIBenchmark
         while (true)
         {
             int rInt = r.Next(0, 1000);
-            var task = _server.Servers.First().DataConnectors["Album"].GetAllAsync(limit: 1, startIndex: rInt);
+            var task = _server.First().DataConnectors["Album"].GetAllAsync(limit: 1, startIndex: rInt);
             task.Wait();
             _albumData = task.Result.First().Cast<AlbumData>();
             if (!String.IsNullOrEmpty(_albumData.ImgBlurhash))

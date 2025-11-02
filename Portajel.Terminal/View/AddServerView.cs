@@ -47,7 +47,7 @@ public class AddServerView: IView
 
     private void AddAndStartAuth()
     {
-        Program.Server.AddServer(new JellyfinServerConnector(
+        Program.Servers.Add(new JellyfinServerConnector(
             Program.Database,
             url: Form[0].UserResponse,
             username: Form[1].UserResponse,
@@ -60,8 +60,8 @@ public class AddServerView: IView
         ));
         Task.Run(async () =>
         {
-            await Program.Server.AuthenticateAsync();
-            await Program.Server.StartSyncAsync();
+            await Program.Servers.AuthenticateAsync();
+            await Program.Servers.StartSyncAsync();
         });
     }
 }
