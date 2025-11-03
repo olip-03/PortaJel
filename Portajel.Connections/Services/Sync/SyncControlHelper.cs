@@ -12,9 +12,9 @@ namespace Portajel.Connections.Services.Sync
     public static class SyncControlHelper
     {
         // public static async Task 
-        public static async Task<(MediaType MediaType, int Total)> GetServerTotalCount(string name, IMediaDataConnector dataConnection)
+        public static async Task<(string url, MediaType MediaType, int Total)> GetServerTotalCount(string url, string name, IMediaDataConnector dataConnection)
         {
-            return (dataConnection.MediaType, await dataConnection.GetTotalCountAsync());
+            return (url, dataConnection.MediaType, await dataConnection.GetTotalCountAsync());
         } 
     }
 }

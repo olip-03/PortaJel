@@ -34,13 +34,10 @@ namespace Portajel.Terminal
         static async Task Main(string[] args)
         {
 #if DEBUG
-
             DbBenchmark benchmark = new();
             benchmark.Setup();
             syncController = new(Database);
-
-            await syncController.Start(Servers);
-            
+            await syncController.Start(Servers);        
 #else
             var summary = BenchmarkRunner.Run<DbBenchmark>();
 #endif

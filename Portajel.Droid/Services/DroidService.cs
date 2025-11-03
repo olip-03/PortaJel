@@ -111,7 +111,7 @@ namespace Portajel.Droid.Services
             }
 
             // Add action to each loaded server and added server
-            foreach (var server in serverConnector.Servers)
+            foreach (var server in serverConnector)
             {
                 server.StartSyncActions.Add(StartSyncProgressAsync);
             }
@@ -192,7 +192,7 @@ namespace Portajel.Droid.Services
                 int total = 0;
                 int count = 0;
                 bool hasStarted = true;
-                foreach (var item in Binder.Server.Servers)
+                foreach (var item in Binder.Server)
                 {
                     try
                     {

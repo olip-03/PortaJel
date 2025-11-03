@@ -1,9 +1,9 @@
 ﻿using Portajel.Connections.Enum;
 using Portajel.Connections.Interfaces;
+using Portajel.Connections.Services.Database;
 using Portajel.Connections.Structs;
-using Portajel.Connections.Structs.Sync;
 using System;
-using System.Buffers;
+//using System.Buffers;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -12,7 +12,6 @@ using static SQLite.SQLite3;
 
 namespace Portajel.Connections.Services.Sync
 {
-
     /// <summary>
     /// Service Class that handles Media Server data sync operations. 
     /// </summary>
@@ -27,12 +26,15 @@ namespace Portajel.Connections.Services.Sync
         private const int MaxParallel = 500;
 
         private IDbConnector _database;
-        private Dictionary<Guid, CancellationTokenSource> _requestTokens = new();
 
-        private Queue<ServerRequestInfo> serverRequests = new();
+        private PersistentDictionary<string, string> serverProcesses;
+        private PersistentQueue<ServerRequestInfo> serverRequests;
 
         public SyncController(IDbConnector database) 
         {
+            string? mainDir = Path.Combine(AppContext.BaseDirectory, "syncQueue.db3");
+            serverRequests = new(mainDir);
+            serverProcesses = new(mainDir);
             _database = database;
         }
 
@@ -55,8 +57,14 @@ namespace Portajel.Connections.Services.Sync
         /// <param name="server">Declare which Server should begin syncing.</param>
         public async Task Start(IMediaServerConnector server)
         {
+            if (!serverProcesses.TryAdd(server.GetAddress(), server.Name)) 
+            {
+                // Already processing this server, can return safe.
+                return;
+            }
+
             // Get all counts
-            var totalCount = server.DataConnectors.Select(s => Task.Run(() => SyncControlHelper.GetServerTotalCount(s.Key, s.Value)));
+            var totalCount = server.DataConnectors.Select(s => Task.Run(() => SyncControlHelper.GetServerTotalCount(server.GetAddress(), s.Key, s.Value)));
             await Task.WhenAll(totalCount);
             var result = totalCount.Select(t => t.Result).Where(r => r.Total > 0).ToList();
 
@@ -88,8 +96,8 @@ namespace Portajel.Connections.Services.Sync
         {
             
         }
-          
-        private void CreateRequests(List<(MediaType MediaType, int Total)> result)
+        
+        private void CreateRequests(List<(string fromUrl, MediaType MediaType, int Total)> result)
         {
             // Calculate batch counts and track current position for each type
             var typeBatchCounts = result.Select(r => (r.Total + BatchSize - 1) / BatchSize).ToArray();
@@ -111,7 +119,8 @@ namespace Portajel.Connections.Services.Sync
                         {
                             MediaType = result[typeIndex].MediaType,
                             StartFrom = (int)start,
-                            BatchSize = actualBatchSize
+                            BatchSize = actualBatchSize,
+                            ServerAddress = result[typeIndex].fromUrl
                         });
 
                         currentBatchIndex[typeIndex]++;
